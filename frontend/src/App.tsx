@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
+import GetStartedPage from "./pages/GetStartedPage";
 import AuthPage from "./pages/AuthPage";
 import DashboardPage from "./pages/DashboardPage";
 import CarsPage from "./pages/CarsPage";
@@ -23,7 +24,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<AuthPage />} />
+            <Route path="/" element={<GetStartedPage />} />
+            <Route path="/auth" element={<AuthPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/cars" element={<CarsPage />} />
             <Route path="/wallet" element={<WalletPage />} />
@@ -39,3 +41,4 @@ const App = () => (
 );
 
 export default App;
+
