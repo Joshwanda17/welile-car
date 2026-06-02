@@ -13,19 +13,18 @@ import {
   ChevronRight,
   TrendingUp,
   UserCheck,
-  ArrowLeft,
   Lock,
   Calendar,
-  Layers,
-  MapPin,
-  Flame,
-  Check,
   AlertCircle,
-  PiggyBank,
-  CheckSquare
+  Users,
+  Briefcase,
+  Check,
+  Info,
+  HelpCircle,
+  Shuffle
 } from 'lucide-react';
 
-// Import images or use local asset fallback paths
+// Import images
 import vitzImg from '@/assets/car-vitz.jpg';
 import premioImg from '@/assets/car-premio.jpg';
 import wishImg from '@/assets/car-wish.jpg';
@@ -35,7 +34,6 @@ interface CarModel {
   name: string;
   type: string;
   priceUgx: number;
-  weeklyBase: number;
   image: string;
   specs: {
     engine: string;
@@ -48,105 +46,108 @@ const CARS: CarModel[] = [
   {
     id: 'vitz',
     name: 'Toyota Vitz',
-    type: 'Hatchback (Efficient & Compact)',
+    type: 'Hatchback (Perfect for Ride-Hailing)',
     priceUgx: 18000000,
-    weeklyBase: 150000,
     image: vitzImg,
     specs: { engine: '1.3L VVT-i', fuel: '20 km/L', seats: 5 }
   },
   {
     id: 'wish',
     name: 'Toyota Wish',
-    type: 'MPV (Spacious & Family Friendly)',
+    type: 'MPV (Ideal for Business & Cargo)',
     priceUgx: 25000000,
-    weeklyBase: 220000,
     image: wishImg,
     specs: { engine: '1.8L Valvematic', fuel: '14 km/L', seats: 7 }
   },
   {
     id: 'premio',
     name: 'Toyota Premio',
-    type: 'Sedan (Premium & Elegant)',
+    type: 'Sedan (Premium Personal Vehicle)',
     priceUgx: 28000000,
-    weeklyBase: 250000,
     image: premioImg,
     specs: { engine: '1.8L D4-D', fuel: '16 km/L', seats: 5 }
-  }
-];
-
-const ONBOARDING_STEPS = [
-  {
-    icon: <CarIcon className="text-primary" size={28} />,
-    title: "Choose Your Perfect Vehicle",
-    description: "Browse from our handpicked, premium range of highly efficient vehicles tailored for Ugandan roads."
-  },
-  {
-    icon: <Wallet className="text-primary" size={28} />,
-    title: "Flexible Financing Plans",
-    description: "No huge upfront payments. Select a customized weekly installment plan that aligns with your income."
-  },
-  {
-    icon: <ShieldCheck className="text-primary" size={28} />,
-    title: "Own Your Car Fully",
-    description: "Every payment brings you closer. Complete your plan and receive full vehicle ownership with no hidden fees."
   }
 ];
 
 export default function GetStartedPage() {
   const navigate = useNavigate();
   const [selectedCar, setSelectedCar] = useState<CarModel>(CARS[0]);
-  const [weeklyPayment, setWeeklyPayment] = useState<number>(CARS[0].weeklyBase);
-  const [activeStep, setActiveStep] = useState(0);
+  
+  // Savings Configuration
+  const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
+  const [savingAmount, setSavingAmount] = useState<number>(150000); // Default weekly saving
 
-  // Portal & Lock States
-  const [showPortal, setShowPortal] = useState(false);
-  const [isPlanLocked, setIsPlanLocked] = useState(false);
-  const [agreeTerms, setAgreeTerms] = useState(false);
+  // Auth/Sign-In Overlay State
+  const [showAuthSection, setShowAuthSection] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [lockedPlan, setLockedPlan] = useState(false);
 
-  // Dynamic calculations
-  const totalWeeks = Math.ceil(selectedCar.priceUgx / weeklyPayment);
-  const totalMonths = Math.ceil(totalWeeks / 4.3);
-  const dailyEquivalent = Math.round(weeklyPayment / 7);
-
-  // Co-Financing Calculations (30% User / 70% Platform)
+  // Dynamic Business Model Calculations
   const deposit30 = Math.round(selectedCar.priceUgx * 0.3);
   const platform70 = Math.round(selectedCar.priceUgx * 0.7);
+  
+  // 30% Interest on the 70% portion financed by company
+  const financeInterest = Math.round(platform70 * 0.3);
+  const totalAmountToAmortize = platform70 + financeInterest;
 
-  // 30% Down Payment split schedules
-  const depositStep1 = Math.round(deposit30 * 0.4); // 40% of deposit
-  const depositStep2 = Math.round(deposit30 * 0.3); // 30% of deposit
-  const depositStep3 = Math.round(deposit30 * 0.3); // 30% of deposit
+  // 20% penalty fee on missed installment
+  const penaltyFee = Math.round(savingAmount * 0.2);
 
-  // Handle car model change
-  const handleCarSelect = (car: CarModel) => {
-    if (isPlanLocked) return;
-    setSelectedCar(car);
-    setWeeklyPayment(car.weeklyBase);
+  // Time calculations to reach the 30% target saving
+  const totalPeriodsToReach30 = Math.ceil(deposit30 / savingAmount);
+  
+  let timeTo30Text = '';
+  if (frequency === 'daily') {
+    const months = (totalPeriodsToReach30 / 30).toFixed(1);
+    timeTo30Text = `${totalPeriodsToReach30} Days (~${months} Months)`;
+  } else if (frequency === 'weekly') {
+    const months = (totalPeriodsToReach30 / 4.3).toFixed(1);
+    timeTo30Text = `${totalPeriodsToReach30} Weeks (~${months} Months)`;
+  } else {
+    timeTo30Text = `${totalPeriodsToReach30} Months`;
+  }
+
+  // Adjust sliders limits based on frequency
+  const getMinMaxSavings = () => {
+    if (frequency === 'daily') return { min: 20000, max: 100000, step: 5000, default: 30000 };
+    if (frequency === 'weekly') return { min: 100000, max: 500000, step: 10000, default: 150000 };
+    return { min: 400000, max: 2000000, step: 50000, default: 600000 };
   };
 
-  const handleWeeklyPaymentChange = (value: number) => {
-    if (isPlanLocked) return;
-    setWeeklyPayment(value);
+  const handleFrequencyChange = (freq: 'daily' | 'weekly' | 'monthly') => {
+    setFrequency(freq);
+    const limits = freq === 'daily' ? { def: 30000 } : freq === 'weekly' ? { def: 150000 } : { def: 600000 };
+    setSavingAmount(limits.def);
+  };
+
+  const handleCarSelect = (car: CarModel) => {
+    if (lockedPlan) return;
+    setSelectedCar(car);
   };
 
   const handleLockPlan = () => {
-    if (!agreeTerms) return;
-    setIsPlanLocked(true);
-  };
-
-  const handleContinueToAuth = () => {
-    navigate('/auth', { state: { carId: selectedCar.id, weeklyPayment, locked: true } });
+    setLockedPlan(true);
+    // Smooth scroll to Auth Panel
+    const element = document.getElementById('auth-portal-section');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      setShowAuthSection(true);
+    }
   };
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden font-sans selection:bg-primary/20">
       
-      {/* Premium Ambient Background Glows */}
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-accent/20 blur-[150px] pointer-events-none" />
-      <div className="absolute top-[30%] right-[10%] w-[300px] h-[300px] rounded-full bg-indigo-500/5 blur-[100px] pointer-events-none" />
+      {/* Decorative Blur Orbs */}
+      <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] rounded-full bg-primary/8 blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-[-5%] right-[-5%] w-[50%] h-[50%] rounded-full bg-indigo-500/10 blur-[150px] pointer-events-none" />
 
-      {/* Header / Navbar */}
+      {/* Header */}
       <header className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between relative z-20">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
@@ -154,593 +155,491 @@ export default function GetStartedPage() {
           </div>
           <span className="text-xl font-bold font-heading tracking-tight">Welile Cars</span>
         </div>
-        
-        {showPortal ? (
-          <button 
-            disabled={isPlanLocked}
-            onClick={() => setShowPortal(false)}
-            className={`text-sm font-semibold flex items-center gap-2 py-2.5 px-4 rounded-xl transition ${
-              isPlanLocked 
-                ? 'opacity-40 cursor-not-allowed text-muted-foreground' 
-                : 'hover:bg-secondary/80 text-foreground'
-            }`}
-          >
-            <ArrowLeft size={16} />
-            <span>Back to Calculator</span>
-          </button>
-        ) : (
-          <button 
-            onClick={() => navigate('/auth')}
-            className="text-sm font-medium hover:text-primary transition-colors duration-200 flex items-center gap-1.5 py-2.5 px-4 rounded-xl hover:bg-secondary/50"
-          >
-            <span>Sign In</span>
-            <UserCheck size={16} />
-          </button>
-        )}
+        <a 
+          href="#auth-portal-section"
+          className="text-sm font-semibold hover:text-primary transition flex items-center gap-2 py-2.5 px-5 rounded-xl hover:bg-secondary/50"
+        >
+          <span>Sign In</span>
+          <UserCheck size={16} />
+        </a>
       </header>
 
-      {/* Main Switchable Portal & Calculator Workspace */}
-      <AnimatePresence mode="wait">
-        {!showPortal ? (
-          /* Standard Calculator & Vision Screen */
-          <motion.main 
-            key="calculator-view"
-            initial={{ opacity: 0, y: 15 }}
+      {/* Hero & Interactive Target Calculator */}
+      <main className="max-w-7xl mx-auto px-6 py-8 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        {/* Left: Main Pitch & Business Overview */}
+        <section className="lg:col-span-6 space-y-8">
+          
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            transition={{ duration: 0.4 }}
-            className="max-w-7xl mx-auto px-6 py-8 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/80 border border-primary/10 backdrop-blur-sm shadow-sm"
           >
-            {/* Left Column: Vision & Stepper */}
-            <section className="lg:col-span-6 space-y-8">
-              <motion.div 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/80 border border-primary/10 backdrop-blur-sm shadow-sm"
-              >
-                <Sparkles className="text-primary" size={14} />
-                <span className="text-xs font-semibold text-secondary-foreground tracking-wider uppercase">Smart Vehicle Ownership</span>
-              </motion.div>
+            <Sparkles className="text-primary animate-pulse" size={14} />
+            <span className="text-xs font-extrabold text-secondary-foreground tracking-wider uppercase">Structured Path to Ownership</span>
+          </motion.div>
 
-              <div className="space-y-4">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-black font-heading leading-[1.1] tracking-tight">
-                  Start Small.<br />
-                  <span className="text-gradient">Own Your Car.</span>
-                </h1>
-                <p className="text-muted-foreground text-lg max-w-xl">
-                  Welile Cars makes vehicle ownership accessible to everyone in Uganda. Pay in lightweight weekly installments and own your brand-new vehicle fully.
-                </p>
-              </div>
+          <div className="space-y-4">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black font-heading leading-[1.1] tracking-tight">
+              Save 30%.<br />
+              <span className="text-gradient">We Finance 70%.</span>
+            </h1>
+            <p className="text-muted-foreground text-lg max-w-xl leading-relaxed">
+              An affordable vehicle ownership solution in Uganda. Save at your own pace—daily, weekly, or monthly. Once you hit your 30% target, we finance the rest and hand over the keys.
+            </p>
+          </div>
 
-              {/* Onboarding Stepper */}
-              <div className="space-y-4">
-                {ONBOARDING_STEPS.map((step, idx) => (
-                  <motion.div
-                    key={idx}
-                    onClick={() => setActiveStep(idx)}
-                    className={`p-4 rounded-2xl border transition-all duration-300 cursor-pointer flex gap-4 ${
-                      activeStep === idx 
-                      ? 'bg-card border-primary/20 shadow-md card-shadow' 
-                      : 'bg-transparent border-transparent hover:bg-secondary/30'
-                    }`}
-                    whileHover={{ x: 4 }}
-                  >
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-all ${
-                      activeStep === idx ? 'bg-secondary' : 'bg-muted'
-                    }`}>
-                      {step.icon}
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="font-bold text-base flex items-center gap-2">
-                        {step.title}
-                        {activeStep === idx && (
-                          <motion.span layoutId="active-dot" className="w-1.5 h-1.5 rounded-full bg-primary" />
-                        )}
-                      </h3>
-                      <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              <div className="pt-2 flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
-                <button
-                  onClick={() => setShowPortal(true)}
-                  className="gradient-primary text-primary-foreground font-semibold px-8 py-4 rounded-2xl shadow-lg shadow-primary/25 hover:shadow-primary/35 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 group"
-                >
-                  <span>Select Plan & See Details</span>
-                  <ArrowRight className="group-hover:translate-x-1 transition-transform" size={18} />
-                </button>
-                <a
-                  href="#calculator-section"
-                  className="bg-card hover:bg-secondary/50 border border-border/80 text-foreground font-medium px-8 py-4 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2"
-                >
-                  Configure Plan
-                </a>
-              </div>
-            </section>
-
-            {/* Right Column: Calculator Card */}
-            <section id="calculator-section" className="lg:col-span-6 relative">
-              <div className="bg-card border border-border/60 rounded-3xl p-6 md:p-8 card-shadow-lg relative overflow-hidden backdrop-blur-md">
-                <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-gradient-to-bl from-primary/10 to-transparent pointer-events-none rounded-bl-full" />
-
-                <div className="flex flex-col gap-6">
-                  <div className="flex justify-between items-start border-b border-border/60 pb-4">
-                    <div>
-                      <h2 className="text-xl font-bold font-heading">Ownership Planner</h2>
-                      <p className="text-muted-foreground text-xs mt-0.5">Co-financing split (30% You / 70% Welile)</p>
-                    </div>
-                    <div className="bg-secondary text-secondary-foreground text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
-                      <BadgePercent size={14} />
-                      <span>Co-Financing Active</span>
-                    </div>
-                  </div>
-
-                  {/* Car Tabs */}
-                  <div className="space-y-3">
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Select Car Model</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {CARS.map((car) => {
-                        const isSelected = selectedCar.id === car.id;
-                        return (
-                          <button
-                            key={car.id}
-                            onClick={() => handleCarSelect(car)}
-                            className={`py-3 px-2 rounded-xl border text-center transition-all duration-300 flex flex-col items-center gap-1 ${
-                              isSelected 
-                                ? 'bg-primary/5 border-primary text-foreground font-semibold shadow-sm' 
-                                : 'bg-muted/50 border-border/40 text-muted-foreground hover:bg-muted hover:text-foreground'
-                            }`}
-                          >
-                            <span className="text-sm tracking-tight">{car.name.split(' ')[1]}</span>
-                            <span className="text-[10px] opacity-75">
-                              {(car.priceUgx / 1000000).toFixed(1)}M UGX
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Interactive Co-Financing Split Display */}
-                  <div className="space-y-2.5 bg-secondary/30 border border-secondary/50 rounded-2xl p-4">
-                    <div className="flex justify-between text-xs font-bold text-secondary-foreground uppercase tracking-wider">
-                      <span>Co-Financing Allocation</span>
-                      <span className="text-primary font-bold">Approved</span>
-                    </div>
-                    
-                    {/* Visual Segmented Progress Bar */}
-                    <div className="flex rounded-xl overflow-hidden h-6 border border-border/50 p-[2px] bg-card">
-                      <div className="bg-primary text-[10px] font-black text-primary-foreground flex items-center justify-center rounded-l-lg transition-all" style={{ width: '30%' }}>
-                        30% YOU
-                      </div>
-                      <div className="bg-indigo-600 text-[10px] font-black text-white flex items-center justify-center rounded-r-lg transition-all" style={{ width: '70%' }}>
-                        70% WELILE
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between text-xs font-semibold pt-1 border-t border-border/20">
-                      <div className="flex flex-col">
-                        <span className="text-muted-foreground text-[10px] uppercase font-bold">Your 30% Deposit</span>
-                        <span className="text-foreground text-sm font-extrabold">{deposit30.toLocaleString()} UGX</span>
-                      </div>
-                      <div className="flex flex-col text-right">
-                        <span className="text-muted-foreground text-[10px] uppercase font-bold">Platform 70% Covered</span>
-                        <span className="text-indigo-600 text-sm font-extrabold">{platform70.toLocaleString()} UGX</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Spec Visualizer */}
-                  <div className="relative rounded-2xl overflow-hidden border border-border/60 bg-muted/30 aspect-[16/9] flex items-center justify-center">
-                    <div className="absolute inset-0 w-full h-full">
-                      <img 
-                        src={selectedCar.image} 
-                        alt={selectedCar.name} 
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/10" />
-                      
-                      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white">
-                        <div>
-                          <h4 className="font-bold text-base tracking-tight">{selectedCar.name}</h4>
-                          <p className="text-[10px] text-gray-300 font-medium">{selectedCar.type}</p>
-                        </div>
-                        <div className="flex gap-2.5 text-[11px] bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10">
-                          <span>{selectedCar.specs.engine}</span>
-                          <span className="opacity-40">|</span>
-                          <span>{selectedCar.specs.fuel}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Payment Slider */}
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Weekly Installment</label>
-                      <span className="text-base font-bold text-primary">
-                        {weeklyPayment.toLocaleString()} UGX <span className="text-xs font-medium text-muted-foreground">/wk</span>
-                      </span>
-                    </div>
-                    
-                    <input
-                      type="range"
-                      min={selectedCar.weeklyBase}
-                      max={selectedCar.weeklyBase * 2.5}
-                      step={10000}
-                      value={weeklyPayment}
-                      onChange={(e) => handleWeeklyPaymentChange(Number(e.target.value))}
-                      className="w-full h-2 rounded-lg bg-secondary accent-primary cursor-pointer"
-                    />
-
-                    <div className="flex justify-between text-[10px] text-muted-foreground">
-                      <span>Min: {selectedCar.weeklyBase.toLocaleString()} UGX</span>
-                      <span>Max: {(selectedCar.weeklyBase * 2.5).toLocaleString()} UGX</span>
-                    </div>
-                  </div>
-
-                  {/* Quick Outputs */}
-                  <div className="grid grid-cols-2 gap-3 bg-secondary/40 border border-secondary/50 rounded-2xl p-4">
-                    <div className="space-y-0.5 border-r border-border/50 pr-3">
-                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold block">Ownership Duration</span>
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-black text-foreground">{totalMonths}</span>
-                        <span className="text-xs font-bold text-muted-foreground">months</span>
-                      </div>
-                      <span className="text-[10px] text-muted-foreground block">({totalWeeks} weeks)</span>
-                    </div>
-
-                    <div className="space-y-0.5 pl-3">
-                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold block">Daily Equivalent</span>
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-black text-foreground">{dailyEquivalent.toLocaleString()}</span>
-                        <span className="text-xs font-bold text-muted-foreground">UGX</span>
-                      </div>
-                      <span className="text-[10px] text-muted-foreground block">(Easy daily saving)</span>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => setShowPortal(true)}
-                    className="w-full py-4 gradient-primary hover:opacity-95 text-primary-foreground font-bold rounded-2xl transition flex items-center justify-center gap-2 group shadow-md"
-                  >
-                    <span>Analyze Deposit & Details</span>
-                    <ChevronRight className="group-hover:translate-x-0.5 transition-transform" size={16} />
-                  </button>
-                </div>
-              </div>
-            </section>
-          </motion.main>
-        ) : (
-          /* High Fidelity Plan Activation & 30% Deposit Portal */
-          <motion.main 
-            key="portal-view"
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.4 }}
-            className="max-w-7xl mx-auto px-6 py-6 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8"
-          >
-            
-            {/* Left Column: Car Specifics & locked state badge */}
-            <div className="lg:col-span-5 space-y-6">
-              
-              {/* Selected Car Details Card */}
-              <div className="bg-card border border-border/80 rounded-3xl p-6 shadow-md card-shadow relative overflow-hidden">
-                <div className="absolute top-3 right-3 z-10 bg-black/60 backdrop-blur-md text-white text-xs font-extrabold px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-1.5">
-                  <Flame size={12} className="text-orange-400 fill-orange-400" />
-                  <span>30% Deposit Plan</span>
-                </div>
-
-                <div className="space-y-5">
-                  <div className="rounded-2xl overflow-hidden border border-border/50 bg-muted aspect-[16/10]">
-                    <img 
-                      src={selectedCar.image} 
-                      alt={selectedCar.name} 
-                      className="w-full h-full object-cover" 
-                    />
-                  </div>
-
-                  <div>
-                    <span className="text-xs font-bold text-primary uppercase tracking-wider">{selectedCar.type}</span>
-                    <h2 className="text-2xl font-black font-heading text-foreground mt-1">{selectedCar.name}</h2>
-                    <p className="text-muted-foreground text-sm mt-0.5">High efficiency model fully prepared for delivery.</p>
-                  </div>
-
-                  {/* Co-Financing Interactive progress split */}
-                  <div className="space-y-2 bg-secondary/35 border border-secondary p-4 rounded-2xl">
-                    <div className="flex justify-between items-center text-xs font-bold uppercase text-secondary-foreground">
-                      <span>Co-Financing Structure</span>
-                      <span className="text-primary">Locked 30/70</span>
-                    </div>
-
-                    <div className="flex rounded-lg overflow-hidden h-5 border border-border/40 p-[1.5px] bg-card">
-                      <div className="bg-primary text-[9px] font-black text-primary-foreground flex items-center justify-center rounded-l-md" style={{ width: '30%' }}>
-                        30% YOU
-                      </div>
-                      <div className="bg-indigo-600 text-[9px] font-black text-white flex items-center justify-center rounded-r-md" style={{ width: '70%' }}>
-                        70% WELILE
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold pt-1">
-                      <div>
-                        <span className="text-muted-foreground block text-[9px] uppercase font-bold">Your 30% Down Payment</span>
-                        <span className="text-foreground font-extrabold">{deposit30.toLocaleString()} UGX</span>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-muted-foreground block text-[9px] uppercase font-bold">Platform 70% Finance Cover</span>
-                        <span className="text-indigo-600 font-extrabold">{platform70.toLocaleString()} UGX</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Core specifications grid */}
-                  <div className="grid grid-cols-3 gap-3 border-y border-border/60 py-4">
-                    <div className="text-center">
-                      <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block">Engine Capacity</span>
-                      <span className="text-sm font-extrabold text-foreground block mt-1">{selectedCar.specs.engine}</span>
-                    </div>
-                    <div className="text-center border-x border-border/60">
-                      <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block">Fuel Economy</span>
-                      <span className="text-sm font-extrabold text-foreground block mt-1">{selectedCar.specs.fuel}</span>
-                    </div>
-                    <div className="text-center">
-                      <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block">Seating Capacity</span>
-                      <span className="text-sm font-extrabold text-foreground block mt-1">{selectedCar.specs.seats} Passenger</span>
-                    </div>
-                  </div>
-
-                  {/* Value specs details */}
-                  <div className="space-y-3">
-                    <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Plan Terms Breakdown</h4>
-                    
-                    <div className="flex justify-between items-center text-sm border-b border-border/40 pb-2">
-                      <span className="text-muted-foreground">Retail Value:</span>
-                      <span className="font-extrabold text-foreground">{selectedCar.priceUgx.toLocaleString()} UGX</span>
-                    </div>
-
-                    <div className="flex justify-between items-center text-sm border-b border-border/40 pb-2">
-                      <span className="text-muted-foreground">Financing Period:</span>
-                      <span className="font-extrabold text-foreground">{totalMonths} Months ({totalWeeks} weeks)</span>
-                    </div>
-
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground">Standard Weekly Installment:</span>
-                      <span className="font-extrabold text-primary">{weeklyPayment.toLocaleString()} UGX</span>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-
-              {/* Status information panel */}
-              <div className="bg-secondary/40 border border-secondary rounded-2xl p-4 flex gap-3.5">
-                <AlertCircle className="text-primary flex-shrink-0 mt-0.5" size={20} />
-                <div className="space-y-1">
-                  <h4 className="text-xs font-bold text-foreground">Co-Financing Benefits</h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    By matching your 30% deposit with a **70% immediate investment**, Welile Cars clears the full retail payment on day one. You take custody of the car instantly and slowly amortize the rest.
-                  </p>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Right Column: 30% Deposit Interactive timeline & Selection locking */}
-            <div className="lg:col-span-7 space-y-6">
-              
-              <div className="bg-card border border-border/80 rounded-3xl p-6 md:p-8 shadow-md card-shadow relative overflow-hidden">
-                
-                {isPlanLocked && (
-                  <div className="absolute inset-0 bg-background/5 border border-primary/20 backdrop-blur-[2px] z-10 pointer-events-none rounded-3xl" />
-                )}
-
-                <div className="space-y-6">
-                  
-                  {/* Dynamic Header based on locked status */}
-                  <div className="flex items-center justify-between border-b border-border/60 pb-5">
-                    <div className="space-y-1">
-                      <h3 className="text-xl font-bold font-heading text-foreground flex items-center gap-2.5">
-                        <span>Your 30% Down Payment Plan</span>
-                        {isPlanLocked && (
-                          <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">
-                            <Check size={10} /> Plan Locked
-                          </span>
-                        )}
-                      </h3>
-                      <p className="text-muted-foreground text-xs">
-                        {isPlanLocked 
-                          ? "This selection has been secured and locked under your session." 
-                          : "Your 30% contribution is divided into 3 transparent milestone steps."
-                        }
-                      </p>
-                    </div>
-
-                    <div className="text-right">
-                      <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block">Your 30% Share</span>
-                      <span className="text-lg md:text-xl font-black text-primary block mt-0.5">{deposit30.toLocaleString()} UGX</span>
-                    </div>
-                  </div>
-
-                  {/* High Fidelity Schedule Timeline */}
-                  <div className="space-y-5 relative">
-                    
-                    {/* Visual Vertical line connector */}
-                    <div className="absolute left-[23px] top-[15px] bottom-[15px] w-[2px] bg-border/80" />
-
-                    {/* Step 1: Initial Deposit */}
-                    <div className="flex gap-4 relative">
-                      <div className="w-12 h-12 rounded-full border-2 border-primary bg-background flex items-center justify-center font-bold text-sm text-primary flex-shrink-0 shadow-sm relative z-10">
-                        1
-                      </div>
-                      <div className="bg-secondary/35 border border-border/40 p-4 rounded-2xl flex-grow space-y-2">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <span className="text-[10px] bg-primary/10 text-primary font-bold px-2 py-0.5 rounded-full">Step 1: Initial Booking Deposit (40%)</span>
-                            <h4 className="font-extrabold text-sm text-foreground mt-1.5">Commitment Allocation</h4>
-                          </div>
-                          <span className="text-sm font-black text-foreground">{depositStep1.toLocaleString()} UGX</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground leading-relaxed">
-                          Payable immediately upon application submission to lock this specific vehicle ID from public listings and initiate co-financing.
-                        </p>
-                        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                          <Calendar size={12} />
-                          <span>Due Date: Immediate / Instant Assignment</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Step 2: Second Installment */}
-                    <div className="flex gap-4 relative">
-                      <div className="w-12 h-12 rounded-full border-2 border-border/80 bg-background flex items-center justify-center font-bold text-sm text-muted-foreground flex-shrink-0 shadow-sm relative z-10">
-                        2
-                      </div>
-                      <div className="bg-secondary/10 border border-border/30 p-4 rounded-2xl flex-grow space-y-2">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <span className="text-[10px] bg-muted text-muted-foreground font-bold px-2 py-0.5 rounded-full">Step 2: Milestone Payment (30%)</span>
-                            <h4 className="font-extrabold text-sm text-foreground mt-1.5">Vetting & local Registration Cover</h4>
-                          </div>
-                          <span className="text-sm font-black text-foreground">{depositStep2.toLocaleString()} UGX</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground leading-relaxed">
-                          Due within 7 days after initial booking to cover registration paperwork, vetting processes, and number plate assignment.
-                        </p>
-                        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                          <Calendar size={12} />
-                          <span>Due Date: 7 Days after booking</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Step 3: Delivery Installment */}
-                    <div className="flex gap-4 relative">
-                      <div className="w-12 h-12 rounded-full border-2 border-border/80 bg-background flex items-center justify-center font-bold text-sm text-muted-foreground flex-shrink-0 shadow-sm relative z-10">
-                        3
-                      </div>
-                      <div className="bg-secondary/10 border border-border/30 p-4 rounded-2xl flex-grow space-y-2">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <span className="text-[10px] bg-muted text-muted-foreground font-bold px-2 py-0.5 rounded-full">Step 3: Handover Day Payment (30%)</span>
-                            <h4 className="font-extrabold text-sm text-foreground mt-1.5">Final Pre-delivery Handover</h4>
-                          </div>
-                          <span className="text-sm font-black text-foreground">{depositStep3.toLocaleString()} UGX</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground leading-relaxed">
-                          Payable on the physical delivery day at our Kampala depot when you collect keys, logbook documentation, and drive away!
-                        </p>
-                        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                          <Calendar size={12} />
-                          <span>Due Date: Handover & Delivery Day</span>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-
-                  {/* Agree checkbox & Lock Selection once CTA */}
-                  <div className="border-t border-border/60 pt-5 space-y-4">
-                    
-                    {!isPlanLocked ? (
-                      /* Unlock mode terms agreement & Lock CTA */
-                      <>
-                        <label className="flex items-start gap-3.5 cursor-pointer select-none">
-                          <input 
-                            type="checkbox"
-                            checked={agreeTerms}
-                            onChange={(e) => setAgreeTerms(e.target.checked)}
-                            className="mt-1 w-4 h-4 rounded text-primary border-border focus:ring-primary accent-primary"
-                          />
-                          <div className="text-xs text-muted-foreground leading-relaxed">
-                            I understand that <strong className="text-foreground">this is a once-off vehicle assignment selection</strong>. Once locked, this specific chassis allocation and 30% deposit payment timeline cannot be changed or edited.
-                          </div>
-                        </label>
-
-                        <button
-                          disabled={!agreeTerms}
-                          onClick={handleLockPlan}
-                          className="w-full py-4 gradient-primary disabled:opacity-50 hover:opacity-95 text-primary-foreground font-extrabold rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 group shadow-md shadow-primary/10"
-                        >
-                          <Lock size={16} />
-                          <span>Lock Selection Once & Generate Invoice</span>
-                        </button>
-                      </>
-                    ) : (
-                      /* Secured Plan Details & Redirection */
-                      <motion.div 
-                        initial={{ opacity: 0, scale: 0.97 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="bg-emerald-50/50 border border-emerald-200/80 rounded-2xl p-5 space-y-4 text-center md:text-left"
-                      >
-                        <div className="flex flex-col md:flex-row gap-4 items-center">
-                          <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 flex-shrink-0 shadow-sm">
-                            <Lock size={20} className="fill-emerald-100" />
-                          </div>
-                          <div className="space-y-1">
-                            <h4 className="font-extrabold text-sm text-emerald-900">Your Selection is Securely Locked!</h4>
-                            <p className="text-xs text-emerald-700 leading-relaxed">
-                              Chassis allocation ID: <strong className="font-mono">W-CAR-{(selectedCar.id).toUpperCase()}-4022</strong>. Welile has co-allocated **{platform70.toLocaleString()} UGX (70%)** towards this vehicle. Proceed to activate your account.
-                            </p>
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={handleContinueToAuth}
-                          className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/10"
-                        >
-                          <span>Proceed to Account Creation & Payment</span>
-                          <ChevronRight size={16} />
-                        </button>
-                      </motion.div>
-                    )}
-
-                  </div>
-
-                </div>
-
-              </div>
-
-              {/* Secure transaction assurance footer banner */}
-              <div className="flex justify-between items-center text-xs text-muted-foreground px-4">
-                <span className="flex items-center gap-1">
-                  <ShieldCheck size={14} className="text-emerald-500" /> Secure SSL Encryption
-                </span>
-                <span>MTN / AIRTEL / VISA / BANK Supported</span>
-              </div>
-
-            </div>
-
-          </motion.main>
-        )}
-      </AnimatePresence>
-
-      {/* Trust & Stats Footer (Only visible on Main Page for clutter control) */}
-      {!showPortal && (
-        <footer className="border-t border-border/60 bg-card/30 backdrop-blur-sm py-10 mt-16 relative z-10 animate-fade-in">
-          <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center md:text-left">
-            <div className="space-y-1">
-              <p className="text-2xl font-black font-heading text-gradient">2,500+</p>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Active Drivers in UG</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-2xl font-black font-heading text-gradient">0%</p>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Hidden Interest Rates</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-2xl font-black font-heading text-gradient">24 Hours</p>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Fast Plan Approval</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-2xl font-black font-heading text-gradient">100%</p>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ownership Guaranteed</p>
+          {/* Quick Target Audience Badges */}
+          <div className="space-y-3 pt-2">
+            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Tailored for:</h4>
+            <div className="flex flex-wrap gap-2.5">
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border/80 text-xs font-semibold">
+                <Users size={14} className="text-primary" /> Ride-Hailing Drivers (Uber/Bolt)
+              </span>
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border/80 text-xs font-semibold">
+                <Briefcase size={14} className="text-primary" /> Business Owners (Transport)
+              </span>
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border/80 text-xs font-semibold">
+                <UserCheck size={14} className="text-primary" /> Individuals (Personal Vehicles)
+              </span>
             </div>
           </div>
-        </footer>
-      )}
+
+          {/* Stepper overview of the 30/70 model */}
+          <div className="bg-secondary/20 border border-secondary/50 rounded-2xl p-5 space-y-4">
+            <h3 className="font-extrabold text-sm uppercase text-secondary-foreground tracking-wider">How the co-financing works:</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-black flex items-center justify-center">1</span>
+                  <span className="font-bold text-xs">Reach 30% Target</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground pl-7">Save via customized flexible frequency until you secure the 30% deposit.</p>
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center">2</span>
+                  <span className="font-bold text-xs">Drive Off & 70% Cover</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground pl-7">We fund the remaining 70% at 30% flat interest. The car is yours to drive!</p>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        {/* Right: Premium Interactive Co-Financing Calculator */}
+        <section className="lg:col-span-6">
+          <div className="bg-card border border-border/60 rounded-3xl p-6 md:p-8 card-shadow-lg relative overflow-hidden backdrop-blur-md">
+            
+            {/* Background design accents */}
+            <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-gradient-to-bl from-primary/10 to-transparent pointer-events-none rounded-bl-full" />
+
+            <div className="space-y-6">
+              
+              <div className="flex justify-between items-start border-b border-border/60 pb-4">
+                <div>
+                  <h2 className="text-xl font-bold font-heading">Co-Financing Planner</h2>
+                  <p className="text-muted-foreground text-xs mt-0.5">Calculate your savings goal & co-investment cover</p>
+                </div>
+                <span className="bg-primary/10 text-primary text-[10px] font-extrabold px-3 py-1 rounded-full uppercase">
+                  30/70 Plan Active
+                </span>
+              </div>
+
+              {/* Car Selection */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Select Vehicle Model</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {CARS.map((car) => {
+                    const isSelected = selectedCar.id === car.id;
+                    return (
+                      <button
+                        key={car.id}
+                        disabled={lockedPlan}
+                        onClick={() => handleCarSelect(car)}
+                        className={`py-3 px-2 rounded-xl border text-center transition flex flex-col items-center gap-1 ${
+                          isSelected 
+                            ? 'bg-primary/5 border-primary text-foreground font-semibold shadow-sm' 
+                            : 'bg-muted/50 border-border/40 text-muted-foreground hover:bg-muted hover:text-foreground'
+                        }`}
+                      >
+                        <span className="text-xs font-bold tracking-tight">{car.name.split(' ')[1]}</span>
+                        <span className="text-[9px] opacity-75">
+                          {(car.priceUgx / 1000000).toFixed(1)}M UGX
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Car Image Preview */}
+              <div className="relative rounded-2xl overflow-hidden border border-border/60 bg-muted aspect-[16/9]">
+                <img 
+                  src={selectedCar.image} 
+                  alt={selectedCar.name} 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/10" />
+                <div className="absolute bottom-3.5 left-4 right-4 flex items-center justify-between text-white">
+                  <div>
+                    <h4 className="font-bold text-sm tracking-tight">{selectedCar.name}</h4>
+                    <p className="text-[9px] text-gray-300 font-medium">{selectedCar.type}</p>
+                  </div>
+                  <div className="flex gap-2 text-[10px] bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/10">
+                    <span>{selectedCar.specs.engine}</span>
+                    <span className="opacity-40">|</span>
+                    <span>{selectedCar.specs.fuel}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Saving Frequency Selector */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Choose Savings Frequency</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(['daily', 'weekly', 'monthly'] as const).map((freq) => (
+                    <button
+                      key={freq}
+                      disabled={lockedPlan}
+                      onClick={() => handleFrequencyChange(freq)}
+                      className={`py-2 px-3 rounded-lg border text-xs font-bold uppercase transition ${
+                        frequency === freq
+                          ? 'bg-secondary text-primary border-primary shadow-sm'
+                          : 'bg-transparent border-border/50 text-muted-foreground hover:bg-secondary/40'
+                      }`}
+                    >
+                      {freq}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Savings Slider */}
+              <div className="space-y-3">
+                <div className="flex justify-between items-center text-xs font-bold">
+                  <span className="text-muted-foreground uppercase tracking-wider">Flexible Installment</span>
+                  <span className="text-primary font-black">
+                    {savingAmount.toLocaleString()} UGX <span className="text-[10px] font-medium text-muted-foreground">/{frequency.substring(0, 3)}</span>
+                  </span>
+                </div>
+                
+                <input
+                  type="range"
+                  disabled={lockedPlan}
+                  min={getMinMaxSavings().min}
+                  max={getMinMaxSavings().max}
+                  step={getMinMaxSavings().step}
+                  value={savingAmount}
+                  onChange={(e) => setSavingAmount(Number(e.target.value))}
+                  className="w-full h-2 rounded-lg bg-secondary accent-primary cursor-pointer"
+                />
+
+                <div className="flex justify-between text-[9px] text-muted-foreground font-semibold">
+                  <span>Min: {getMinMaxSavings().min.toLocaleString()}</span>
+                  <span>Max: {getMinMaxSavings().max.toLocaleString()}</span>
+                </div>
+              </div>
+
+              {/* Segmented Co-Financing Graphics */}
+              <div className="space-y-2.5 bg-secondary/30 border border-secondary/50 rounded-2xl p-4">
+                
+                <div className="flex rounded-xl overflow-hidden h-5.5 border border-border/50 p-[1.5px] bg-card">
+                  <div className="bg-primary text-[9px] font-black text-primary-foreground flex items-center justify-center rounded-l-lg" style={{ width: '30%' }}>
+                    30% YOU SAVE
+                  </div>
+                  <div className="bg-indigo-600 text-[9px] font-black text-white flex items-center justify-center rounded-r-lg" style={{ width: '70%' }}>
+                    70% platform
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 text-xs font-semibold pt-1">
+                  <div>
+                    <span className="text-[9px] text-muted-foreground uppercase font-extrabold block">Your 30% Target</span>
+                    <span className="text-foreground font-black text-sm">{deposit30.toLocaleString()} UGX</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[9px] text-muted-foreground uppercase font-extrabold block">Platform 70% Cover</span>
+                    <span className="text-indigo-600 font-black text-sm">{platform70.toLocaleString()} UGX</span>
+                  </div>
+                </div>
+
+                {/* Company Interest Structure & Penalty Disclosures */}
+                <div className="border-t border-border/20 pt-2.5 grid grid-cols-2 gap-2 text-[10px]">
+                  <div className="space-y-0.5">
+                    <span className="text-muted-foreground font-semibold flex items-center gap-1">
+                      Financing Cost (30% interest)
+                      <Info size={11} className="text-muted-foreground" />
+                    </span>
+                    <span className="font-extrabold text-foreground block">+{financeInterest.toLocaleString()} UGX</span>
+                    <span className="text-[9px] text-muted-foreground block">(Charged only on the 70% financed portion)</span>
+                  </div>
+
+                  <div className="space-y-0.5 text-right">
+                    <span className="text-muted-foreground font-semibold flex items-center gap-1 justify-end">
+                      Missed installment Penalty (20%)
+                      <AlertCircle size={11} className="text-destructive" />
+                    </span>
+                    <span className="font-extrabold text-destructive block">+{penaltyFee.toLocaleString()} UGX</span>
+                    <span className="text-[9px] text-muted-foreground block">(Applicable per delayed installment)</span>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Dynamic Target Accomplishment Duration */}
+              <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                    <Clock size={20} />
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-muted-foreground uppercase font-bold block">Delivery Target Achieved In</span>
+                    <span className="text-sm font-black text-foreground">{timeTo30Text}</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-[9px] text-muted-foreground uppercase font-bold block">Final Loan Portion</span>
+                  <span className="text-xs font-bold text-foreground">{(totalAmountToAmortize).toLocaleString()} UGX</span>
+                </div>
+              </div>
+
+              {/* Selection Locking CTA */}
+              {!lockedPlan ? (
+                <button
+                  onClick={handleLockPlan}
+                  className="w-full py-4 gradient-primary hover:opacity-95 text-primary-foreground font-extrabold rounded-2xl transition flex items-center justify-center gap-2 group shadow-md"
+                >
+                  <Lock size={15} />
+                  <span>Lock Savings Target & Sign In</span>
+                  <ArrowRight className="group-hover:translate-x-0.5 transition-transform" size={15} />
+                </button>
+              ) : (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3.5 flex items-center gap-3 text-emerald-800 text-xs">
+                  <CheckCircle2 size={16} className="text-emerald-600 flex-shrink-0" />
+                  <div className="flex-grow">
+                    <strong>Target locked!</strong> Saving **{savingAmount.toLocaleString()} UGX/{frequency.substring(0,3)}** towards **{selectedCar.name}**.
+                  </div>
+                  <Check size={14} className="text-emerald-600" />
+                </div>
+              )}
+
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+
+      {/* Vision & Mission, and Why Choose Welile Cars */}
+      <section className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-border/50 relative z-10">
+        
+        {/* Left: Why Choose Welile Cars & Core Flexibility */}
+        <div className="space-y-6">
+          <div>
+            <span className="text-xs font-extrabold text-primary uppercase tracking-wider">Benefits</span>
+            <h2 className="text-3xl font-black font-heading text-foreground mt-1">Why Choose Welile Cars?</h2>
+            <p className="text-muted-foreground text-sm mt-1 leading-relaxed">
+              We eliminate the massive barriers to car ownership with custom co-investments and maximum payment flexibility.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <div className="bg-card border border-border/80 rounded-2xl p-5 card-shadow space-y-2">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                <Wallet size={20} />
+              </div>
+              <h4 className="font-extrabold text-sm text-foreground">Extreme Flexibility</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Save daily, weekly, or monthly in varying sizes. Adjust your plans instantly to align with cashflows.
+              </p>
+            </div>
+
+            <div className="bg-card border border-border/80 rounded-2xl p-5 card-shadow space-y-2">
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                <BadgePercent size={20} />
+              </div>
+              <h4 className="font-extrabold text-sm text-foreground">Flat Financed Charge</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                A simple 30% interest rate is applied solely to the remaining 70% portion. Extremely transparent co-investment.
+              </p>
+            </div>
+
+            <div className="bg-card border border-border/80 rounded-2xl p-5 card-shadow space-y-2">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                <ShieldCheck size={20} />
+              </div>
+              <h4 className="font-extrabold text-sm text-foreground">Co-Financing Partner</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Our strategic partnerships with dealerships & financing houses guarantee vehicle allocation instantly once you hit 30%.
+              </p>
+            </div>
+
+            <div className="bg-card border border-border/80 rounded-2xl p-5 card-shadow space-y-2">
+              <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600">
+                <Shuffle size={20} />
+              </div>
+              <h4 className="font-extrabold text-sm text-foreground">Seamless Integrations</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Integrated directly with Mobile Money (MTN & Airtel) so you can push savings safely directly from your phone.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* Right: Vision, Mission & Company Values */}
+        <div className="space-y-8 flex flex-col justify-center">
+          
+          <div className="bg-card border border-border/60 rounded-3xl p-6 md:p-8 shadow-md card-shadow relative overflow-hidden space-y-6">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-full pointer-events-none" />
+            
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-primary uppercase">
+                <Sparkles size={14} />
+                <span>Our Vision</span>
+              </div>
+              <h3 className="text-xl font-bold font-heading">Empowering Every Ugandan Driver</h3>
+              <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
+                To build Uganda's most structured, inclusive, and accessible vehicle finance network, unlocking economic potential and enabling sustainable transport ownership for riders, businesses, and individuals.
+              </p>
+            </div>
+
+            <div className="border-t border-border/60 pt-6 space-y-2">
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 uppercase">
+                <Clock size={14} />
+                <span>Our Mission</span>
+              </div>
+              <h3 className="text-xl font-bold font-heading">Lowering the Barrier of Upfront Capital</h3>
+              <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
+                To eliminate the high-entry costs of vehicle purchases by offering lightweight micro-savings plans, transparent 30/70 co-financing cover, and strategic financial services partnerships.
+              </p>
+            </div>
+
+          </div>
+
+          {/* Core regulatory disclosures */}
+          <div className="px-4 text-[10px] text-muted-foreground leading-relaxed">
+            * Important Note: Failing to meet your pre-allocated savings installment schedule triggers a standard 20% penalty charge calculated on that specific scheduled installment amount. Always adjust plan rates to match your active budget before locking.
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* Embedded Sign In / Sign Up Portal */}
+      <section id="auth-portal-section" className="max-w-md mx-auto px-6 py-12 relative z-10 border-t border-border/50">
+        
+        <div className="bg-card border border-border/80 rounded-3xl p-6 md:p-8 shadow-xl card-shadow-lg space-y-6">
+          
+          <div className="flex flex-col items-center">
+            <div className="w-12 h-12 gradient-primary rounded-2xl flex items-center justify-center mb-3 text-white shadow-md shadow-primary/20">
+              <CarIcon size={22} />
+            </div>
+            <h3 className="text-xl font-bold font-heading">Sign In to Welile Portal</h3>
+            <p className="text-muted-foreground text-xs mt-0.5">Securely log in to access full car catalog and start saving</p>
+          </div>
+
+          <form onSubmit={(e) => { e.preventDefault(); navigate('/dashboard'); }} className="space-y-4">
+            
+            {!isLogin && (
+              <>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Full Name</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="E.g., Welile Kisa"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full h-11 px-4 rounded-xl border border-border/80 bg-muted/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm transition"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Phone Number</label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="E.g., +256 700 123456"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full h-11 px-4 rounded-xl border border-border/80 bg-muted/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm transition"
+                  />
+                </div>
+              </>
+            )}
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">Email Address</label>
+              <input
+                type="email"
+                required
+                placeholder="E.g., welile@kisa.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full h-11 px-4 rounded-xl border border-border/80 bg-muted/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm transition"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">Password</label>
+              <input
+                type="password"
+                required
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full h-11 px-4 rounded-xl border border-border/80 bg-muted/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm transition"
+              />
+            </div>
+
+            {lockedPlan && (
+              <div className="p-3 bg-secondary/40 border border-secondary rounded-xl text-[11px] text-primary font-semibold flex items-center gap-2">
+                <Check size={14} /> Locked targets will be linked to this account automatically.
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="w-full h-12 gradient-primary text-primary-foreground font-bold rounded-2xl hover:opacity-95 transition shadow-md mt-2 flex items-center justify-center gap-2"
+            >
+              <span>{isLogin ? 'Log In & Access' : 'Create Account & Start Saving'}</span>
+              <ArrowRight size={16} />
+            </button>
+
+          </form>
+
+          <p className="text-center text-xs text-muted-foreground pt-1">
+            {isLogin ? "New to Welile Cars? " : "Already have an account? "}
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-primary font-bold hover:underline"
+            >
+              {isLogin ? 'Sign Up' : 'Log In'}
+            </button>
+          </p>
+
+        </div>
+
+      </section>
+
+      {/* Partner Ecosystem */}
+      <footer className="border-t border-border/60 bg-card/30 backdrop-blur-sm py-12 relative z-10 text-center space-y-6">
+        <div className="max-w-7xl mx-auto px-6 space-y-4">
+          <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Our Strategic Integrations & Partners</h4>
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-60">
+            <span className="font-extrabold text-sm md:text-base tracking-wider uppercase">MTN Mobile Money</span>
+            <span className="font-extrabold text-sm md:text-base tracking-wider uppercase">Airtel Money</span>
+            <span className="font-extrabold text-sm md:text-base tracking-wider uppercase">Uganda Vehicle Dealers Ltd</span>
+            <span className="font-extrabold text-sm md:text-base tracking-wider uppercase">Co-op Credit Fund</span>
+          </div>
+        </div>
+        <p className="text-[10px] text-muted-foreground">© 2026 Welile Cars. All rights reserved. Registered Asset Financing Provider in Uganda.</p>
+      </footer>
 
     </div>
   );
