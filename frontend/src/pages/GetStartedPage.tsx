@@ -20,7 +20,9 @@ import {
   MapPin,
   Flame,
   Check,
-  AlertCircle
+  AlertCircle,
+  PiggyBank,
+  CheckSquare
 } from 'lucide-react';
 
 // Import images or use local asset fallback paths
@@ -106,21 +108,24 @@ export default function GetStartedPage() {
   const totalMonths = Math.ceil(totalWeeks / 4.3);
   const dailyEquivalent = Math.round(weeklyPayment / 7);
 
-  // 30% Down Payment Calculations
+  // Co-Financing Calculations (30% User / 70% Platform)
   const deposit30 = Math.round(selectedCar.priceUgx * 0.3);
+  const platform70 = Math.round(selectedCar.priceUgx * 0.7);
+
+  // 30% Down Payment split schedules
   const depositStep1 = Math.round(deposit30 * 0.4); // 40% of deposit
   const depositStep2 = Math.round(deposit30 * 0.3); // 30% of deposit
   const depositStep3 = Math.round(deposit30 * 0.3); // 30% of deposit
 
   // Handle car model change
   const handleCarSelect = (car: CarModel) => {
-    if (isPlanLocked) return; // Prevent change if plan is locked
+    if (isPlanLocked) return;
     setSelectedCar(car);
     setWeeklyPayment(car.weeklyBase);
   };
 
   const handleWeeklyPaymentChange = (value: number) => {
-    if (isPlanLocked) return; // Prevent change if plan is locked
+    if (isPlanLocked) return;
     setWeeklyPayment(value);
   };
 
@@ -130,7 +135,6 @@ export default function GetStartedPage() {
   };
 
   const handleContinueToAuth = () => {
-    // Pass selection parameters through route state or let them signup
     navigate('/auth', { state: { carId: selectedCar.id, weeklyPayment, locked: true } });
   };
 
@@ -262,14 +266,14 @@ export default function GetStartedPage() {
                 <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-gradient-to-bl from-primary/10 to-transparent pointer-events-none rounded-bl-full" />
 
                 <div className="flex flex-col gap-6">
-                  <div className="flex justify-between items-start border-b border-border/60 pb-5">
+                  <div className="flex justify-between items-start border-b border-border/60 pb-4">
                     <div>
                       <h2 className="text-xl font-bold font-heading">Ownership Planner</h2>
-                      <p className="text-muted-foreground text-xs mt-0.5">Customize your weekly plan options</p>
+                      <p className="text-muted-foreground text-xs mt-0.5">Co-financing split (30% You / 70% Welile)</p>
                     </div>
                     <div className="bg-secondary text-secondary-foreground text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
                       <BadgePercent size={14} />
-                      <span>0% Hidden Fees</span>
+                      <span>Co-Financing Active</span>
                     </div>
                   </div>
 
@@ -296,6 +300,35 @@ export default function GetStartedPage() {
                           </button>
                         );
                       })}
+                    </div>
+                  </div>
+
+                  {/* Interactive Co-Financing Split Display */}
+                  <div className="space-y-2.5 bg-secondary/30 border border-secondary/50 rounded-2xl p-4">
+                    <div className="flex justify-between text-xs font-bold text-secondary-foreground uppercase tracking-wider">
+                      <span>Co-Financing Allocation</span>
+                      <span className="text-primary font-bold">Approved</span>
+                    </div>
+                    
+                    {/* Visual Segmented Progress Bar */}
+                    <div className="flex rounded-xl overflow-hidden h-6 border border-border/50 p-[2px] bg-card">
+                      <div className="bg-primary text-[10px] font-black text-primary-foreground flex items-center justify-center rounded-l-lg transition-all" style={{ width: '30%' }}>
+                        30% YOU
+                      </div>
+                      <div className="bg-indigo-600 text-[10px] font-black text-white flex items-center justify-center rounded-r-lg transition-all" style={{ width: '70%' }}>
+                        70% WELILE
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between text-xs font-semibold pt-1 border-t border-border/20">
+                      <div className="flex flex-col">
+                        <span className="text-muted-foreground text-[10px] uppercase font-bold">Your 30% Deposit</span>
+                        <span className="text-foreground text-sm font-extrabold">{deposit30.toLocaleString()} UGX</span>
+                      </div>
+                      <div className="flex flex-col text-right">
+                        <span className="text-muted-foreground text-[10px] uppercase font-bold">Platform 70% Covered</span>
+                        <span className="text-indigo-600 text-sm font-extrabold">{platform70.toLocaleString()} UGX</span>
+                      </div>
                     </div>
                   </div>
 
@@ -398,7 +431,7 @@ export default function GetStartedPage() {
               <div className="bg-card border border-border/80 rounded-3xl p-6 shadow-md card-shadow relative overflow-hidden">
                 <div className="absolute top-3 right-3 z-10 bg-black/60 backdrop-blur-md text-white text-xs font-extrabold px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-1.5">
                   <Flame size={12} className="text-orange-400 fill-orange-400" />
-                  <span>30% Deposit Required</span>
+                  <span>30% Deposit Plan</span>
                 </div>
 
                 <div className="space-y-5">
@@ -414,6 +447,34 @@ export default function GetStartedPage() {
                     <span className="text-xs font-bold text-primary uppercase tracking-wider">{selectedCar.type}</span>
                     <h2 className="text-2xl font-black font-heading text-foreground mt-1">{selectedCar.name}</h2>
                     <p className="text-muted-foreground text-sm mt-0.5">High efficiency model fully prepared for delivery.</p>
+                  </div>
+
+                  {/* Co-Financing Interactive progress split */}
+                  <div className="space-y-2 bg-secondary/35 border border-secondary p-4 rounded-2xl">
+                    <div className="flex justify-between items-center text-xs font-bold uppercase text-secondary-foreground">
+                      <span>Co-Financing Structure</span>
+                      <span className="text-primary">Locked 30/70</span>
+                    </div>
+
+                    <div className="flex rounded-lg overflow-hidden h-5 border border-border/40 p-[1.5px] bg-card">
+                      <div className="bg-primary text-[9px] font-black text-primary-foreground flex items-center justify-center rounded-l-md" style={{ width: '30%' }}>
+                        30% YOU
+                      </div>
+                      <div className="bg-indigo-600 text-[9px] font-black text-white flex items-center justify-center rounded-r-md" style={{ width: '70%' }}>
+                        70% WELILE
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold pt-1">
+                      <div>
+                        <span className="text-muted-foreground block text-[9px] uppercase font-bold">Your 30% Down Payment</span>
+                        <span className="text-foreground font-extrabold">{deposit30.toLocaleString()} UGX</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-muted-foreground block text-[9px] uppercase font-bold">Platform 70% Finance Cover</span>
+                        <span className="text-indigo-600 font-extrabold">{platform70.toLocaleString()} UGX</span>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Core specifications grid */}
@@ -459,9 +520,9 @@ export default function GetStartedPage() {
               <div className="bg-secondary/40 border border-secondary rounded-2xl p-4 flex gap-3.5">
                 <AlertCircle className="text-primary flex-shrink-0 mt-0.5" size={20} />
                 <div className="space-y-1">
-                  <h4 className="text-xs font-bold text-foreground">Why the 30% Deposit?</h4>
+                  <h4 className="text-xs font-bold text-foreground">Co-Financing Benefits</h4>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    The 30% commitment deposit secures your vehicle chassis allocation, covers comprehensive 1-year local insurance, and registers the car details under your name.
+                    By matching your 30% deposit with a **70% immediate investment**, Welile Cars clears the full retail payment on day one. You take custody of the car instantly and slowly amortize the rest.
                   </p>
                 </div>
               </div>
@@ -483,23 +544,23 @@ export default function GetStartedPage() {
                   <div className="flex items-center justify-between border-b border-border/60 pb-5">
                     <div className="space-y-1">
                       <h3 className="text-xl font-bold font-heading text-foreground flex items-center gap-2.5">
-                        <span>30% Deposit Payment Schedule</span>
+                        <span>Your 30% Down Payment Plan</span>
                         {isPlanLocked && (
                           <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">
-                            <Check size={10} /> Locked
+                            <Check size={10} /> Plan Locked
                           </span>
                         )}
                       </h3>
                       <p className="text-muted-foreground text-xs">
                         {isPlanLocked 
                           ? "This selection has been secured and locked under your session." 
-                          : "A total 30% deposit of the retail value is split into 3 steps."
+                          : "Your 30% contribution is divided into 3 transparent milestone steps."
                         }
                       </p>
                     </div>
 
                     <div className="text-right">
-                      <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block">Total 30% Deposit</span>
+                      <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block">Your 30% Share</span>
                       <span className="text-lg md:text-xl font-black text-primary block mt-0.5">{deposit30.toLocaleString()} UGX</span>
                     </div>
                   </div>
@@ -518,13 +579,13 @@ export default function GetStartedPage() {
                       <div className="bg-secondary/35 border border-border/40 p-4 rounded-2xl flex-grow space-y-2">
                         <div className="flex justify-between items-start">
                           <div>
-                            <span className="text-[10px] bg-primary/10 text-primary font-bold px-2 py-0.5 rounded-full">Phase 1: Initial Deposit (40%)</span>
-                            <h4 className="font-extrabold text-sm text-foreground mt-1.5">Commitment Allocation Invoice</h4>
+                            <span className="text-[10px] bg-primary/10 text-primary font-bold px-2 py-0.5 rounded-full">Step 1: Initial Booking Deposit (40%)</span>
+                            <h4 className="font-extrabold text-sm text-foreground mt-1.5">Commitment Allocation</h4>
                           </div>
                           <span className="text-sm font-black text-foreground">{depositStep1.toLocaleString()} UGX</span>
                         </div>
                         <p className="text-xs text-muted-foreground leading-relaxed">
-                          Payable immediately upon application submission to lock this specific vehicle ID from public listings.
+                          Payable immediately upon application submission to lock this specific vehicle ID from public listings and initiate co-financing.
                         </p>
                         <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                           <Calendar size={12} />
@@ -541,8 +602,8 @@ export default function GetStartedPage() {
                       <div className="bg-secondary/10 border border-border/30 p-4 rounded-2xl flex-grow space-y-2">
                         <div className="flex justify-between items-start">
                           <div>
-                            <span className="text-[10px] bg-muted text-muted-foreground font-bold px-2 py-0.5 rounded-full">Phase 2: Milestone Payment (30%)</span>
-                            <h4 className="font-extrabold text-sm text-foreground mt-1.5">Vetting & Documentation Payment</h4>
+                            <span className="text-[10px] bg-muted text-muted-foreground font-bold px-2 py-0.5 rounded-full">Step 2: Milestone Payment (30%)</span>
+                            <h4 className="font-extrabold text-sm text-foreground mt-1.5">Vetting & local Registration Cover</h4>
                           </div>
                           <span className="text-sm font-black text-foreground">{depositStep2.toLocaleString()} UGX</span>
                         </div>
@@ -564,8 +625,8 @@ export default function GetStartedPage() {
                       <div className="bg-secondary/10 border border-border/30 p-4 rounded-2xl flex-grow space-y-2">
                         <div className="flex justify-between items-start">
                           <div>
-                            <span className="text-[10px] bg-muted text-muted-foreground font-bold px-2 py-0.5 rounded-full">Phase 3: Final Delivery (30%)</span>
-                            <h4 className="font-extrabold text-sm text-foreground mt-1.5">Handover & Drive-Away Payment</h4>
+                            <span className="text-[10px] bg-muted text-muted-foreground font-bold px-2 py-0.5 rounded-full">Step 3: Handover Day Payment (30%)</span>
+                            <h4 className="font-extrabold text-sm text-foreground mt-1.5">Final Pre-delivery Handover</h4>
                           </div>
                           <span className="text-sm font-black text-foreground">{depositStep3.toLocaleString()} UGX</span>
                         </div>
@@ -622,7 +683,7 @@ export default function GetStartedPage() {
                           <div className="space-y-1">
                             <h4 className="font-extrabold text-sm text-emerald-900">Your Selection is Securely Locked!</h4>
                             <p className="text-xs text-emerald-700 leading-relaxed">
-                              Chassis allocation ID: <strong className="font-mono">W-CAR-{(selectedCar.id).toUpperCase()}-4022</strong>. This choice is linked to your device session. Proceed to create your account and complete Phase 1 deposit.
+                              Chassis allocation ID: <strong className="font-mono">W-CAR-{(selectedCar.id).toUpperCase()}-4022</strong>. Welile has co-allocated **{platform70.toLocaleString()} UGX (70%)** towards this vehicle. Proceed to activate your account.
                             </p>
                           </div>
                         </div>
