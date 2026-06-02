@@ -7,6 +7,7 @@ export interface User {
   user_metadata?: {
     name?: string;
     phone?: string;
+    residence?: string;
     referral_code?: string;
   };
 }
@@ -16,7 +17,7 @@ interface AuthContextType {
   session: any | null; // Mock session
   loading: boolean;
   isAdmin: boolean;
-  signUp: (email: string, password: string, name: string, phone: string, referralCode?: string) => Promise<{ error: string | null }>;
+  signUp: (email: string, password: string, name: string, phone: string, residence: string, referralCode?: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 }
@@ -45,8 +46,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
-  const signUp = async (email: string, password: string, name: string, phone: string, referralCode?: string) => {
-    const newUser = { id: 'mock-id-' + Date.now(), email, user_metadata: { name, phone, referralCode } };
+  const signUp = async (email: string, password: string, name: string, phone: string, residence: string, referralCode?: string) => {
+    const newUser = { id: 'mock-id-' + Date.now(), email, user_metadata: { name, phone, residence, referralCode } };
     setUser(newUser);
     setSession({ access_token: 'mock-token' });
     setIsAdmin(false);
