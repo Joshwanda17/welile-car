@@ -1,0 +1,108 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int                  @id @default(autoincrement())
+  email            String               @unique
+  passwordHash     String
+  name             String
+  phone            String?
+  role             Role                 @default(CUSTOMER)
+  referralCode     String?              @unique
+  status           UserStatus           @default(ACTIVE)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  
+  savingsAccount   SavingsAccount?
+  financings       FinancingAgreement[]
+  transactions     Transaction[]
+}
+
+model Vehicle {
+  id               Int                  @id @default(autoincrement())
+  make             String
+  model            String
+  year             Int
+  value            Decimal              @db.Decimal(12, 2)
+  status           VehicleStatus        @default(AVAILABLE)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  financings       FinancingAgreement[]
+}
+
+model SavingsAccount {
+  id                        Int           @id @default(autoincrement())
+  userId                    Int           @unique
+  user                      User          @relation(fields: [userId], references: [id])
+  currentBalance            Decimal       @default(0.00) @db.Decimal(12, 2)
+  targetAmount              Decimal       @db.Decimal(12, 2)
+  compoundedInterestEarned  Decimal       @default(0.00) @db.Decimal(12, 2)
+  lastInterestCalculation   DateTime?
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
+}
+
+model FinancingAgreement {
+  id                   Int               @id @default(autoincrement())
+  userId               Int
+  user                 User              @relation(fields: [userId], references: [id])
+  vehicleId            Int
+  vehicle              Vehicle           @relation(fields: [vehicleId], references: [id])
+  totalFinanced        Decimal           @db.Decimal(12, 2)
+  interestRate         Decimal           @db.Decimal(5, 2)
+  repaymentTermMonths  Int
+  status               FinancingStatus   @default(ACTIVE)
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+}
+
+model Transaction {
+  id           Int               @id @default(autoincrement())
+  userId       Int
+  user         User              @relation(fields: [userId], references: [id])
+  amount       Decimal           @db.Decimal(12, 2)
+  type         TransactionType
+  date         DateTime          @default(now())
+  description  String?
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+  AGENT
+  CFO
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum VehicleStatus {
+  AVAILABLE
+  FINANCED
+  MAINTENANCE
+}
+
+enum FinancingStatus {
+  PENDING
+  ACTIVE
+  PAID_OFF
+  DEFAULTED
+}
+
+enum TransactionType {
+  SAVINGS_DEPOSIT
+  REPAYMENT
+  INTEREST_ADDITION
+  FEE
+}

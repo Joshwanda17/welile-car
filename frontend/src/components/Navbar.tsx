@@ -34,9 +34,8 @@ export default function Navbar() {
       </div>
 
       {/* Centered Logo */}
-      <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-        <Car className="text-[#4c35e6] hidden sm:block" size={28} />
-        <span className="font-chewy text-3xl sm:text-4xl md:text-5xl tracking-wide text-slate-900">Welile Cars</span>
+      <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
+        <img src="/welile_car_logo.png" alt="Welile Cars Logo" className="h-10 sm:h-12 md:h-14 object-contain" />
       </Link>
 
       {/* Right Container with Avatar */}
