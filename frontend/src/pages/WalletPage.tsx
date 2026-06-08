@@ -25,6 +25,12 @@ const WalletPage = () => {
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('mtn');
 
+  // Calculator State
+  const [calcTarget, setCalcTarget] = useState('');
+  const [calcMonthly, setCalcMonthly] = useState('');
+  const [calcResult, setCalcResult] = useState<any>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
+
   if (!authLoading && !user) { navigate('/'); return null; }
   if (isLoading || !profile) {
     return <div className="min-h-screen bg-background flex items-center justify-center">
@@ -38,6 +44,29 @@ const WalletPage = () => {
     deposit.mutate({ amount: val, method });
     setAmount('');
     setShowDeposit(false);
+  };
+
+  const handleCalculate = async () => {
+    if (!calcTarget || !calcMonthly) return;
+    setIsCalculating(true);
+    try {
+      const res = await fetch(`http://${window.location.hostname}:3005/api/savings/calculate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetAmount: parseInt(calcTarget),
+          monthlyContribution: parseInt(calcMonthly)
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCalcResult(data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsCalculating(false);
+    }
   };
 
   const iconForType = (type: string) => {
@@ -74,6 +103,58 @@ const WalletPage = () => {
         <div className="bg-card rounded-2xl p-4 card-shadow">
           <p className="text-[10px] text-muted-foreground uppercase">Growth Earned</p>
           <p className="text-lg font-bold font-heading mt-1 text-gradient">{formatUGX(profile.growth_earned)}</p>
+        </div>
+      </div>
+
+      {/* Savings Calculator Widget */}
+      <div className="px-6 mt-6">
+        <div className="bg-purple-600 rounded-3xl p-6 text-white shadow-lg shadow-purple-600/30">
+          <h2 className="font-extrabold text-lg flex items-center gap-2 mb-4">
+            <Sparkles size={18} /> Savings Calculator
+          </h2>
+          <div className="space-y-4">
+            <div>
+              <p className="text-xs text-purple-200 font-bold mb-1">Vehicle Target Deposit (UGX)</p>
+              <input 
+                type="number" 
+                placeholder="e.g. 15000000"
+                value={calcTarget}
+                onChange={e => setCalcTarget(e.target.value)}
+                className="w-full bg-white/20 border border-white/20 rounded-xl px-4 py-3 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white transition font-medium"
+              />
+            </div>
+            <div>
+              <p className="text-xs text-purple-200 font-bold mb-1">Monthly Contribution (UGX)</p>
+              <input 
+                type="number" 
+                placeholder="e.g. 500000"
+                value={calcMonthly}
+                onChange={e => setCalcMonthly(e.target.value)}
+                className="w-full bg-white/20 border border-white/20 rounded-xl px-4 py-3 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white transition font-medium"
+              />
+            </div>
+            
+            {calcResult && (
+              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-white/10 p-4 rounded-xl border border-white/20">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium text-purple-100">Estimated Time</span>
+                  <span className="font-bold">{calcResult.estimatedMonths} Months</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-purple-100">Total Interest Earned</span>
+                  <span className="font-bold text-emerald-300">+{formatUGX(calcResult.estimatedInterest)}</span>
+                </div>
+              </motion.div>
+            )}
+
+            <button 
+              onClick={handleCalculate}
+              disabled={isCalculating}
+              className="w-full bg-white text-purple-600 font-bold py-3 rounded-xl hover:bg-slate-50 transition disabled:opacity-50"
+            >
+              {isCalculating ? 'Calculating...' : 'Calculate Estimation'}
+            </button>
+          </div>
         </div>
       </div>
 

@@ -59,7 +59,8 @@ model FinancingAgreement {
   totalFinanced        Decimal           @db.Decimal(12, 2)
   interestRate         Decimal           @db.Decimal(5, 2)
   repaymentTermMonths  Int
-  status               FinancingStatus   @default(ACTIVE)
+  status               FinancingStatus   @default(PENDING)
+  riskLevel            RiskLevel         @default(YELLOW)
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
 }
@@ -77,7 +78,9 @@ model Transaction {
 enum Role {
   CUSTOMER
   ADMIN
-  AGENT
+  LOAN_OFFICER
+  RECOVERY_OFFICER
+  DEALER
   CFO
 }
 
@@ -93,8 +96,16 @@ enum VehicleStatus {
   MAINTENANCE
 }
 
+enum RiskLevel {
+  GREEN
+  YELLOW
+  RED
+}
+
 enum FinancingStatus {
   PENDING
+  APPROVED
+  REJECTED
   ACTIVE
   PAID_OFF
   DEFAULTED
@@ -102,6 +113,7 @@ enum FinancingStatus {
 
 enum TransactionType {
   SAVINGS_DEPOSIT
+  WITHDRAWAL
   REPAYMENT
   INTEREST_ADDITION
   FEE

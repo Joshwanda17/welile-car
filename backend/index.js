@@ -26,7 +26,7 @@ app.get('/api/health', async (req, res) => {
 // Auth Routes
 app.post('/api/auth/register', async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name, phone } = req.body;
     
     // Check if user exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -43,7 +43,8 @@ app.post('/api/auth/register', async (req, res) => {
       data: {
         email,
         passwordHash,
-        name
+        name,
+        phone
       }
     });
 
@@ -88,6 +89,57 @@ app.get('/api/users/me', authenticateToken, async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+// Mock Dashboard Endpoints
+app.get('/api/dashboard/summary', authenticateToken, async (req, res) => {
+  // Return mock dashboard summary based on user
+  res.json({
+    savings: {
+      totalSaved: 8400000,
+      targetAmount: 15000000,
+      interestEarned: 420000, // 5% of 8.4M
+      progressPercent: 56
+    },
+    journey: {
+      currentStep: 'Saving', // Registered, Saving, Qualified, Financing, Released, Repayment
+      completedSteps: ['Registered', 'Saving']
+    },
+    vehicle: null, // User is still saving
+    repayment: null
+  });
+});
+
+// Mock Savings Calculator Endpoint
+app.post('/api/savings/calculate', (req, res) => {
+  const { targetAmount, monthlyContribution } = req.body;
+  if (!targetAmount || !monthlyContribution) {
+    return res.status(400).json({ error: 'Missing targetAmount or monthlyContribution' });
+  }
+  
+  const months = Math.ceil(targetAmount / monthlyContribution);
+  const totalInterest = (targetAmount * 0.05).toFixed(0);
+  
+  res.json({
+    targetAmount,
+    monthlyContribution,
+    estimatedMonths: months,
+    estimatedInterest: parseInt(totalInterest)
+  });
+});
+
+app.listen(port, '0.0.0.0', () => {
+  const { networkInterfaces } = require('os');
+  const nets = networkInterfaces();
+  let localIp = 'localhost';
+  
+  for (const name of Object.keys(nets)) {
+    for (const net of nets[name]) {
+      if (net.family === 'IPv4' && !net.internal) {
+        localIp = net.address;
+        break;
+      }
+    }
+  }
+
+  console.log(`Server running on http://0.0.0.0:${port}`);
+  console.log(`📱 Access API on your phone at http://${localIp}:${port}`);
 });

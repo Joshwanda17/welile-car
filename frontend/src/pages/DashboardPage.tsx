@@ -1,147 +1,209 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useProfile, useGetProgress, useApplyGrowth, CARS } from '@/hooks/useProfile';
 import { motion } from 'framer-motion';
 import AnimatedNumber from '@/components/AnimatedNumber';
 import ProgressBar from '@/components/ProgressBar';
 import BottomNav from '@/components/BottomNav';
 import { formatUGX } from '@/lib/format';
-import { TrendingUp, Target, Sparkles, Users } from 'lucide-react';
+import { TrendingUp, Target, Sparkles, CheckCircle2, Circle, Car, CreditCard, ChevronRight } from 'lucide-react';
+
+interface DashboardData {
+  savings: {
+    totalSaved: number;
+    targetAmount: number;
+    interestEarned: number;
+    progressPercent: number;
+  };
+  journey: {
+    currentStep: string;
+    completedSteps: string[];
+  };
+  vehicle: any;
+  repayment: any;
+}
+
+const JOURNEY_STEPS = ['Registered', 'Saving', 'Qualified', 'Financing', 'Released', 'Repayment'];
 
 const DashboardPage = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, session, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const { data: profile, isLoading } = useProfile();
-  const applyGrowth = useApplyGrowth();
-  const progress = useGetProgress(profile);
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!authLoading && !user) { navigate('/'); return null; }
-  if (isLoading || !profile) {
-    return <div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="animate-pulse text-muted-foreground">Loading...</div>
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      navigate('/');
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`http://${window.location.hostname}:3005/api/dashboard/summary`, {
+          headers: { 'Authorization': `Bearer ${session?.access_token}` }
+        });
+        if (res.ok) {
+          const json = await res.json();
+          setData(json);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [user, session, authLoading, navigate]);
+
+  if (loading || !data) {
+    return <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="animate-pulse text-slate-400 font-medium">Loading Dashboard...</div>
     </div>;
   }
 
-  const car = CARS.find(c => c.id === profile.selected_car_id);
-  const milestones = [10, 25, 50, 100];
-  const achievedMilestones = milestones.filter(m => progress && progress.percentage >= m);
-
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="gradient-primary px-6 pt-12 pb-8 rounded-b-3xl">
-        <p className="text-primary-foreground/70 text-sm">Welcome back,</p>
-        <h1 className="text-primary-foreground text-xl font-bold font-heading">{profile.name}</h1>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="mt-6 bg-primary-foreground/10 backdrop-blur rounded-2xl p-5"
-        >
-          <p className="text-primary-foreground/70 text-xs uppercase tracking-wider">Total Balance</p>
-          <AnimatedNumber
-            value={profile.wallet_balance}
-            className="text-primary-foreground text-3xl font-bold font-heading block mt-1"
-          />
-          <div className="flex gap-6 mt-4">
-            <div>
-              <p className="text-primary-foreground/60 text-[10px] uppercase">Deposits</p>
-              <p className="text-primary-foreground text-sm font-semibold">{formatUGX(profile.total_deposits)}</p>
-            </div>
-            <div>
-              <p className="text-primary-foreground/60 text-[10px] uppercase">Growth</p>
-              <p className="text-primary-foreground text-sm font-semibold">{formatUGX(profile.growth_earned)}</p>
-            </div>
-          </div>
-        </motion.div>
+    <div className="min-h-screen bg-slate-50 pb-20">
+      {/* Header */}
+      <div className="bg-slate-900 px-6 pt-12 pb-24 rounded-b-[40px]">
+        <p className="text-slate-400 text-sm font-medium">Welcome back,</p>
+        <h1 className="text-white text-2xl font-extrabold">{user?.name || 'User'}</h1>
       </div>
 
-      <div className="px-6 mt-6 space-y-4">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="bg-card rounded-2xl p-4 card-shadow flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center">
-            <TrendingUp size={18} className="text-primary" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold">Your savings grow up to 5% monthly</p>
-            <p className="text-xs text-muted-foreground">2% base + 3% bonus with weekly deposits</p>
-          </div>
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-          className="bg-secondary rounded-2xl p-4 flex items-center gap-3">
-          <Users size={16} className="text-primary" />
-          <p className="text-xs text-secondary-foreground">3 people unlocked cars this week · Most reach 30% in 6–8 months</p>
-        </motion.div>
-
-        {car && progress ? (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="bg-card rounded-2xl p-5 card-shadow">
-            <div className="flex items-center gap-2 mb-3">
-              <Target size={16} className="text-primary" />
-              <p className="font-semibold text-sm">{car.name}</p>
-            </div>
-            <p className="text-xs text-muted-foreground mb-1">
-              Target: {formatUGX(progress.target)} (30% of {formatUGX(car.price)})
-            </p>
-            <ProgressBar percentage={progress.percentage} className="mb-3" />
-            <p className="text-lg font-bold font-heading text-gradient">{progress.percentage}% of target</p>
-
-            {progress.percentage < 100 ? (
-              <p className="text-xs text-muted-foreground mt-1">
-                You need <span className="font-semibold text-foreground">{formatUGX(progress.remaining)}</span> more
-              </p>
-            ) : (
-              <div className="mt-3">
-                <p className="text-sm font-semibold text-success flex items-center gap-1">
-                  <Sparkles size={14} /> You've unlocked your car 🎉
-                </p>
-                <button onClick={() => navigate('/financing')}
-                  className="mt-3 w-full h-11 gradient-primary text-primary-foreground font-semibold rounded-2xl text-sm">
-                  Proceed to Financing
-                </button>
+      <div className="px-6 -mt-16 space-y-6">
+        
+        {/* Savings Wallet Widget */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} 
+          className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100"
+        >
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Total Saved</p>
+              <div className="text-3xl font-black text-slate-900 flex items-baseline gap-1">
+                <AnimatedNumber value={data.savings.totalSaved} />
+                <span className="text-lg text-slate-400 font-medium">UGX</span>
               </div>
-            )}
-
-            <div className="flex gap-2 mt-4">
-              {milestones.map(m => (
-                <div key={m} className={`text-[10px] font-semibold px-2 py-1 rounded-full ${
-                  achievedMilestones.includes(m) ? 'gradient-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
-                }`}>{m}%</div>
-              ))}
             </div>
-          </motion.div>
+            <div className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-emerald-100">
+              <TrendingUp size={12} />
+              +5% Interest
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between text-sm font-bold mb-2">
+                <span className="text-slate-700">Target Deposit</span>
+                <span className="text-slate-900">{formatUGX(data.savings.targetAmount)}</span>
+              </div>
+              <ProgressBar percentage={data.savings.progressPercent} className="h-3" />
+            </div>
+            
+            <div className="flex justify-between items-center pt-4 border-t border-slate-100">
+              <div>
+                <p className="text-slate-500 text-xs font-semibold">Interest Earned</p>
+                <p className="text-emerald-600 font-bold text-sm">+{formatUGX(data.savings.interestEarned)}</p>
+              </div>
+              <button onClick={() => navigate('/savings')} className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-xl text-sm font-bold transition-colors">
+                Deposit Now
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Ownership Journey Timeline Widget */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+          className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100"
+        >
+          <h3 className="font-extrabold text-slate-900 mb-6 flex items-center gap-2">
+            <Sparkles size={18} className="text-purple-600" /> Ownership Journey
+          </h3>
+          <div className="relative">
+            <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-slate-100 rounded-full" />
+            <div className="space-y-6 relative">
+              {JOURNEY_STEPS.map((step, idx) => {
+                const isCompleted = data.journey.completedSteps.includes(step);
+                const isCurrent = data.journey.currentStep === step;
+                return (
+                  <div key={step} className="flex gap-4">
+                    <div className="relative mt-0.5 z-10 bg-white">
+                      {isCompleted ? (
+                        <CheckCircle2 size={24} className="text-emerald-500 fill-emerald-50" />
+                      ) : isCurrent ? (
+                        <div className="w-6 h-6 rounded-full border-4 border-purple-600 bg-white shadow-[0_0_0_4px_rgba(147,51,234,0.1)]" />
+                      ) : (
+                        <Circle size={24} className="text-slate-200" />
+                      )}
+                    </div>
+                    <div>
+                      <p className={`font-bold ${isCurrent ? 'text-purple-600' : isCompleted ? 'text-slate-900' : 'text-slate-400'}`}>
+                        {step}
+                      </p>
+                      {isCurrent && <p className="text-xs font-medium text-slate-500 mt-1">Keep depositing to reach your 30% target.</p>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Current Vehicle Widget (if exists, else placeholder) */}
+        {data.vehicle ? (
+           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+           className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100"
+         >
+           <h3 className="font-extrabold text-slate-900 mb-4 flex items-center gap-2">
+             <Car size={18} className="text-purple-600" /> Current Vehicle
+           </h3>
+           <div className="flex gap-4 items-center">
+             <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center">
+                <Car className="text-slate-400" size={32} />
+             </div>
+             <div>
+               <p className="font-bold text-slate-900 text-lg">{data.vehicle.name}</p>
+               <p className="text-sm font-medium text-slate-500">{data.vehicle.plateNumber}</p>
+             </div>
+           </div>
+         </motion.div>
         ) : (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="bg-card rounded-2xl p-5 card-shadow text-center">
-            <p className="text-sm text-muted-foreground mb-3">Select a car to start tracking progress</p>
-            <button onClick={() => navigate('/cars')}
-              className="h-10 px-6 gradient-primary text-primary-foreground font-semibold rounded-2xl text-sm">
-              Browse Cars
+            className="bg-slate-900 rounded-3xl p-6 text-white relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <Car size={100} />
+            </div>
+            <h3 className="font-extrabold mb-2 relative z-10">Looking for a car?</h3>
+            <p className="text-slate-400 text-sm font-medium mb-6 relative z-10">Browse our marketplace and pick your dream car to set a target.</p>
+            <button onClick={() => navigate('/vehicles')} className="flex items-center gap-2 bg-white text-slate-900 px-5 py-2.5 rounded-xl text-sm font-bold transition-transform hover:scale-[1.02] relative z-10">
+              Browse Vehicles <ChevronRight size={16} />
             </button>
           </motion.div>
         )}
 
-        <div className="grid grid-cols-2 gap-3">
-          <button onClick={() => navigate('/wallet')} className="bg-card rounded-2xl p-4 card-shadow text-left">
-            <p className="text-xs text-muted-foreground">Quick Action</p>
-            <p className="text-sm font-semibold mt-1">Deposit Money</p>
-          </button>
-          <button onClick={() => applyGrowth.mutate()} className="bg-card rounded-2xl p-4 card-shadow text-left">
-            <p className="text-xs text-muted-foreground">Simulate</p>
-            <p className="text-sm font-semibold mt-1">Apply Growth</p>
-          </button>
-        </div>
+        {/* Repayment Summary Widget (if exists) */}
+        {data.repayment && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+            className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100"
+          >
+            <h3 className="font-extrabold text-slate-900 mb-4 flex items-center gap-2">
+              <CreditCard size={18} className="text-purple-600" /> Repayment Summary
+            </h3>
+            <div className="flex justify-between items-center bg-slate-50 p-4 rounded-2xl">
+              <div>
+                <p className="text-xs font-semibold text-slate-500 mb-1">Next Payment</p>
+                <p className="font-black text-slate-900">{formatUGX(data.repayment.nextAmount)}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs font-semibold text-slate-500 mb-1">Due Date</p>
+                <p className="font-bold text-red-500">{data.repayment.dueDate}</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          className="gradient-primary-soft rounded-2xl p-4">
-          <p className="text-sm font-semibold text-secondary-foreground">Invite friends, grow faster</p>
-          <p className="text-xs text-muted-foreground mt-1">Share your code and earn UGX 50,000 per referral</p>
-          <div className="mt-3 bg-card rounded-xl px-4 py-2 flex items-center justify-between">
-            <span className="font-mono font-bold text-sm">{profile.referral_code}</span>
-            <button onClick={() => navigator.clipboard.writeText(profile.referral_code)}
-              className="text-xs text-primary font-semibold">Copy</button>
-          </div>
-        </motion.div>
       </div>
 
       <BottomNav />

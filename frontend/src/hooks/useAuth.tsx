@@ -1,30 +1,27 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-// Mock User type to replace Supabase User
 export interface User {
   id: string;
   email?: string;
-  user_metadata?: {
-    name?: string;
-    phone?: string;
-    residence?: string;
-    referral_code?: string;
-    avatar_url?: string;
-  };
+  name?: string;
+  role?: string;
+  savingsAccount?: any;
 }
 
 interface AuthContextType {
   user: User | null;
-  session: any | null; // Mock session
+  session: any | null; 
   loading: boolean;
   isAdmin: boolean;
   isCfo: boolean;
-  signUp: (email: string, password: string, name: string, phone: string, residence: string, referralCode?: string) => Promise<{ error: string | null }>;
+  signUp: (email: string, password: string, name: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const API_URL = `http://${window.location.hostname}:3005/api`;
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -33,80 +30,74 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCfo, setIsCfo] = useState(false);
 
+  const fetchUser = async (token: string) => {
+    try {
+      const res = await fetch(`${API_URL}/users/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data);
+        setIsAdmin(data.role === 'ADMIN');
+        setIsCfo(data.role === 'CFO');
+      } else {
+        signOut();
+      }
+    } catch (e) {
+      signOut();
+    }
+  };
+
   useEffect(() => {
-    // Check local storage for mocked user session on load
-    const storedUser = localStorage.getItem('mockUser');
-    const storedIsAdmin = localStorage.getItem('mockIsAdmin');
-    const storedIsCfo = localStorage.getItem('mockIsCfo');
-    
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setSession({ access_token: 'mock-token' });
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      setSession({ access_token: token });
+      fetchUser(token).finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
-    if (storedIsAdmin === 'true') {
-      setIsAdmin(true);
-    }
-    if (storedIsCfo === 'true') {
-      setIsCfo(true);
-    }
-    
-    setLoading(false);
   }, []);
 
-  const signUp = async (email: string, password: string, name: string, phone: string, residence: string, referralCode?: string) => {
-    const newUser = { id: 'mock-id-' + Date.now(), email, user_metadata: { name, phone, residence, referralCode } };
-    setUser(newUser);
-    setSession({ access_token: 'mock-token' });
-    setIsAdmin(false);
-    setIsCfo(false);
-    
-    localStorage.setItem('mockUser', JSON.stringify(newUser));
-    localStorage.setItem('mockIsAdmin', 'false');
-    localStorage.setItem('mockIsCfo', 'false');
-    
-    return { error: null };
+  const signUp = async (email: string, password: string, name: string, phone: string, residence: string) => {
+    try {
+      const res = await fetch(`${API_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, name, phone, residence })
+      });
+      const data = await res.json();
+      if (!res.ok) return { error: data.error || 'Signup failed' };
+      
+      localStorage.setItem('authToken', data.token);
+      setSession({ access_token: data.token });
+      setUser(data.user);
+      setIsAdmin(data.user.role === 'ADMIN');
+      setIsCfo(data.user.role === 'CFO');
+      return { error: null };
+    } catch (err) {
+      return { error: 'Network error' };
+    }
   };
 
   const signIn = async (email: string, password: string) => {
-    // Admin login mock
-    if (email === 'admin@admin.com') {
-      const adminUser = { id: 'mock-admin-id', email };
-      setUser(adminUser);
-      setSession({ access_token: 'mock-token' });
-      setIsAdmin(true);
-      setIsCfo(false);
+    try {
+      const res = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) return { error: data.error || 'Login failed' };
       
-      localStorage.setItem('mockUser', JSON.stringify(adminUser));
-      localStorage.setItem('mockIsAdmin', 'true');
-      localStorage.setItem('mockIsCfo', 'false');
+      localStorage.setItem('authToken', data.token);
+      setSession({ access_token: data.token });
+      setUser(data.user);
+      setIsAdmin(data.user.role === 'ADMIN');
+      setIsCfo(data.user.role === 'CFO');
       return { error: null };
+    } catch (err) {
+      return { error: 'Network error' };
     }
-
-    // CFO login mock
-    if (email === 'cfo@admin.com') {
-      const cfoUser = { id: 'mock-cfo-id', email };
-      setUser(cfoUser);
-      setSession({ access_token: 'mock-token' });
-      setIsAdmin(false);
-      setIsCfo(true);
-      
-      localStorage.setItem('mockUser', JSON.stringify(cfoUser));
-      localStorage.setItem('mockIsAdmin', 'false');
-      localStorage.setItem('mockIsCfo', 'true');
-      return { error: null };
-    }
-
-    const standardUser = { id: 'mock-id-' + Date.now(), email };
-    setUser(standardUser);
-    setSession({ access_token: 'mock-token' });
-    setIsAdmin(false);
-    setIsCfo(false);
-    
-    localStorage.setItem('mockUser', JSON.stringify(standardUser));
-    localStorage.setItem('mockIsAdmin', 'false');
-    localStorage.setItem('mockIsCfo', 'false');
-    
-    return { error: null };
   };
 
   const signOut = async () => {
@@ -114,9 +105,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setSession(null);
     setIsAdmin(false);
     setIsCfo(false);
-    localStorage.removeItem('mockUser');
-    localStorage.removeItem('mockIsAdmin');
-    localStorage.removeItem('mockIsCfo');
+    localStorage.removeItem('authToken');
   };
 
   return (
