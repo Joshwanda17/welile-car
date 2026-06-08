@@ -363,7 +363,7 @@ export default function LogbookPage() {
                     </button>
                   </div>
                 </div>
-              ) : (
+              ) : modalStep === 3 ? (
                 <div className="space-y-4 text-center">
                   <p className="text-sm font-bold text-slate-700 mb-2">Enter your 4-digit PIN to confirm</p>
                   <div className="flex justify-center">

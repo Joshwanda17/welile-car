@@ -81,6 +81,19 @@ export default function VehiclesPage() {
   const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
   const [showFinancing, setShowFinancing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSchedule, setSelectedSchedule] = useState<'daily'|'weekly'|'monthly'>('monthly');
+  const [kycModalStep, setKycModalStep] = useState<0|1|2|3|4>(0);
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [paymentSource, setPaymentSource] = useState<'wallet'|'deposit'|null>(null);
+
+  useEffect(() => {
+    if (kycModalStep === 3) {
+      const timer = setTimeout(() => {
+        setKycModalStep(4);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [kycModalStep]);
 
   const filteredCars = carsData.filter(car => 
     car.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -237,8 +250,8 @@ export default function VehiclesPage() {
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }} 
-              onClick={() => setShowFinancing(false)}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+              onClick={() => { setShowFinancing(false); setKycModalStep(0); }}
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm cursor-pointer"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -247,7 +260,7 @@ export default function VehiclesPage() {
               className="relative w-full max-w-4xl bg-white rounded-[32px] shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
             >
               <button 
-                onClick={() => setShowFinancing(false)}
+                onClick={() => { setShowFinancing(false); setKycModalStep(0); }}
                 className="absolute top-6 right-6 w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors z-10"
               >
                 <X size={24} />
@@ -291,36 +304,154 @@ export default function VehiclesPage() {
                 </div>
 
                 <div className="lg:w-2/3 pt-8 lg:pt-0 flex flex-col justify-center">
-                  <div className="mb-8 pr-12">
-                    <h3 className="text-2xl font-bold text-slate-900">Choose your repayment schedule</h3>
-                    <p className="text-slate-500 font-medium mt-2">Based on a 12-month loan for the 70% financed amount (with 30% flat interest).</p>
-                  </div>
+                  {kycModalStep === 0 ? (
+                    <>
+                      <div className="mb-8 pr-12">
+                        <h3 className="text-2xl font-bold text-slate-900">Choose your repayment schedule</h3>
+                        <p className="text-slate-500 font-medium mt-2">Based on a 12-month loan for the 70% financed amount (with 30% flat interest).</p>
+                      </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-                    <div className="bg-white border-2 border-slate-100 rounded-2xl p-6 hover:border-[#4c35e6] hover:shadow-lg transition-all cursor-pointer">
-                      <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Daily</p>
-                      <p className="text-xl font-black text-slate-900">{formatCurrency(dailyPayment)}</p>
-                      <p className="text-xs font-bold text-slate-400 mt-2">365 payments</p>
-                    </div>
-                    <div className="bg-white border-2 border-slate-100 rounded-2xl p-6 hover:border-[#4c35e6] hover:shadow-lg transition-all cursor-pointer">
-                      <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Weekly</p>
-                      <p className="text-xl font-black text-slate-900">{formatCurrency(weeklyPayment)}</p>
-                      <p className="text-xs font-bold text-slate-400 mt-2">52 payments</p>
-                    </div>
-                    <div className="bg-white border-2 border-[#4c35e6] shadow-md shadow-[#4c35e6]/10 rounded-2xl p-6 cursor-pointer relative overflow-hidden">
-                      <div className="absolute top-0 right-0 bg-[#4c35e6] text-white text-[10px] font-bold px-3 py-1.5 rounded-bl-lg">POPULAR</div>
-                      <p className="text-sm font-bold text-[#4c35e6] uppercase tracking-wider mb-2">Monthly</p>
-                      <p className="text-xl font-black text-slate-900">{formatCurrency(monthlyPayment)}</p>
-                      <p className="text-xs font-bold text-slate-400 mt-2">12 payments</p>
-                    </div>
-                  </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+                        <div 
+                          onClick={() => setSelectedSchedule('daily')}
+                          className={`bg-white border-2 rounded-2xl p-6 transition-all cursor-pointer ${selectedSchedule === 'daily' ? 'border-[#4c35e6] shadow-md shadow-[#4c35e6]/10' : 'border-slate-100 hover:border-slate-300 hover:shadow-lg'}`}
+                        >
+                          <p className={`text-sm font-bold uppercase tracking-wider mb-2 ${selectedSchedule === 'daily' ? 'text-[#4c35e6]' : 'text-slate-500'}`}>Daily</p>
+                          <p className="text-xl font-black text-slate-900">{formatCurrency(dailyPayment)}</p>
+                          <p className="text-xs font-bold text-slate-400 mt-2">365 payments</p>
+                        </div>
+                        
+                        <div 
+                          onClick={() => setSelectedSchedule('weekly')}
+                          className={`bg-white border-2 rounded-2xl p-6 transition-all cursor-pointer ${selectedSchedule === 'weekly' ? 'border-[#4c35e6] shadow-md shadow-[#4c35e6]/10' : 'border-slate-100 hover:border-slate-300 hover:shadow-lg'}`}
+                        >
+                          <p className={`text-sm font-bold uppercase tracking-wider mb-2 ${selectedSchedule === 'weekly' ? 'text-[#4c35e6]' : 'text-slate-500'}`}>Weekly</p>
+                          <p className="text-xl font-black text-slate-900">{formatCurrency(weeklyPayment)}</p>
+                          <p className="text-xs font-bold text-slate-400 mt-2">52 payments</p>
+                        </div>
 
-                  <button 
-                    onClick={() => navigate('/logbook')}
-                    className="w-full bg-slate-900 hover:bg-[#4c35e6] text-white font-bold py-4 rounded-2xl transition-colors shadow-xl"
-                  >
-                    Confirm & Proceed to KYC
-                  </button>
+                        <div 
+                          onClick={() => setSelectedSchedule('monthly')}
+                          className={`bg-white border-2 rounded-2xl p-6 transition-all cursor-pointer relative overflow-hidden ${selectedSchedule === 'monthly' ? 'border-[#4c35e6] shadow-md shadow-[#4c35e6]/10' : 'border-slate-100 hover:border-slate-300 hover:shadow-lg'}`}
+                        >
+                          <div className="absolute top-0 right-0 bg-[#4c35e6] text-white text-[10px] font-bold px-3 py-1.5 rounded-bl-lg">POPULAR</div>
+                          <p className={`text-sm font-bold uppercase tracking-wider mb-2 ${selectedSchedule === 'monthly' ? 'text-[#4c35e6]' : 'text-slate-500'}`}>Monthly</p>
+                          <p className="text-xl font-black text-slate-900">{formatCurrency(monthlyPayment)}</p>
+                          <p className="text-xs font-bold text-slate-400 mt-2">12 payments</p>
+                        </div>
+                      </div>
+
+                      <button 
+                        onClick={() => setKycModalStep(1)}
+                        className="w-full bg-slate-900 hover:bg-[#4c35e6] text-white font-bold py-4 rounded-2xl transition-colors shadow-xl"
+                      >
+                        Confirm & Proceed to KYC
+                      </button>
+                    </>
+                  ) : kycModalStep === 1 ? (
+                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                      <h3 className="text-2xl font-bold text-slate-900 mb-2">Target Deposit Payment</h3>
+                      <p className="text-slate-500 font-medium mb-8">How would you like to pay the initial {formatCurrency(targetAmount)}?</p>
+                      
+                      <div className="space-y-4">
+                        <button 
+                          onClick={() => { setPaymentSource('wallet'); setKycModalStep(3); }}
+                          className="w-full bg-white border-2 border-slate-100 p-6 rounded-2xl flex items-center gap-4 hover:border-[#4c35e6] hover:bg-[#4c35e6]/5 transition-all text-left group"
+                        >
+                          <div className="w-12 h-12 bg-[#4c35e6]/10 text-[#4c35e6] rounded-full flex items-center justify-center font-black group-hover:bg-[#4c35e6] group-hover:text-white transition-colors">
+                            W
+                          </div>
+                          <div>
+                            <p className="font-bold text-slate-900 text-lg">Pay from Welile Wallet</p>
+                            <p className="text-sm text-slate-500">Instant transfer from your available balance</p>
+                          </div>
+                        </button>
+                        
+                        <button 
+                          onClick={() => { setPaymentSource('deposit'); setKycModalStep(2); }}
+                          className="w-full bg-white border-2 border-slate-100 p-6 rounded-2xl flex items-center gap-4 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left group"
+                        >
+                          <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-black group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                            M
+                          </div>
+                          <div>
+                            <p className="font-bold text-slate-900 text-lg">Mobile Money Deposit</p>
+                            <p className="text-sm text-slate-500">Pay directly via MTN or Airtel Mobile Money</p>
+                          </div>
+                        </button>
+                      </div>
+                      
+                      <button onClick={() => setKycModalStep(0)} className="mt-8 text-slate-500 font-bold hover:text-slate-900 transition-colors">
+                        ← Back to Schedule
+                      </button>
+                    </div>
+                  ) : kycModalStep === 2 ? (
+                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                      <h3 className="text-2xl font-bold text-slate-900 mb-2">Mobile Money Deposit</h3>
+                      <p className="text-slate-500 font-medium mb-8">Enter your details to initiate a prompt for {formatCurrency(targetAmount)}.</p>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-bold text-slate-700 mb-2">Mobile Number</label>
+                          <input 
+                            type="text" 
+                            value={mobileNumber}
+                            onChange={(e) => setMobileNumber(e.target.value)}
+                            placeholder="e.g. 077X XXX XXX"
+                            className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-4 font-bold text-slate-900 focus:outline-none focus:border-[#4c35e6] focus:bg-white transition-colors"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-bold text-slate-700 mb-2">Amount (UGX)</label>
+                          <input 
+                            type="text" 
+                            disabled
+                            value={formatCurrency(targetAmount)}
+                            className="w-full bg-slate-100 border-2 border-slate-200 rounded-xl px-4 py-4 font-bold text-slate-500 cursor-not-allowed"
+                          />
+                        </div>
+                        <button 
+                          onClick={() => setKycModalStep(3)}
+                          disabled={!mobileNumber}
+                          className="w-full mt-4 bg-slate-900 hover:bg-[#4c35e6] disabled:bg-slate-300 text-white font-bold py-4 rounded-xl transition-colors shadow-lg"
+                        >
+                          Send Prompt
+                        </button>
+                      </div>
+                      
+                      <button onClick={() => setKycModalStep(1)} className="mt-8 text-slate-500 font-bold hover:text-slate-900 transition-colors">
+                        ← Back
+                      </button>
+                    </div>
+                  ) : kycModalStep === 3 ? (
+                    <div className="py-20 flex flex-col items-center justify-center animate-in fade-in duration-300">
+                      <div className="w-16 h-16 border-4 border-slate-200 border-t-[#4c35e6] rounded-full animate-spin mb-6"></div>
+                      <h3 className="text-2xl font-bold text-slate-900 mb-2">Processing Payment...</h3>
+                      <p className="text-slate-500 font-medium text-center">
+                        {paymentSource === 'wallet' 
+                          ? 'Deducting from your Welile Wallet securely.' 
+                          : 'Waiting for Mobile Money confirmation. Please check your phone.'}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="py-12 flex flex-col items-center justify-center animate-in zoom-in duration-300 text-center">
+                      <div className="w-24 h-24 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-6">
+                        <CheckCircle2 size={48} />
+                      </div>
+                      <h3 className="text-3xl font-black text-slate-900 mb-2">Deposit Successful!</h3>
+                      <p className="text-slate-600 font-medium mb-8">
+                        We have successfully received your initial deposit of <span className="font-bold text-emerald-600">{formatCurrency(targetAmount)}</span>.
+                        The remaining financed balance is <span className="font-bold text-slate-900">{formatCurrency(financedAmount)}</span>.
+                      </p>
+                      
+                      <button 
+                        onClick={() => navigate('/logbook')}
+                        className="w-full bg-[#4c35e6] hover:bg-[#3f2bc2] text-white font-bold py-4 rounded-xl transition-colors shadow-lg"
+                      >
+                        Go to My Wallet
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
