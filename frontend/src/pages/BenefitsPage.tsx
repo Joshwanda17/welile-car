@@ -1,20 +1,18 @@
 import { Wallet, BadgePercent, ShieldCheck, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '@/components/Navbar';
 
 export default function BenefitsPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-purple-500/20 flex flex-col">
-      <Navbar />
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-indigo-500/20">
 
       <main className="max-w-7xl mx-auto px-6 py-16 flex-grow flex flex-col justify-center">
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-extrabold tracking-tight max-w-2xl mx-auto leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight max-w-2xl mx-auto leading-tight text-purple-600">
             Why choose Welile Cars?
           </h1>
-          <p className="text-slate-500 mt-4 text-lg">Discover why thousands choose Welile Cars.</p>
+          <p className="text-slate-500 mt-4 text-sm sm:text-base">Discover why thousands choose Welile Cars.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">

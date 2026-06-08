@@ -2,11 +2,15 @@ import { useState } from 'react';
 import { Car, User, Menu, X } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, isAdmin, isCfo } = useAuth();
+  const { t } = useLanguage();
 
   const getLinkClass = (path: string) => {
     const isActive = location.pathname === path;
@@ -18,56 +22,70 @@ export default function Navbar() {
 
   return (
     <nav className="relative max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between">
-      
+
       {/* Top Left Menu Button */}
       <div className="flex flex-1 justify-start">
-        <button 
+        <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="text-slate-800 hover:text-[#4c35e6] transition-colors bg-slate-50 hover:bg-slate-100 p-2 sm:p-2.5 rounded-xl border border-slate-200"
+          className="text-slate-800 hover:text-[#4c35e6] transition-colors focus:outline-none"
         >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {isMenuOpen ? <X size={24} strokeWidth={2.5} /> : <Menu size={24} strokeWidth={2.5} />}
         </button>
       </div>
 
-      {/* Centered Logo & Avatar */}
+      {/* Centered Logo */}
       <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
         <Car className="text-[#4c35e6] hidden sm:block" size={28} />
-        <span className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">Welile Cars</span>
-        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-purple-100 flex items-center justify-center text-[#4c35e6] shadow-sm ml-1">
-          <User size={18} />
-        </div>
+        <span className="font-chewy text-3xl sm:text-4xl md:text-5xl tracking-wide text-slate-900">Welile Cars</span>
       </Link>
 
-      {/* Right Spacer for centering */}
-      <div className="flex flex-1 justify-end"></div>
+      {/* Right Container with Avatar */}
+      <div className="flex flex-1 justify-end">
+        <Link
+          to="/profile"
+          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-purple-100 flex items-center justify-center text-[#4c35e6] shadow-sm hover:opacity-80 transition-opacity overflow-hidden"
+        >
+          {user?.user_metadata?.avatar_url ? (
+            <img
+              src={user.user_metadata.avatar_url}
+              alt="Profile"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <User size={18} />
+          )}
+        </Link>
+      </div>
 
       {/* Dropdown Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <>
             {/* Backdrop to close menu when clicking outside */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMenuOpen(false)}
               className="fixed inset-0 z-40"
             />
-            
+
             <motion.div
               initial={{ opacity: 0, y: -10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute top-24 left-6 bg-white shadow-2xl rounded-2xl p-6 border border-slate-100 z-50 min-w-[240px] flex flex-col gap-6"
+              className="absolute top-24 left-4 sm:left-6 bg-white shadow-2xl rounded-2xl p-6 border border-slate-100 z-50 min-w-[240px] flex flex-col gap-6"
             >
               <div className="border-b border-slate-100 pb-4 mb-2">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Navigation Menu</p>
               </div>
-              <Link to="/profile" onClick={() => setIsMenuOpen(false)} className={getLinkClass("/profile")}>Profile</Link>
-              <Link to="/logbook" onClick={() => setIsMenuOpen(false)} className={getLinkClass("/logbook")}>My Wallet</Link>
-              <Link to="/settings" onClick={() => setIsMenuOpen(false)} className={getLinkClass("/settings")}>Settings</Link>
-              <a href="#about" onClick={() => setIsMenuOpen(false)} className="text-slate-600 hover:text-[#4c35e6] font-semibold transition-colors">About Us</a>
+              <Link to="/profile" onClick={() => setIsMenuOpen(false)} className={getLinkClass("/profile")}>{t('settings.account')}</Link>
+              <Link to="/logbook" onClick={() => setIsMenuOpen(false)} className={getLinkClass("/logbook")}>{t('nav.wallet')}</Link>
+              <Link to="/admin" onClick={() => setIsMenuOpen(false)} className={getLinkClass("/admin")}>Admin Panel</Link>
+              <Link to="/cfo" onClick={() => setIsMenuOpen(false)} className={getLinkClass("/cfo")}>CFO Portal</Link>
+              <Link to="/settings" onClick={() => setIsMenuOpen(false)} className={getLinkClass("/settings")}>{t('settings.menu')}</Link>
+              <Link to="/about" onClick={() => setIsMenuOpen(false)} className="text-slate-600 hover:text-[#4c35e6] font-semibold transition-colors">{t('nav.about')}</Link>
             </motion.div>
           </>
         )}

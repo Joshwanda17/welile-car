@@ -9,7 +9,6 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-purple-500/20 flex flex-col">
-      <Navbar />
 
       {/* Hero Section */}
       <main className="max-w-7xl mx-auto px-6 pt-16 pb-20 flex flex-col lg:flex-row items-center gap-12">
@@ -18,7 +17,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.05]"
+            className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight leading-tight"
           >
             Your Journey <br/> Starts Here.
           </motion.h1>
@@ -32,14 +31,26 @@ export default function LandingPage() {
             Own your dream car with welile - the smarter way to save!
           </motion.p>
 
-          <motion.p 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-lg text-slate-500 max-w-lg mx-auto lg:mx-0 leading-relaxed font-medium"
+            className="max-w-lg mx-auto lg:mx-0 space-y-6"
           >
-            Save up to 30% through flexible daily or weekly installments. Once you hit the target, we finance the remaining 70%. Drive your dream car today.
-          </motion.p>
+            <p className="text-lg text-slate-500 leading-relaxed font-medium">
+              Save up to 30% through flexible daily or weekly installments. Once you hit the target, we finance the remaining 70%. Drive your dream car today.
+            </p>
+
+            <div className="bg-purple-50/50 border border-purple-200 p-6 rounded-2xl text-left shadow-sm">
+              <p className="text-lg font-black text-purple-600 flex items-center gap-3 mb-2">
+                <span className="w-3 h-3 rounded-full bg-purple-600"></span>
+                5% Compounding Installment Bonus!
+              </p>
+              <p className="text-base text-slate-600 font-medium leading-relaxed pl-6">
+                Every savings installment you pay compounds by 5% until the 30% target is completed, helping you reach your target faster.
+              </p>
+            </div>
+          </motion.div>
 
         </div>
 

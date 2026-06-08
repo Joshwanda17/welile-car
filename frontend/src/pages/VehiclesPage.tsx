@@ -1,14 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronRight, Search, CheckCircle2, X } from 'lucide-react';
+import { ChevronRight, Search, CheckCircle2, X, Heart, SlidersHorizontal } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { useSelectCarDetails } from '@/hooks/useProfile';
 
 import vitzImg from '@/assets/car-vitz.jpg';
 import premioImg from '@/assets/car-premio.jpg';
 import wishImg from '@/assets/car-wish.jpg';
 import harrierImg from '@/assets/harrier-white.png';
 import heroCarImg from '@/assets/hero-car.png';
+import passoImg from '@/assets/car-passo.png';
 
 const carsData = [
   {
@@ -17,8 +20,16 @@ const carsData = [
     tagline: 'Perfect for Ride-Hailing',
     priceUgx: 18000000,
     priceStr: '18M UGX',
+    oldPriceRange: '14M - 18M UGX',
+    oldMin: 14000000,
+    oldMax: 18000000,
+    newPriceRange: '24M - 28M UGX',
+    newMin: 24000000,
+    newMax: 28000000,
     image: vitzImg,
-    specs: { year: 2016, engine: '1.0L', transmission: 'Automatic', mileage: '65,000 km' }
+    specs: { year: 2016, engine: '1.0L', transmission: 'Automatic', mileage: '65,000 km' },
+    category: 'Ride-Hailing',
+    rating: 4.8
   },
   {
     id: 'premio',
@@ -26,8 +37,16 @@ const carsData = [
     tagline: 'Premium Sedan',
     priceUgx: 28000000,
     priceStr: '28M UGX',
+    oldPriceRange: '22M - 28M UGX',
+    oldMin: 22000000,
+    oldMax: 28000000,
+    newPriceRange: '38M - 45M UGX',
+    newMin: 38000000,
+    newMax: 45000000,
     image: premioImg,
-    specs: { year: 2015, engine: '1.8L', transmission: 'Automatic', mileage: '50,000 km' }
+    specs: { year: 2015, engine: '1.8L', transmission: 'Automatic', mileage: '50,000 km' },
+    category: 'Sedan',
+    rating: 4.7
   },
   {
     id: 'wish',
@@ -35,8 +54,16 @@ const carsData = [
     tagline: 'Ideal for Cargo/Family',
     priceUgx: 25000000,
     priceStr: '25M UGX',
+    oldPriceRange: '18M - 25M UGX',
+    oldMin: 18000000,
+    oldMax: 25000000,
+    newPriceRange: '32M - 38M UGX',
+    newMin: 32000000,
+    newMax: 38000000,
     image: wishImg,
-    specs: { year: 2014, engine: '1.8L', transmission: 'Automatic', mileage: '70,000 km' }
+    specs: { year: 2014, engine: '1.8L', transmission: 'Automatic', mileage: '70,000 km' },
+    category: 'Family',
+    rating: 4.6
   },
   {
     id: 'harrier',
@@ -44,8 +71,16 @@ const carsData = [
     tagline: 'Luxury SUV',
     priceUgx: 85000000,
     priceStr: '85M UGX',
+    oldPriceRange: '65M - 85M UGX',
+    oldMin: 65000000,
+    oldMax: 85000000,
+    newPriceRange: '110M - 130M UGX',
+    newMin: 110000000,
+    newMax: 130000000,
     image: harrierImg,
-    specs: { year: 2017, engine: '2.0L Turbo', transmission: 'Automatic', mileage: '35,000 km' }
+    specs: { year: 2017, engine: '2.0L Turbo', transmission: 'Automatic', mileage: '35,000 km' },
+    category: 'SUV',
+    rating: 4.9
   },
   {
     id: 'noah',
@@ -53,8 +88,16 @@ const carsData = [
     tagline: 'Spacious 7-Seater',
     priceUgx: 35000000,
     priceStr: '35M UGX',
+    oldPriceRange: '28M - 35M UGX',
+    oldMin: 28000000,
+    oldMax: 35000000,
+    newPriceRange: '48M - 58M UGX',
+    newMin: 48000000,
+    newMax: 58000000,
     image: heroCarImg,
-    specs: { year: 2015, engine: '2.0L', transmission: 'Automatic', mileage: '60,000 km' }
+    specs: { year: 2015, engine: '2.0L', transmission: 'Automatic', mileage: '60,000 km' },
+    category: 'Family',
+    rating: 4.8
   },
   {
     id: 'passo',
@@ -62,8 +105,16 @@ const carsData = [
     tagline: 'Compact & Efficient',
     priceUgx: 16000000,
     priceStr: '16M UGX',
-    image: vitzImg,
-    specs: { year: 2017, engine: '1.0L', transmission: 'Automatic', mileage: '48,000 km' }
+    oldPriceRange: '12M - 16M UGX',
+    oldMin: 12000000,
+    oldMax: 16000000,
+    newPriceRange: '20M - 24M UGX',
+    newMin: 20000000,
+    newMax: 24000000,
+    image: passoImg,
+    specs: { year: 2017, engine: '1.0L', transmission: 'Automatic', mileage: '48,000 km' },
+    category: 'Ride-Hailing',
+    rating: 4.5
   },
   {
     id: 'sienta',
@@ -71,13 +122,24 @@ const carsData = [
     tagline: 'Family Mini-Van',
     priceUgx: 22000000,
     priceStr: '22M UGX',
+    oldPriceRange: '16M - 22M UGX',
+    oldMin: 16000000,
+    oldMax: 22000000,
+    newPriceRange: '28M - 34M UGX',
+    newMin: 28000000,
+    newMax: 34000000,
     image: wishImg,
-    specs: { year: 2016, engine: '1.5L', transmission: 'Automatic', mileage: '55,000 km' }
+    specs: { year: 2016, engine: '1.5L', transmission: 'Automatic', mileage: '55,000 km' },
+    category: 'Family',
+    rating: 4.6
   }
 ];
 
 export default function VehiclesPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const selectCarDetails = useSelectCarDetails();
+
   const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
   const [showFinancing, setShowFinancing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -86,22 +148,45 @@ export default function VehiclesPage() {
   const [mobileNumber, setMobileNumber] = useState('');
   const [paymentSource, setPaymentSource] = useState<'wallet'|'deposit'|null>(null);
 
-  useEffect(() => {
-    if (kycModalStep === 3) {
-      const timer = setTimeout(() => {
-        setKycModalStep(4);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [kycModalStep]);
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [likedCars, setLikedCars] = useState<string[]>(() => {
+    const stored = localStorage.getItem('likedCars');
+    return stored ? JSON.parse(stored) : [];
+  });
 
-  const filteredCars = carsData.filter(car => 
-    car.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const [carCondition, setCarCondition] = useState<'used' | 'new'>('used');
+  const [customPrice, setCustomPrice] = useState<number>(0);
 
   const selectedCar = carsData.find(c => c.id === selectedCarId);
 
-  const carPrice = selectedCar ? selectedCar.priceUgx : 0;
+  useEffect(() => {
+    if (selectedCar) {
+      setCarCondition('used');
+      setCustomPrice(selectedCar.priceUgx); // defaults to used max
+    }
+  }, [selectedCarId]);
+
+  const handleConditionChange = (condition: 'used' | 'new') => {
+    setCarCondition(condition);
+    if (selectedCar) {
+      const defaultPrice = condition === 'used' ? selectedCar.priceUgx : selectedCar.newMin;
+      setCustomPrice(defaultPrice);
+    }
+  };
+
+  const toggleLike = (carId: string) => {
+    setLikedCars(prev => {
+      const updated = prev.includes(carId) 
+        ? prev.filter(id => id !== carId) 
+        : [...prev, carId];
+      localStorage.setItem('likedCars', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const categories = ['All', 'Ride-Hailing', 'Sedan', 'SUV', 'Family'];
+
+  const carPrice = customPrice || (selectedCar ? selectedCar.priceUgx : 0);
   // Target Deposit: 30% of car price
   const targetAmount = carPrice * 0.3;
   // Financed Amount: 70% of car price
@@ -114,6 +199,47 @@ export default function VehiclesPage() {
   const weeklyPayment = totalRepayment / 52;
   const monthlyPayment = totalRepayment / 12;
 
+  useEffect(() => {
+    if (kycModalStep === 3) {
+      const timer = setTimeout(() => {
+        setKycModalStep(4);
+
+        if (selectedCar) {
+          const loanData = {
+            carId: selectedCar.id,
+            carName: selectedCar.name,
+            condition: carCondition,
+            priceUgx: carPrice,
+            targetDeposit: targetAmount,
+            financedAmount: financedAmount,
+            interestAmount: financedAmount * 0.3,
+            totalRepayment: totalRepayment,
+            dailyPayment: dailyPayment,
+            weeklyPayment: weeklyPayment,
+            monthlyPayment: monthlyPayment,
+            image: selectedCar.image
+          };
+          localStorage.setItem('selectedVehicleLoan', JSON.stringify(loanData));
+
+          if (user) {
+            selectCarDetails.mutate({
+              carId: selectedCar.id,
+              condition: carCondition,
+              price: carPrice
+            });
+          }
+        }
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [kycModalStep, selectedCarId, carCondition, carPrice, targetAmount, financedAmount, totalRepayment, dailyPayment, weeklyPayment, monthlyPayment, user, selectCarDetails]);
+
+  const filteredCars = carsData.filter(car => {
+    const matchesSearch = car.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'All' || car.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   const formatCurrency = (num: number) => {
     return new Intl.NumberFormat('en-UG', {
       style: 'currency',
@@ -124,84 +250,137 @@ export default function VehiclesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-purple-500/20 flex flex-col pb-24">
-      <Navbar />
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-[#4c35e6]/20 flex flex-col pb-24">
 
-      <main className="max-w-7xl mx-auto px-6 py-16 flex-grow flex flex-col justify-start">
-        <div className="max-w-3xl mx-auto w-full text-center space-y-6 mb-16">
-          <div>
-            <h1 className="text-5xl font-extrabold tracking-tight">Find your perfect car</h1>
-            <p className="text-slate-500 text-lg font-medium mt-4">in just a few clicks</p>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-grow flex flex-col justify-start w-full">
+
+
+        {/* Search & Filter bar (Foodgo style) */}
+        <div className="flex items-center gap-3 w-full mb-6">
+          <div className="relative flex-1 bg-white border border-slate-100 rounded-2xl shadow-sm flex items-center h-14 pl-12 pr-4">
+            <Search className="absolute left-4 text-slate-400" size={20} />
+            <input 
+              type="text" 
+              placeholder="Search for cars..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-400 font-bold text-sm"
+            />
           </div>
-          
-          <div className="flex items-center gap-2 max-w-lg mx-auto bg-white p-2 rounded-full border border-slate-200 shadow-sm shadow-slate-100">
-            <div className="flex-1 flex items-center gap-2 px-4 text-slate-400">
-              <Search size={20} />
-              <input 
-                type="text" 
-                placeholder="Search vehicles..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-400 font-medium"
-              />
-            </div>
-            <button className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full transition-colors">
-              Search
-            </button>
-          </div>
+          <button className="w-14 h-14 bg-[#4c35e6] hover:bg-[#3f2bc2] text-white rounded-2xl flex items-center justify-center shadow-lg shadow-[#4c35e6]/20 transition-all">
+            <SlidersHorizontal size={20} />
+          </button>
+        </div>
+
+        {/* Categories horizontal list */}
+        <div className="flex gap-2.5 overflow-x-auto pb-4 mb-6 scrollbar-hide">
+          {categories.map((cat) => {
+            const isSelected = selectedCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-5 py-2.5 rounded-2xl text-xs font-black tracking-wider transition-all border whitespace-nowrap ${
+                  isSelected 
+                    ? 'bg-[#4c35e6] text-white border-[#4c35e6] shadow-md shadow-[#4c35e6]/10' 
+                    : 'bg-white text-slate-600 border-slate-100 hover:border-slate-300'
+                }`}
+              >
+                {cat}
+              </button>
+            );
+          })}
         </div>
 
         {filteredCars.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-xl text-slate-500 font-medium">No vehicles found matching "{searchQuery}"</p>
+          <div className="text-center py-16">
+            <p className="text-lg text-slate-400 font-bold">No vehicles found matching "{searchQuery}"</p>
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* 2-column mobile grid, scaling to 3/4 columns on desktop */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {filteredCars.map((car) => {
             const isSelected = selectedCarId === car.id;
+            const isLiked = likedCars.includes(car.id);
+            
             return (
               <div 
                 key={car.id}
                 onClick={() => setSelectedCarId(car.id)}
-                className={`bg-white rounded-[32px] p-6 pb-8 flex flex-col justify-between cursor-pointer transition-all duration-300 ${
+                className={`bg-white rounded-[28px] border p-4 pb-5 flex flex-col justify-between cursor-pointer transition-all duration-300 relative ${
                   isSelected 
-                    ? 'ring-4 ring-[#4c35e6] shadow-xl shadow-[#4c35e6]/20 -translate-y-2' 
-                    : 'border border-slate-100 hover:border-slate-300 hover:shadow-lg hover:-translate-y-1'
+                    ? 'border-[#4c35e6] ring-2 ring-[#4c35e6] shadow-lg shadow-[#4c35e6]/10 -translate-y-1' 
+                    : 'border-slate-100 hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5'
                 }`}
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-2xl font-bold text-slate-800">{car.name}</h3>
-                    <p className="text-[#4c35e6] font-bold mt-1 text-sm">{car.tagline}</p>
-                  </div>
-                  {isSelected && (
-                    <CheckCircle2 className="text-[#4c35e6] drop-shadow-sm" size={28} />
-                  )}
+                {/* Floating Selection Indicator */}
+                {isSelected && (
+                  <span className="absolute top-4 left-4 bg-[#4c35e6] text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full">
+                    Selected
+                  </span>
+                )}
+
+                {/* Car Image centered, slightly floating */}
+                <div className="relative w-full h-32 sm:h-40 flex items-center justify-center mb-3">
+                  <img 
+                    src={car.image} 
+                    alt={car.name} 
+                    className="max-w-full max-h-full object-contain mix-blend-multiply drop-shadow-md transition-transform duration-300 hover:scale-105" 
+                  />
                 </div>
-                <div className="py-8 relative">
-                  <img src={car.image} alt={car.name} className="w-full h-40 rounded-2xl object-contain mix-blend-multiply drop-shadow-lg" />
+
+                {/* Title & Tagline */}
+                <div>
+                  <h3 className="font-extrabold text-slate-900 text-sm sm:text-base leading-tight tracking-tight">{car.name}</h3>
+                  <p className="text-slate-400 font-bold text-[10px] mt-0.5 tracking-tight line-clamp-1">{car.tagline}</p>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-xs text-slate-500 font-bold uppercase tracking-wider block">Price</span>
-                    <span className="text-lg font-black text-slate-800">{car.priceStr}</span>
+
+                {/* Price range details */}
+                <div className="mt-3 pt-3 border-t border-slate-50 text-[11px] space-y-1 text-slate-500 font-semibold">
+                  <div className="flex justify-between items-center">
+                    <span>Used (Old):</span>
+                    <span className="text-slate-800 font-bold">{car.oldPriceRange}</span>
                   </div>
+                  <div className="flex justify-between items-center">
+                    <span>New:</span>
+                    <span className="text-slate-800 font-bold">{car.newPriceRange}</span>
+                  </div>
+                  <p className="text-[9px] text-amber-600 font-extrabold italic mt-1 leading-none">
+                    Depending on the condition
+                  </p>
+                </div>
+
+                {/* Rating & Favorite Heart Toggle */}
+                <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-50">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-amber-400 font-black text-sm">★</span>
+                    <span className="text-xs font-black text-slate-700">{car.rating}</span>
+                    <span className="text-slate-300 text-[10px]">|</span>
+                    <span className="text-[11px] font-black text-[#4c35e6]">{car.priceStr}</span>
+                  </div>
+                  
                   <button 
-                    className={`px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition-all ${
-                      isSelected 
-                        ? 'bg-[#4c35e6] text-white shadow-[#4c35e6]/30' 
-                        : 'bg-slate-100 text-slate-700 hover:bg-[#4c35e6] hover:text-white'
-                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleLike(car.id);
+                    }}
+                    className="w-8 h-8 rounded-full bg-slate-50 hover:bg-red-50 flex items-center justify-center transition-colors group"
                   >
-                    {isSelected ? 'Selected' : 'Select'}
+                    <Heart 
+                      size={14} 
+                      className={`transition-colors ${
+                        isLiked 
+                          ? 'fill-red-500 text-red-500' 
+                          : 'text-slate-400 group-hover:text-red-500'
+                      }`} 
+                    />
                   </button>
                 </div>
               </div>
             );
           })}
         </div>
-
       </main>
 
       <footer className="border-t border-slate-100 py-8 text-center text-sm font-medium text-slate-400 mt-auto bg-white">
@@ -269,13 +448,138 @@ export default function VehiclesPage() {
               <div className="p-8 md:p-12 lg:flex gap-12">
                 <div className="lg:w-1/3 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-slate-100 pb-8 lg:pb-0 lg:pr-12">
                   <h2 className="text-3xl font-extrabold text-slate-900 mb-2">{selectedCar.name}</h2>
-                  <p className="text-lg text-[#4c35e6] font-bold mb-8">{selectedCar.priceStr}</p>
-                  <img src={selectedCar.image} alt={selectedCar.name} className="w-full h-auto object-contain mix-blend-multiply drop-shadow-xl mb-8" />
+                  <p className="text-lg text-[#4c35e6] font-bold mb-6">
+                    {formatCurrency(carPrice)} <span className="text-xs font-semibold text-slate-400 capitalize">({carCondition})</span>
+                  </p>
+                  <img src={selectedCar.image} alt={selectedCar.name} className="w-full h-auto object-contain mix-blend-multiply drop-shadow-xl mb-6" />
                   
+                  {/* Vehicle Type & Amount Selector */}
+                  <div className="mb-6 bg-slate-50 border border-slate-100 rounded-2xl p-5">
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
+                      Select Condition & Price
+                    </p>
+                    
+                    {/* Condition Tabs */}
+                    <div className="grid grid-cols-2 gap-2 mb-4 bg-slate-200/50 p-1 rounded-xl">
+                      <button
+                        type="button"
+                        onClick={() => handleConditionChange('used')}
+                        className={`py-2 rounded-lg text-xs font-black transition-all ${
+                          carCondition === 'used'
+                            ? 'bg-white text-[#4c35e6] shadow-sm'
+                            : 'text-slate-500 hover:text-slate-800'
+                        }`}
+                      >
+                        Used (Old)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleConditionChange('new')}
+                        className={`py-2 rounded-lg text-xs font-black transition-all ${
+                          carCondition === 'new'
+                            ? 'bg-white text-[#4c35e6] shadow-sm'
+                            : 'text-slate-500 hover:text-slate-800'
+                        }`}
+                      >
+                        New
+                      </button>
+                    </div>
+
+                    {/* Price Range Label & Slider */}
+                    <div className="space-y-3">
+                      <div className="flex justify-between text-xs font-bold text-slate-600">
+                        <span>Range:</span>
+                        <span>
+                          {carCondition === 'used'
+                            ? `${formatCurrency(selectedCar.oldMin || 0)} - ${formatCurrency(selectedCar.oldMax || 0)}`
+                            : `${formatCurrency(selectedCar.newMin || 0)} - ${formatCurrency(selectedCar.newMax || 0)}`}
+                        </span>
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <div className="flex justify-between items-center bg-white border border-slate-200 rounded-xl px-3 py-2">
+                          <span className="text-[11px] font-bold text-slate-400 uppercase">Price:</span>
+                          <input
+                            type="number"
+                            min={carCondition === 'used' ? selectedCar.oldMin : selectedCar.newMin}
+                            max={carCondition === 'used' ? selectedCar.oldMax : selectedCar.newMax}
+                            value={customPrice}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              setCustomPrice(val);
+                            }}
+                            className="bg-transparent text-right font-black text-slate-900 focus:outline-none w-32 text-sm"
+                          />
+                          <span className="text-xs font-black text-slate-800 ml-1">UGX</span>
+                        </div>
+                        {(() => {
+                          const min = carCondition === 'used' ? selectedCar.oldMin : selectedCar.newMin;
+                          const max = carCondition === 'used' ? selectedCar.oldMax : selectedCar.newMax;
+                          if (min !== undefined && max !== undefined && (customPrice < min || customPrice > max)) {
+                            return (
+                              <p className="text-[10px] text-red-500 font-bold mt-1 leading-tight">
+                                *Must be between {formatCurrency(min)} and {formatCurrency(max)}
+                              </p>
+                            );
+                          }
+                          return null;
+                        })()}
+                      </div>
+
+                      <input
+                        type="range"
+                        min={carCondition === 'used' ? selectedCar.oldMin : selectedCar.newMin}
+                        max={carCondition === 'used' ? selectedCar.oldMax : selectedCar.newMax}
+                        step={500000}
+                        value={customPrice}
+                        onChange={(e) => setCustomPrice(Number(e.target.value))}
+                        className="w-full h-1.5 rounded-lg bg-slate-200 accent-[#4c35e6] cursor-pointer"
+                      />
+                      
+                      {/* Presets */}
+                      <div className="grid grid-cols-3 gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setCustomPrice(carCondition === 'used' ? (selectedCar.oldMin || 0) : (selectedCar.newMin || 0))}
+                          className="py-1 px-1 bg-white border border-slate-100 hover:border-slate-300 rounded-lg text-[9px] font-bold text-slate-600 transition-colors"
+                        >
+                          Min Price
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const min = carCondition === 'used' ? (selectedCar.oldMin || 0) : (selectedCar.newMin || 0);
+                            const max = carCondition === 'used' ? (selectedCar.oldMax || 0) : (selectedCar.newMax || 0);
+                            setCustomPrice(Math.round(min + (max - min) / 2));
+                          }}
+                          className="py-1 px-1 bg-white border border-slate-100 hover:border-slate-300 rounded-lg text-[9px] font-bold text-slate-600 transition-colors"
+                        >
+                          Mid Price
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCustomPrice(carCondition === 'used' ? (selectedCar.oldMax || 0) : (selectedCar.newMax || 0))}
+                          className="py-1 px-1 bg-white border border-slate-100 hover:border-slate-300 rounded-lg text-[9px] font-bold text-slate-600 transition-colors"
+                        >
+                          Max Price
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
                     <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Target Deposit (30%)</p>
                     <p className="text-3xl font-black text-[#4c35e6] mb-2">{formatCurrency(targetAmount)}</p>
-                    <p className="text-sm font-medium text-slate-500">Required before handing over the vehicle. We finance the remaining 70%.</p>
+                    <p className="text-sm font-medium text-slate-500 mb-3">Required before handing over the vehicle. We finance the remaining 70%.</p>
+                    <div className="border-t border-slate-200/60 pt-3">
+                      <p className="text-xs font-bold text-emerald-600 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        5% Compounding Installment Bonus!
+                      </p>
+                      <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                        Every savings installment you pay compounds by 5% until the 30% target is completed, helping you reach your target faster.
+                      </p>
+                    </div>
                   </div>
 
                   {selectedCar.specs && (
@@ -345,7 +649,7 @@ export default function VehiclesPage() {
                         onClick={() => setKycModalStep(1)}
                         className="w-full bg-slate-900 hover:bg-[#4c35e6] text-white font-bold py-4 rounded-2xl transition-colors shadow-xl"
                       >
-                        Confirm & Proceed to KYC
+                        Confirm & Proceed
                       </button>
                     </>
                   ) : kycModalStep === 1 ? (

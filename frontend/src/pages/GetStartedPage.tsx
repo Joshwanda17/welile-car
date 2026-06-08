@@ -83,6 +83,10 @@ export default function GetStartedPage() {
   const [savingAmount, setSavingAmount] = useState<number>(150000); // Default weekly saving
   const [lockedPlan, setLockedPlan] = useState(false);
 
+  const handleCarSelect = (car: CarModel) => {
+    setSelectedCar(car);
+  };
+
   // Auth/Sign-In State
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState('');
@@ -359,6 +363,12 @@ export default function GetStartedPage() {
                         <div className="grid grid-cols-2 gap-2 text-[10px] font-semibold pt-0.5">
                           <span>30% Deposit Goal: <strong>{deposit30.toLocaleString()} UGX</strong></span>
                           <span className="text-right">70% Platform Cover: <strong className="text-indigo-600">{platform70.toLocaleString()} UGX</strong></span>
+                        </div>
+                        <div className="bg-emerald-50/60 border border-emerald-100 rounded-lg p-2 mt-1">
+                          <p className="text-[10px] font-bold text-emerald-700">5% Compounding Installment Bonus!</p>
+                          <p className="text-[9px] text-emerald-600 leading-normal mt-0.5">
+                            Save in installments and watch your balance grow: every installment you pay compounds by 5% until the {deposit30.toLocaleString()} UGX target is completed.
+                          </p>
                         </div>
                         <div className="border-t border-border/20 pt-1.5 grid grid-cols-2 gap-2 text-[8px] text-muted-foreground font-semibold">
                           <span>Interest Cost (30% on 70%): <strong className="text-foreground">+{financeInterest.toLocaleString()} UGX</strong></span>

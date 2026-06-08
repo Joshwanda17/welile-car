@@ -7,6 +7,7 @@ export interface Profile {
   user_id: string;
   name: string;
   phone: string;
+  avatar_url?: string;
   referral_code: string;
   referred_by: string | null;
   wallet_balance: number;
@@ -20,6 +21,8 @@ export interface Profile {
   financing_unlocked: boolean;
   financing_status: string;
   selected_car_id: string | null;
+  selected_car_condition?: 'used' | 'new' | null;
+  selected_car_price?: number | null;
   assigned_agent: string | null;
   flagged: boolean;
   created_at: string;
@@ -36,11 +39,27 @@ const getMockProfile = (userId: string): Profile => {
   const stored = localStorage.getItem(`mockProfile_${userId}`);
   if (stored) return JSON.parse(stored);
   
+  let name = 'John Doe';
+  let phone = '+256 700 123 456';
+  let avatar_url = '';
+  const storedUser = localStorage.getItem('mockUser');
+  if (storedUser) {
+    try {
+      const u = JSON.parse(storedUser);
+      if (u.user_metadata?.name) name = u.user_metadata.name;
+      if (u.user_metadata?.phone) phone = u.user_metadata.phone;
+      if (u.user_metadata?.avatar_url) avatar_url = u.user_metadata.avatar_url;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
   const initial: Profile = {
     id: `prof_${userId}`,
     user_id: userId,
-    name: 'Test User',
-    phone: '',
+    name,
+    phone,
+    avatar_url,
     referral_code: 'ref123',
     referred_by: null,
     wallet_balance: 0,
@@ -54,6 +73,8 @@ const getMockProfile = (userId: string): Profile => {
     financing_unlocked: false,
     financing_status: 'none',
     selected_car_id: null,
+    selected_car_condition: null,
+    selected_car_price: null,
     assigned_agent: null,
     flagged: false,
     created_at: new Date().toISOString(),
@@ -92,6 +113,39 @@ export function useProfile() {
       return getMockProfile(user.id);
     },
     enabled: !!user,
+  });
+}
+
+export function useUpdateProfile() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (updates: Partial<Profile & { avatar_url?: string }>) => {
+      if (!user) throw new Error('Not authenticated');
+      
+      const updated = updateMockProfile(user.id, updates);
+      
+      // Update mockUser storage to keep user_metadata sync
+      const storedUser = localStorage.getItem('mockUser');
+      if (storedUser) {
+        try {
+          const parsed = JSON.parse(storedUser);
+          parsed.user_metadata = {
+            ...parsed.user_metadata,
+            ...updates
+          };
+          localStorage.setItem('mockUser', JSON.stringify(parsed));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      
+      return updated;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    },
   });
 }
 
@@ -141,6 +195,25 @@ export function useSelectCar() {
     mutationFn: async (carId: string) => {
       if (!user) throw new Error('Not authenticated');
       updateMockProfile(user.id, { selected_car_id: carId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    },
+  });
+}
+
+export function useSelectCarDetails() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ carId, condition, price }: { carId: string; condition: 'used' | 'new'; price: number }) => {
+      if (!user) throw new Error('Not authenticated');
+      updateMockProfile(user.id, { 
+        selected_car_id: carId,
+        selected_car_condition: condition,
+        selected_car_price: price
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
@@ -200,7 +273,7 @@ export function useGetProgress(profile: Profile | null | undefined) {
   if (!profile || !profile.selected_car_id) return null;
   const car = CARS.find(c => c.id === profile.selected_car_id);
   if (!car) return null;
-  const target = car.price * 0.3;
+  const target = (profile.selected_car_price || car.price) * 0.3;
   const percentage = Math.min(100, Math.round((profile.wallet_balance / target) * 100));
   return {
     target,
