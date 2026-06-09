@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronRight, Search, CheckCircle2, X, Heart, SlidersHorizontal } from 'lucide-react';
+import { ChevronRight, Search, CheckCircle2, X, Heart, SlidersHorizontal, AlertCircle } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -159,6 +159,25 @@ export default function VehiclesPage() {
 
   const selectedCar = carsData.find(c => c.id === selectedCarId);
 
+  const [isQualified, setIsQualified] = useState<boolean>(true);
+  const { session } = useAuth();
+
+  useEffect(() => {
+    if (session?.access_token) {
+      fetch(`http://${window.location.hostname}:3005/api/dashboard/summary`, {
+        headers: { 'Authorization': `Bearer ${session.access_token}` }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.health && data.savings) {
+          const qualified = data.health.creditScore >= 70 && data.savings.progressPercent >= 30;
+          setIsQualified(qualified);
+        }
+      })
+      .catch(console.error);
+    }
+  }, [session]);
+
   useEffect(() => {
     if (selectedCar) {
       setCarCondition('used');
@@ -254,6 +273,12 @@ export default function VehiclesPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-grow flex flex-col justify-start w-full">
 
+        {!isQualified && (
+          <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-4 mb-6 font-medium text-sm flex items-center gap-3">
+            <AlertCircle size={20} className="text-amber-500 shrink-0" />
+            Continue building your deposit to unlock financing opportunities. The marketplace remains viewable.
+          </div>
+        )}
 
         {/* Search & Filter bar (Foodgo style) */}
         <div className="flex items-center gap-3 w-full mb-6">
@@ -411,10 +436,15 @@ export default function VehiclesPage() {
                 </div>
               </div>
               <button 
-                onClick={() => setShowFinancing(true)}
-                className="w-full sm:w-auto bg-[#4e158e] hover:bg-[#3f2bc2] text-white px-8 py-4 rounded-xl font-bold text-[15px] shadow-lg shadow-[#4e158e]/30 transition-all"
+                onClick={() => isQualified && setShowFinancing(true)}
+                disabled={!isQualified}
+                className={`w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-[15px] transition-all ${
+                  isQualified 
+                    ? 'bg-[#4e158e] hover:bg-[#3f2bc2] text-white shadow-lg shadow-[#4e158e]/30' 
+                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                }`}
               >
-                View Payment Schedule
+                {isQualified ? 'View Payment Schedule' : 'Financing Locked'}
               </button>
             </div>
           </motion.div>
