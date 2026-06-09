@@ -25,12 +25,17 @@ const CustomerLayout = ({ children }: { children: React.ReactNode }) => {
 
   const SidebarContent = () => (
     <>
-      <div className="p-6">
-        <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-primary text-3xl">directions_car</span>
-          <span className="font-display-lg text-xl font-bold text-primary tracking-tight">Welile Car</span>
+      <div className="p-6 flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-primary text-3xl">directions_car</span>
+            <span className="font-display-lg text-xl font-bold text-primary tracking-tight">Welile Car</span>
+          </div>
+          <p className="text-slate-400 font-bold uppercase tracking-wider text-[10px] mt-2">Customer Portal</p>
         </div>
-        <p className="text-slate-400 font-bold uppercase tracking-wider text-[10px] mt-2">Customer Portal</p>
+        <button onClick={() => setMobileMenuOpen(false)} className="md:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-lg">
+          <X size={20} />
+        </button>
       </div>
       
       <nav className="flex-1 px-4 space-y-1 overflow-y-auto pb-4">
@@ -70,14 +75,14 @@ const CustomerLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex h-screen bg-slate-50 font-body-md overflow-hidden selection:bg-primary-fixed selection:text-on-primary-fixed">
       {/* Mobile Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 z-40">
+      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 flex items-center px-4 z-40 gap-3">
+        <button onClick={() => setMobileMenuOpen(true)} className="p-2 text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors rounded-lg">
+          <Menu size={20} />
+        </button>
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-primary text-2xl">directions_car</span>
           <span className="font-display-lg font-bold text-primary text-lg tracking-tight">Welile Car</span>
         </div>
-        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-slate-600 bg-slate-100 rounded-lg">
-          {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
       </div>
 
       {/* Mobile Sidebar Overlay */}

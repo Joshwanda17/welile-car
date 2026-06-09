@@ -10,6 +10,7 @@ import LandingPage from "./pages/LandingPage";
 import AboutPage from "./pages/AboutPage";
 import BenefitsPage from "./pages/BenefitsPage";
 import VehiclesPage from "./pages/VehiclesPage";
+import CarDetailsPage from "./pages/CarDetailsPage";
 import GetStartedPage from "./pages/GetStartedPage";
 import AuthPage from "./pages/AuthPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -68,6 +69,7 @@ const AppLayout = () => {
         {/* Customer Routes with Sidebar */}
         <Route path="/dashboard" element={<CustomerLayout><DashboardPage /></CustomerLayout>} />
         <Route path="/vehicles" element={<CustomerLayout><VehiclesPage /></CustomerLayout>} />
+        <Route path="/vehicles/:id" element={<CustomerLayout><CarDetailsPage /></CustomerLayout>} />
         <Route path="/cars" element={<CustomerLayout><CarsPage /></CustomerLayout>} />
         <Route path="/wallet" element={<CustomerLayout><WalletPage /></CustomerLayout>} />
         <Route path="/profile" element={<CustomerLayout><ProfilePage /></CustomerLayout>} />

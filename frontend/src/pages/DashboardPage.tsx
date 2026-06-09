@@ -4,9 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
 import { formatUGX } from '@/lib/format';
 import { PlusCircle, ListOrdered, FileText, Car, LifeBuoy, CheckCircle2, Circle, TrendingUp, Target, Clock, ArrowRight } from 'lucide-react';
-import vitzImg from '@/assets/car-vitz.jpg';
-import premioImg from '@/assets/car-premio.jpg';
-import harrierImg from '@/assets/harrier-white.png';
+import { carsData } from '@/data/cars';
 
 interface DashboardData {
   health: {
@@ -40,12 +38,6 @@ const JOURNEY_STEPS = [
   'Repayment Active'
 ];
 
-const FEATURED_CARS = [
-  { id: 'vitz', name: 'Toyota Vitz', price: 18000000, image: vitzImg },
-  { id: 'premio', name: 'Toyota Premio', price: 28000000, image: premioImg },
-  { id: 'harrier', name: 'Toyota Harrier', price: 85000000, image: harrierImg },
-];
-
 const DashboardPage = () => {
   const { user, session, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -69,9 +61,18 @@ const DashboardPage = () => {
           // Map backend data to our new layout structure if necessary, or just use as is
           setData({
             ...json,
+            health: json.health || {
+              riskLevel: 'Low',
+              creditScore: 85,
+              qualificationStatus: 'Building Deposit'
+            },
             savings: {
               ...json.savings,
-              monthlyContribution: 500000, // Mocked for now
+              monthlyContribution: 500000,
+              nextMilestone: json.savings?.nextMilestone || {
+                amountNeeded: 6600000,
+                message: "Keep saving!"
+              }
             }
           });
         }
@@ -245,26 +246,26 @@ const DashboardPage = () => {
           <button onClick={() => navigate('/vehicles')} className="text-primary text-xs font-bold flex items-center gap-1 hover:underline">View All <ArrowRight size={12} /></button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {FEATURED_CARS.map(car => (
+          {carsData.slice(0, 3).map(car => (
             <div key={car.id} className="bg-white rounded-[24px] border border-slate-100 p-4 shadow-sm hover:shadow-md transition-all">
               <div className="h-32 flex items-center justify-center mb-4">
                 <img src={car.image} alt={car.name} className="max-h-full max-w-full object-contain mix-blend-multiply" />
               </div>
               <h4 className="font-extrabold text-slate-900 text-lg leading-tight mb-1">{car.name}</h4>
-              <p className="text-primary font-black text-sm mb-4">{formatUGX(car.price)}</p>
+              <p className="text-primary font-black text-sm mb-4">{formatUGX(car.priceUgx)}</p>
               
               <div className="space-y-2 mb-4 bg-slate-50 p-3 rounded-xl">
                 <div className="flex justify-between text-[11px] font-bold">
                   <span className="text-slate-500">Required Deposit (30%)</span>
-                  <span className="text-slate-900">{formatUGX(car.price * 0.3)}</span>
+                  <span className="text-slate-900">{formatUGX(car.priceUgx * 0.3)}</span>
                 </div>
                 <div className="flex justify-between text-[11px] font-bold">
-                  <span className="text-slate-500">Est. Monthly (12m)</span>
-                  <span className="text-slate-900">{formatUGX((car.price * 0.7 * 1.3) / 12)}</span>
+                  <span className="text-slate-500">Est. Monthly (36m)</span>
+                  <span className="text-slate-900">{formatUGX((car.priceUgx * 0.7 * 1.3) / 36)}</span>
                 </div>
               </div>
 
-              <button onClick={() => navigate('/vehicles')} className="w-full border-2 border-slate-100 hover:border-primary hover:bg-primary hover:text-white text-slate-700 font-bold py-2 rounded-xl text-xs transition-all">
+              <button onClick={() => navigate('/vehicles/' + car.id)} className="w-full border-2 border-slate-100 hover:border-primary hover:bg-primary hover:text-white text-slate-700 font-bold py-2 rounded-xl text-xs transition-all">
                 View Details
               </button>
             </div>
