@@ -61,9 +61,9 @@ const LandingPage = () => {
   }, []);
 
   // Calculator Logic
-  const [price, setPrice] = useState(450000);
+  const [price, setPrice] = useState(90000000);
   const [depositPercent, setDepositPercent] = useState(30);
-  const [monthlySavings, setMonthlySavings] = useState(5000);
+  const [monthlySavings, setMonthlySavings] = useState(1000000);
 
   const depositNeeded = price * (depositPercent / 100);
   const financeAmount = price - depositNeeded;
@@ -208,23 +208,23 @@ const LandingPage = () => {
                 <div>
                   <div className="flex justify-between mb-3">
                     <span className="font-label-md text-on-surface-variant">Vehicle Price</span>
-                    <span className="font-bold text-primary">R {price.toLocaleString()}</span>
+                    <span className="font-bold text-primary">UGX {price.toLocaleString()}</span>
                   </div>
                   <input 
-                    type="range" min="100000" max="2000000" step="10000" value={price} 
+                    type="range" min="20000000" max="400000000" step="1000000" value={price} 
                     onChange={e => setPrice(Number(e.target.value))}
                     className="w-full h-2 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary premium-transition" 
                   />
                   <div className="flex justify-between mt-2 text-[10px] text-on-surface-variant/40 uppercase font-bold tracking-widest">
-                    <span>R100k</span>
-                    <span>R2m</span>
+                    <span>20M UGX</span>
+                    <span>400M UGX</span>
                   </div>
                 </div>
 
                 <div>
                   <div className="flex justify-between mb-3">
                     <span className="font-label-md text-on-surface-variant">Deposit Goal</span>
-                    <span className="font-bold text-primary">R {Math.round(depositNeeded).toLocaleString()} ({depositPercent}%)</span>
+                    <span className="font-bold text-primary">UGX {Math.round(depositNeeded).toLocaleString()} ({depositPercent}%)</span>
                   </div>
                   <input 
                     type="range" min="30" max="100" step="1" value={depositPercent} 
@@ -236,10 +236,10 @@ const LandingPage = () => {
                 <div>
                   <div className="flex justify-between mb-3">
                     <span className="font-label-md text-on-surface-variant">Monthly Savings</span>
-                    <span className="font-bold text-primary">R {monthlySavings.toLocaleString()}</span>
+                    <span className="font-bold text-primary">UGX {monthlySavings.toLocaleString()}</span>
                   </div>
                   <input 
-                    type="range" min="1000" max="50000" step="500" value={monthlySavings} 
+                    type="range" min="200000" max="10000000" step="100000" value={monthlySavings} 
                     onChange={e => setMonthlySavings(Number(e.target.value))}
                     className="w-full h-2 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary premium-transition" 
                   />
@@ -262,14 +262,14 @@ const LandingPage = () => {
                 <div className="pb-6 border-b border-white/10 premium-transition hover:translate-x-2">
                   <div className="text-white/60 text-sm mb-1">Estimated Finance Amount</div>
                   <div className="text-4xl font-bold">
-                    <span className="text-xl opacity-60">R</span> <span className="tabular-nums">{Math.round(financeAmount).toLocaleString()}</span>
+                    <span className="text-xl opacity-60">UGX</span> <span className="tabular-nums">{Math.round(financeAmount).toLocaleString()}</span>
                   </div>
                 </div>
                 
                 <div className="premium-transition hover:translate-x-2">
                   <div className="text-white/60 text-sm mb-1">Monthly Repayment</div>
                   <div className="text-4xl font-bold">
-                    <span className="text-xl opacity-60">R</span> <span className="tabular-nums">{targetRepay.toLocaleString()}</span>
+                    <span className="text-xl opacity-60">UGX</span> <span className="tabular-nums">{targetRepay.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
