@@ -9,11 +9,20 @@ import { formatUGX } from '@/lib/format';
 import { TrendingUp, Target, Sparkles, CheckCircle2, Circle, Car, CreditCard, ChevronRight } from 'lucide-react';
 
 interface DashboardData {
+  health: {
+    riskLevel: string;
+    creditScore: number;
+    qualificationStatus: string;
+  };
   savings: {
     totalSaved: number;
     targetAmount: number;
     interestEarned: number;
     progressPercent: number;
+    nextMilestone: {
+      amountNeeded: number;
+      message: string;
+    };
   };
   journey: {
     currentStep: string;
@@ -72,14 +81,40 @@ const DashboardPage = () => {
 
       <div className="px-6 -mt-16 space-y-6">
         
-        {/* Savings Wallet Widget */}
+        {/* Financial Health Card */}
         <motion.div 
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} 
-          className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100"
+          className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 flex items-center justify-between"
+        >
+          <div>
+            <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Financial Health</p>
+            <h2 className="text-xl font-extrabold text-slate-900">{data.health.qualificationStatus}</h2>
+            <div className="flex gap-3 mt-2">
+              <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${data.health.riskLevel === 'Low' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                Risk: {data.health.riskLevel}
+              </span>
+            </div>
+          </div>
+          <div className="relative w-16 h-16 flex items-center justify-center shrink-0">
+            <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+              <path className="text-slate-100" strokeWidth="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path className={`${data.health.creditScore >= 70 ? 'text-emerald-500' : 'text-amber-500'}`} strokeWidth="3" strokeDasharray={`${data.health.creditScore}, 100`} stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-[10px] font-bold text-slate-500 leading-none">Score</span>
+              <span className="text-sm font-black text-slate-900 leading-none">{data.health.creditScore}</span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Savings Wallet Widget - Deposit Progress */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
+          className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100"
         >
           <div className="flex justify-between items-start mb-6">
             <div>
-              <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Total Saved</p>
+              <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Deposit Progress</p>
               <div className="text-3xl font-black text-slate-900 flex items-baseline gap-1">
                 <AnimatedNumber value={data.savings.totalSaved} />
                 <span className="text-lg text-slate-400 font-medium">UGX</span>
@@ -87,23 +122,36 @@ const DashboardPage = () => {
             </div>
             <div className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-emerald-100">
               <TrendingUp size={12} />
-              +5% Interest
+              +5% Growth
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-5">
             <div>
-              <div className="flex justify-between text-sm font-bold mb-2">
-                <span className="text-slate-700">Target Deposit</span>
-                <span className="text-slate-900">{formatUGX(data.savings.targetAmount)}</span>
+              <div className="flex justify-between text-xs font-bold mb-2">
+                <span className="text-slate-500">Current Savings</span>
+                <span className="text-slate-900">Required Deposit: {formatUGX(data.savings.targetAmount)}</span>
               </div>
               <ProgressBar percentage={data.savings.progressPercent} className="h-3" />
             </div>
+
+            {/* Next Milestone */}
+            <div className="bg-purple-50 border border-purple-100 rounded-2xl p-4 flex items-start gap-3">
+              <div className="bg-purple-200 p-1.5 rounded-full text-purple-700 shrink-0 mt-0.5">
+                <Target size={14} />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-900">Next Milestone</p>
+                <p className="text-xs font-medium text-slate-600 mt-0.5">
+                  Save <span className="font-bold text-purple-700">{formatUGX(data.savings.nextMilestone.amountNeeded)}</span> more {data.savings.nextMilestone.message}
+                </p>
+              </div>
+            </div>
             
             <div className="flex justify-between items-center pt-4 border-t border-slate-100">
-              <div>
-                <p className="text-slate-500 text-xs font-semibold">Interest Earned</p>
-                <p className="text-emerald-600 font-bold text-sm">+{formatUGX(data.savings.interestEarned)}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-slate-500 text-xs font-semibold">Remaining:</p>
+                <p className="text-slate-900 font-bold text-sm">{formatUGX(data.savings.targetAmount - data.savings.totalSaved)}</p>
               </div>
               <button onClick={() => navigate('/savings')} className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-xl text-sm font-bold transition-colors">
                 Deposit Now

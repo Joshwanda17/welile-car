@@ -22,6 +22,11 @@ import CfoPage from "./pages/CfoPage";
 import LogbookPage from "./pages/LogbookPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
+import ExecutiveDashboard from "./pages/admin/ExecutiveDashboard";
+import LoanDashboard from "./pages/admin/LoanDashboard";
+import RecoveryDashboard from "./pages/admin/RecoveryDashboard";
+import SavingsDashboard from "./pages/admin/SavingsDashboard";
+import DealerDashboard from "./pages/admin/DealerDashboard";
 
 const queryClient = new QueryClient();
 
@@ -49,12 +54,12 @@ const App = () => (
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/financing" element={<FinancingPage />} />
               <Route path="/admin" element={<AdminPage />} />
-              <Route path="/admin-dashboard" element={<AdminPage />} />
-              <Route path="/admin-portal" element={<AdminPage />} />
-              <Route path="/dashboard/admin" element={<AdminPage />} />
-              <Route path="/admin-dashdoard" element={<AdminPage />} />
+              <Route path="/admin/executive" element={<ExecutiveDashboard />} />
+              <Route path="/admin/loans" element={<LoanDashboard />} />
+              <Route path="/admin/recovery" element={<RecoveryDashboard />} />
+              <Route path="/admin/savings" element={<SavingsDashboard />} />
+              <Route path="/admin/dealers" element={<DealerDashboard />} />
               <Route path="/cfo" element={<CfoPage />} />
-              <Route path="/cfo-dashboard" element={<CfoPage />} />
               <Route path="/logbook" element={<LogbookPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="*" element={<NotFound />} />
