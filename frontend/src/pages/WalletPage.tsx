@@ -25,6 +25,31 @@ const WalletPage = () => {
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('mtn');
 
+  // Live Data State
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [loadingDashboard, setLoadingDashboard] = useState(true);
+  const { session } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`http://${window.location.hostname}:3005/api/dashboard/summary`, {
+          headers: { 'Authorization': `Bearer ${session?.access_token}` }
+        });
+        if (res.ok) {
+          const json = await res.json();
+          setDashboardData(json);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoadingDashboard(false);
+      }
+    };
+    fetchData();
+  }, [user, session]);
+
   // Calculator State
   const [calcTarget, setCalcTarget] = useState('');
   const [calcMonthly, setCalcMonthly] = useState('');
@@ -32,16 +57,25 @@ const WalletPage = () => {
   const [isCalculating, setIsCalculating] = useState(false);
 
   if (!authLoading && !user) { navigate('/'); return null; }
-  if (isLoading || !profile) {
+  if (isLoading || loadingDashboard || !profile || !dashboardData) {
     return <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="animate-pulse text-muted-foreground">Loading...</div>
     </div>;
   }
 
-  const handleDeposit = () => {
+  const handleDeposit = async () => {
     const val = parseInt(amount);
     if (!val || val < 1000) return;
-    deposit.mutate({ amount: val, method });
+    await deposit.mutateAsync({ amount: val, method });
+    
+    // Refresh dashboard data
+    const res = await fetch(`http://${window.location.hostname}:3005/api/dashboard/summary`, {
+      headers: { 'Authorization': `Bearer ${session?.access_token}` }
+    });
+    if (res.ok) {
+      setDashboardData(await res.json());
+    }
+
     setAmount('');
     setShowDeposit(false);
   };
@@ -84,7 +118,7 @@ const WalletPage = () => {
       <div className="px-6 mt-4">
         <div className="bg-card rounded-2xl p-5 card-shadow">
           <p className="text-xs text-muted-foreground uppercase tracking-wider">Available Balance</p>
-          <AnimatedNumber value={profile.wallet_balance} className="text-3xl font-bold font-heading block mt-1" />
+          <AnimatedNumber value={dashboardData.savings.totalSaved} className="text-3xl font-bold font-heading block mt-1" />
           {profile.savings_locked && (
             <p className="text-xs text-warning font-medium mt-2">🔒 Savings locked for car ownership</p>
           )}
@@ -98,11 +132,11 @@ const WalletPage = () => {
       <div className="px-6 mt-4 grid grid-cols-2 gap-3">
         <div className="bg-card rounded-2xl p-4 card-shadow">
           <p className="text-[10px] text-muted-foreground uppercase">Total Deposits</p>
-          <p className="text-lg font-bold font-heading mt-1">{formatUGX(profile.total_deposits)}</p>
+          <p className="text-lg font-bold font-heading mt-1">{formatUGX(dashboardData.savings.totalSaved)}</p>
         </div>
         <div className="bg-card rounded-2xl p-4 card-shadow">
           <p className="text-[10px] text-muted-foreground uppercase">Growth Earned</p>
-          <p className="text-lg font-bold font-heading mt-1 text-gradient">{formatUGX(profile.growth_earned)}</p>
+          <p className="text-lg font-bold font-heading mt-1 text-gradient">{formatUGX(dashboardData.savings.interestEarned)}</p>
         </div>
       </div>
 

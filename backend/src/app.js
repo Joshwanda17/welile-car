@@ -7,6 +7,7 @@ const { authenticateToken } = require('./shared/middleware/auth.middleware');
 const authRoutes = require('./modules/auth/auth.routes');
 const usersRoutes = require('./modules/users/users.routes');
 const dashboardRoutes = require('./modules/dashboard/dashboard.routes');
+const transactionsRoutes = require('./modules/transactions/transactions.routes');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -30,6 +31,7 @@ app.get('/api/health', async (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/transactions', transactionsRoutes);
 
 app.post('/api/savings/calculate', (req, res) => {
   const { targetAmount, monthlyContribution } = req.body;
