@@ -6,6 +6,7 @@ const { authenticateToken } = require('./shared/middleware/auth.middleware');
 // Routes
 const authRoutes = require('./modules/auth/auth.routes');
 const usersRoutes = require('./modules/users/users.routes');
+const dashboardRoutes = require('./modules/dashboard/dashboard.routes');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -28,33 +29,7 @@ app.get('/api/health', async (req, res) => {
 // App routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
-
-// Mock Dashboard Endpoints (To be moved to savings/dashboard modules)
-app.get('/api/dashboard/summary', authenticateToken, async (req, res) => {
-  res.json({
-    health: {
-      riskLevel: 'Low',
-      creditScore: 84, // 0-100
-      qualificationStatus: 'Eligible for Financing'
-    },
-    savings: {
-      totalSaved: 8400000,
-      targetAmount: 15000000,
-      interestEarned: 420000, // 5% of 8.4M
-      progressPercent: 56,
-      nextMilestone: {
-        amountNeeded: 500000,
-        message: 'to unlock financing eligibility.'
-      }
-    },
-    journey: {
-      currentStep: 'Saving', // Registered, Saving, Qualified, Financing, Released, Repayment
-      completedSteps: ['Registered', 'Saving']
-    },
-    vehicle: null, // User is still saving
-    repayment: null
-  });
-});
+app.use('/api/dashboard', dashboardRoutes);
 
 app.post('/api/savings/calculate', (req, res) => {
   const { targetAmount, monthlyContribution } = req.body;
