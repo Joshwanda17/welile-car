@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { API_URL } from '@/config';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
 import { carsData, Car } from '@/data/cars';
@@ -31,7 +32,7 @@ const CarDetailsPage = () => {
 
   useEffect(() => {
     if (session?.access_token) {
-      fetch(`http://${window.location.hostname}:3005/api/dashboard/summary`, {
+      fetch(`${API_URL}/dashboard/summary`, {
         headers: { 'Authorization': `Bearer ${session.access_token}` }
       })
       .then(res => res.json())

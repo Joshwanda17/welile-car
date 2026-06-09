@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from './useAuth';
+import { API_URL } from '@/config';
 
 // Mock Profile type
 export interface Profile {
@@ -156,7 +157,7 @@ export function useTransactions() {
     queryKey: ['transactions', user?.id],
     queryFn: async () => {
       if (!user || !token) return [];
-      const res = await fetch(`http://${window.location.hostname}:3005/api/transactions/history`, {
+      const res = await fetch(`${API_URL}/transactions/history`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -177,7 +178,7 @@ export function useDeposit() {
     mutationFn: async ({ amount, method }: { amount: number; method: string }) => {
       if (!user || !token) throw new Error('Not authenticated');
 
-      const res = await fetch(`http://${window.location.hostname}:3005/api/transactions/deposit`, {
+      const res = await fetch(`${API_URL}/transactions/deposit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -273,7 +274,7 @@ export function useRequestFinancing() {
     mutationFn: async ({ carId, carName, carPrice, requestedAmount }: { carId: string, carName: string, carPrice: number, requestedAmount: number }) => {
       if (!user || !token) throw new Error('Not authenticated');
       
-      const res = await fetch(`http://${window.location.hostname}:3005/api/loans/apply`, {
+      const res = await fetch(`${API_URL}/loans/apply`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

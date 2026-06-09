@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '@/config';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
 import { formatUGX } from '@/lib/format';
@@ -53,7 +54,7 @@ const DashboardPage = () => {
 
     const fetchData = async () => {
       try {
-        const res = await fetch(`http://${window.location.hostname}:3005/api/dashboard/summary`, {
+        const res = await fetch(`${API_URL}/dashboard/summary`, {
           headers: { 'Authorization': `Bearer ${session?.access_token}` }
         });
         if (res.ok) {
