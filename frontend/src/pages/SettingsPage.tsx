@@ -42,13 +42,13 @@ export default function SettingsPage() {
   const renderAccount = () => (
     <div className="space-y-6">
       <div className="flex flex-col items-center justify-center py-6">
-        <div className="relative w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center text-[#4c35e6] shadow-sm mb-4">
+        <div className="relative w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center text-[#4e158e] shadow-sm mb-4">
           {profile?.avatar_url ? (
             <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover rounded-full" />
           ) : (
             <User size={40} />
           )}
-          <button className="absolute bottom-0 right-0 w-8 h-8 bg-[#4c35e6] text-white rounded-full flex items-center justify-center border-2 border-white">
+          <button className="absolute bottom-0 right-0 w-8 h-8 bg-[#4e158e] text-white rounded-full flex items-center justify-center border-2 border-white">
             <Camera size={14} />
           </button>
         </div>
@@ -58,21 +58,21 @@ export default function SettingsPage() {
 
       <div className="space-y-3">
         <div className="bg-slate-50 p-4 rounded-xl flex items-center gap-4 border border-slate-100">
-          <Mail size={20} className="text-[#4c35e6]" />
+          <Mail size={20} className="text-[#4e158e]" />
           <div>
             <p className="text-[11px] font-bold text-slate-400 uppercase">Email</p>
             <p className="font-medium text-slate-800">{profile?.email || 'john.doe@example.com'}</p>
           </div>
         </div>
         <div className="bg-slate-50 p-4 rounded-xl flex items-center gap-4 border border-slate-100">
-          <Phone size={20} className="text-[#4c35e6]" />
+          <Phone size={20} className="text-[#4e158e]" />
           <div>
             <p className="text-[11px] font-bold text-slate-400 uppercase">Phone</p>
             <p className="font-medium text-slate-800">{profile?.phone || '+256 700 123 456'}</p>
           </div>
         </div>
         <div className="bg-slate-50 p-4 rounded-xl flex items-center gap-4 border border-slate-100">
-          <MapPin size={20} className="text-[#4c35e6]" />
+          <MapPin size={20} className="text-[#4e158e]" />
           <div>
             <p className="text-[11px] font-bold text-slate-400 uppercase">Residence</p>
             <p className="font-medium text-slate-800">{profile?.residence || 'Ntinda, Kampala'}</p>
@@ -80,7 +80,7 @@ export default function SettingsPage() {
         </div>
       </div>
       
-      <button className="w-full py-4 bg-[#4c35e6] hover:bg-[#3f2bc2] transition-colors text-white font-bold rounded-xl mt-4">
+      <button className="w-full py-4 bg-[#4e158e] hover:bg-[#3f2bc2] transition-colors text-white font-bold rounded-xl mt-4">
         Save Changes
       </button>
     </div>
@@ -96,7 +96,7 @@ export default function SettingsPage() {
           </div>
           <button 
             onClick={() => setPushEnabled(!pushEnabled)}
-            className={`w-12 h-6 rounded-full p-1 transition-colors ${pushEnabled ? 'bg-[#4c35e6]' : 'bg-slate-300'}`}
+            className={`w-12 h-6 rounded-full p-1 transition-colors ${pushEnabled ? 'bg-[#4e158e]' : 'bg-slate-300'}`}
           >
             <div className={`w-4 h-4 bg-white rounded-full transition-transform ${pushEnabled ? 'translate-x-6' : ''}`} />
           </button>
@@ -109,7 +109,7 @@ export default function SettingsPage() {
           </div>
           <button 
             onClick={() => setEmailEnabled(!emailEnabled)}
-            className={`w-12 h-6 rounded-full p-1 transition-colors ${emailEnabled ? 'bg-[#4c35e6]' : 'bg-slate-300'}`}
+            className={`w-12 h-6 rounded-full p-1 transition-colors ${emailEnabled ? 'bg-[#4e158e]' : 'bg-slate-300'}`}
           >
             <div className={`w-4 h-4 bg-white rounded-full transition-transform ${emailEnabled ? 'translate-x-6' : ''}`} />
           </button>
@@ -123,7 +123,7 @@ export default function SettingsPage() {
       <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Monitor size={20} className="text-[#4c35e6]" />
+            <Monitor size={20} className="text-[#4e158e]" />
             <span className="font-bold text-slate-800">Dark Mode</span>
           </div>
           <button 
@@ -141,7 +141,7 @@ export default function SettingsPage() {
     <div className="space-y-4">
       <button className="w-full bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-100 p-4 rounded-xl flex items-center justify-between text-left group">
         <div className="flex items-center gap-3">
-          <Lock size={20} className="text-[#4c35e6]" />
+          <Lock size={20} className="text-[#4e158e]" />
           <div>
             <p className="font-bold text-slate-800">Change Password</p>
             <p className="text-xs text-slate-500">Update your security key</p>
@@ -151,7 +151,7 @@ export default function SettingsPage() {
       </button>
       <button className="w-full bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-100 p-4 rounded-xl flex items-center justify-between text-left group">
         <div className="flex items-center gap-3">
-          <ShieldCheck size={20} className="text-[#4c35e6]" />
+          <ShieldCheck size={20} className="text-[#4e158e]" />
           <div>
             <p className="font-bold text-slate-800">Two-Factor Auth</p>
             <p className="text-xs text-slate-500">Extra layer of security</p>
@@ -164,18 +164,18 @@ export default function SettingsPage() {
 
   const renderPayment = () => (
     <div className="space-y-4">
-      <div className="bg-[#4c35e6]/5 border border-[#4c35e6]/20 p-4 rounded-xl flex items-center justify-between">
+      <div className="bg-[#4e158e]/5 border border-[#4e158e]/20 p-4 rounded-xl flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Smartphone size={20} className="text-[#4c35e6]" />
+          <Smartphone size={20} className="text-[#4e158e]" />
           <div>
             <p className="font-bold text-slate-800">MTN Mobile Money</p>
             <p className="text-xs text-slate-500">077* *** *12</p>
           </div>
         </div>
-        <CheckCircle2 size={18} className="text-[#4c35e6]" />
+        <CheckCircle2 size={18} className="text-[#4e158e]" />
       </div>
       
-      <button className="w-full py-4 bg-white border-2 border-dashed border-slate-200 text-slate-500 hover:text-[#4c35e6] hover:border-[#4c35e6] font-bold rounded-xl transition-colors">
+      <button className="w-full py-4 bg-white border-2 border-dashed border-slate-200 text-slate-500 hover:text-[#4e158e] hover:border-[#4e158e] font-bold rounded-xl transition-colors">
         + Add Payment Method
       </button>
     </div>
@@ -205,14 +205,14 @@ export default function SettingsPage() {
               }}
               className={`w-full p-4 rounded-xl flex items-center justify-between transition-all border ${
                 isSelected 
-                  ? 'bg-[#4c35e6]/5 border-[#4c35e6]/20' 
+                  ? 'bg-[#4e158e]/5 border-[#4e158e]/20' 
                   : 'bg-slate-50 hover:bg-slate-100 border-slate-100'
               }`}
             >
-              <span className={isSelected ? 'font-bold text-[#4c35e6]' : 'font-medium text-slate-700'}>
+              <span className={isSelected ? 'font-bold text-[#4e158e]' : 'font-medium text-slate-700'}>
                 {lang}
               </span>
-              {isSelected && <CheckCircle2 size={18} className="text-[#4c35e6]" />}
+              {isSelected && <CheckCircle2 size={18} className="text-[#4e158e]" />}
             </button>
           );
         })}
@@ -229,7 +229,7 @@ export default function SettingsPage() {
   const renderHelp = () => {
     const articles = [
       { title: "What vehicles are available for financing?", body: "We offer motorcycles (Bajaj, TVS), sedans, and commercial trucks. Visit the Vehicles tab to browse the full catalog.", color: "bg-emerald-500" },
-      { title: "How do I track my vehicle logbook process?", body: "You can track your logbook processing status directly from your dashboard at any time.", color: "bg-[#4c35e6]" },
+      { title: "How do I track my vehicle logbook process?", body: "You can track your logbook processing status directly from your dashboard at any time.", color: "bg-[#4e158e]" },
       { title: "What are the requirements for a vehicle loan?", body: "You will need a valid National ID, a registered guarantor, and a minimum initial deposit (usually 15%).", color: "bg-rose-400" },
       { title: "What happens if I miss an installment?", body: "A grace period is provided. Contact us immediately to arrange an alternative payment schedule.", color: "bg-blue-400" },
       { title: "Can I upgrade my vehicle?", body: "Yes, we offer flexible upgrade plans once you hit 50% repayment. Contact support for details.", color: "bg-amber-400" },
@@ -238,7 +238,7 @@ export default function SettingsPage() {
 
     const discussions = [
       { title: "Which motorcycle is best for Boda Boda?", date: "15 Oct 2026 • Vehicles", icon: Smartphone, color: "bg-emerald-500", shadow: "shadow-emerald-500/30" },
-      { title: "How do I change my vehicle model?", date: "12 Oct 2026 • Financing", icon: FileText, color: "bg-[#4c35e6]", shadow: "shadow-[#4c35e6]/30" },
+      { title: "How do I change my vehicle model?", date: "12 Oct 2026 • Financing", icon: FileText, color: "bg-[#4e158e]", shadow: "shadow-[#4e158e]/30" },
       { title: "Can I transfer ownership easily?", date: "08 Oct 2026 • Account", icon: User, color: "bg-rose-500", shadow: "shadow-rose-500/30" },
       { title: "What is the typical delivery time for a new car?", date: "02 Oct 2026 • Vehicles", icon: FileText, color: "bg-blue-400", shadow: "shadow-blue-400/30" }
     ];
@@ -249,7 +249,7 @@ export default function SettingsPage() {
     return (
     <div className="space-y-6 pb-6 text-left h-[75vh] overflow-y-auto pr-2">
       <div className="text-center mb-6">
-        <div className="w-20 h-20 bg-[#4c35e6]/10 text-[#4c35e6] rounded-full flex items-center justify-center mx-auto mb-4 relative">
+        <div className="w-20 h-20 bg-[#4e158e]/10 text-[#4e158e] rounded-full flex items-center justify-center mx-auto mb-4 relative">
           <MessageSquare size={36} fill="currentColor" />
           <div className="absolute top-0 right-0 w-8 h-8 bg-[#310c87] text-white rounded-full flex items-center justify-center translate-x-1 -translate-y-1 border-2 border-white shadow-sm">
             <span className="font-black text-lg">?</span>
@@ -265,7 +265,7 @@ export default function SettingsPage() {
           value={helpSearchQuery}
           onChange={(e) => setHelpSearchQuery(e.target.value)}
           placeholder="How Can we Help..." 
-          className="w-full bg-slate-50 border border-slate-100 rounded-full py-3.5 pl-12 pr-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#4c35e6]/20"
+          className="w-full bg-slate-50 border border-slate-100 rounded-full py-3.5 pl-12 pr-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#4e158e]/20"
         />
       </div>
 
@@ -322,11 +322,11 @@ export default function SettingsPage() {
             onChange={(e) => setHelpMessage(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
             placeholder="Type your message..." 
-            className="flex-1 bg-slate-50 border border-slate-100 rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#4c35e6]/20"
+            className="flex-1 bg-slate-50 border border-slate-100 rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#4e158e]/20"
           />
           <button 
             onClick={handleSendMessage}
-            className="w-12 h-12 bg-[#4c35e6] hover:bg-[#3f2bc2] text-white rounded-xl flex items-center justify-center transition-colors shrink-0 shadow-md shadow-[#4c35e6]/25"
+            className="w-12 h-12 bg-[#4e158e] hover:bg-[#3f2bc2] text-white rounded-xl flex items-center justify-center transition-colors shrink-0 shadow-md shadow-[#4e158e]/25"
           >
             <Send size={18} className="-ml-0.5" />
           </button>
@@ -350,7 +350,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex justify-center selection:bg-[#4c35e6]/20">
+    <div className="min-h-screen bg-slate-50 flex justify-center selection:bg-[#4e158e]/20">
       <main className="w-full max-w-md bg-white min-h-screen shadow-2xl overflow-hidden relative">
         <div className="p-4 pt-10">
           <div className="flex items-center justify-center relative mb-8">

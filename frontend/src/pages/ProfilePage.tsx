@@ -251,7 +251,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-[#4c35e6]/20 flex flex-col pb-24">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-[#4e158e]/20 flex flex-col pb-24">
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12 w-full flex-grow">
         
@@ -263,7 +263,7 @@ export default function ProfilePage() {
         <div className="bg-white rounded-[32px] shadow-xl shadow-slate-200/50 overflow-hidden border border-slate-100">
           
           {/* Header section with Avatar */}
-          <div className="bg-[#4c35e6] p-8 sm:p-12 relative overflow-hidden flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
+          <div className="bg-[#4e158e] p-8 sm:p-12 relative overflow-hidden flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -mr-20 -mt-20"></div>
             
             <div 
@@ -278,7 +278,7 @@ export default function ProfilePage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-4xl sm:text-5xl font-black text-[#4c35e6]">
+                  <span className="text-4xl sm:text-5xl font-black text-[#4e158e]">
                     {customer.name.charAt(0)}
                   </span>
                 )}
@@ -290,7 +290,7 @@ export default function ProfilePage() {
                 </div>
               </div>
               
-              <div className="absolute bottom-0 right-0 bg-emerald-500 text-white p-1.5 sm:p-2 rounded-full shadow-md border-4 border-[#4c35e6] group-hover:scale-105 transition-transform">
+              <div className="absolute bottom-0 right-0 bg-emerald-500 text-white p-1.5 sm:p-2 rounded-full shadow-md border-4 border-[#4e158e] group-hover:scale-105 transition-transform">
                 <ShieldCheck size={20} />
               </div>
             </div>
@@ -308,14 +308,14 @@ export default function ProfilePage() {
             
             {/* Details Grid */}
             <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <FileText size={20} className="text-[#4c35e6]" />
+              <FileText size={20} className="text-[#4e158e]" />
               Personal Details
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
               
               <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-[#4c35e6] shadow-sm">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-[#4e158e] shadow-sm">
                   <Mail size={20} />
                 </div>
                 <div>
@@ -325,7 +325,7 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-[#4c35e6] shadow-sm">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-[#4e158e] shadow-sm">
                   <Phone size={20} />
                 </div>
                 <div>
@@ -335,7 +335,7 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-[#4c35e6] shadow-sm">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-[#4e158e] shadow-sm">
                   <MapPin size={20} />
                 </div>
                 <div>
@@ -345,7 +345,7 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-[#4c35e6] shadow-sm">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-[#4e158e] shadow-sm">
                   <User size={20} />
                 </div>
                 <div>
@@ -383,7 +383,7 @@ export default function ProfilePage() {
               <div className="w-full space-y-6">
                 {/* Current Photo Preview inside Modal */}
                 <div className="flex justify-center">
-                  <div className="w-32 h-32 rounded-full border-4 border-[#4c35e6]/10 p-1 bg-white shadow-lg shadow-slate-100">
+                  <div className="w-32 h-32 rounded-full border-4 border-[#4e158e]/10 p-1 bg-white shadow-lg shadow-slate-100">
                     <div className="w-full h-full rounded-full bg-slate-50 flex items-center justify-center overflow-hidden">
                       {currentAvatarUrl ? (
                         <img src={currentAvatarUrl} alt="Preview" className="w-full h-full object-cover" />
@@ -398,7 +398,7 @@ export default function ProfilePage() {
                   <button 
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isLoading}
-                    className="w-full h-13 bg-[#4c35e6] hover:bg-[#3f2bc2] text-white font-bold rounded-xl transition-all shadow-md shadow-[#4c35e6]/25 flex items-center justify-center gap-2.5 text-sm disabled:opacity-50"
+                    className="w-full h-13 bg-[#4e158e] hover:bg-[#3f2bc2] text-white font-bold rounded-xl transition-all shadow-md shadow-[#4e158e]/25 flex items-center justify-center gap-2.5 text-sm disabled:opacity-50"
                   >
                     <Upload size={18} />
                     Upload Photo from Device
@@ -416,7 +416,7 @@ export default function ProfilePage() {
                     disabled={isLoading}
                     className="w-full h-13 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold rounded-xl transition-all flex items-center justify-center gap-2.5 text-sm disabled:opacity-50"
                   >
-                    <Camera size={18} className="text-[#4c35e6]" />
+                    <Camera size={18} className="text-[#4e158e]" />
                     Take Photo with Camera
                   </button>
 
@@ -500,7 +500,7 @@ export default function ProfilePage() {
                   <button 
                     onClick={saveSnapshot}
                     disabled={isLoading}
-                    className="flex-1 h-13 bg-[#4c35e6] hover:bg-[#3f2bc2] text-white font-bold rounded-xl transition-all shadow-lg shadow-[#4c35e6]/20 flex items-center justify-center gap-2 text-sm disabled:opacity-50"
+                    className="flex-1 h-13 bg-[#4e158e] hover:bg-[#3f2bc2] text-white font-bold rounded-xl transition-all shadow-lg shadow-[#4e158e]/20 flex items-center justify-center gap-2 text-sm disabled:opacity-50"
                   >
                     {isLoading ? (
                       <Loader2 size={18} className="animate-spin" />

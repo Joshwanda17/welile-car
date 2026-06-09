@@ -7,10 +7,10 @@ export default function AboutPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-[#4c35e6]/20">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-[#4e158e]/20">
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-48 bg-[#4c35e6] overflow-hidden">
+      <section className="relative pt-32 pb-48 bg-[#4e158e] overflow-hidden">
         {/* Background Decorative Circles */}
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-white/5 rounded-full translate-x-1/3 -translate-y-1/2 blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#310c87]/20 rounded-full -translate-x-1/3 translate-y-1/3 blur-3xl"></div>
@@ -45,7 +45,7 @@ export default function AboutPage() {
                   placeholder="info@yourdomain.com"
                   className="w-full bg-white/10 border border-white/20 text-white placeholder:text-white/50 rounded-full py-4 pl-6 pr-32 focus:outline-none focus:ring-2 focus:ring-white/50 backdrop-blur-sm"
                 />
-                <button className="absolute right-2 top-2 bottom-2 px-6 bg-white text-[#4c35e6] font-bold rounded-full hover:bg-slate-50 transition-colors shadow-lg shadow-white/10">
+                <button className="absolute right-2 top-2 bottom-2 px-6 bg-white text-[#4e158e] font-bold rounded-full hover:bg-slate-50 transition-colors shadow-lg shadow-white/10">
                   Subscribe
                 </button>
               </div>
@@ -75,8 +75,8 @@ export default function AboutPage() {
                   <div className="w-16 h-16 bg-slate-200 rounded-full mx-auto -mt-12 border-4 border-white mb-2 shadow-sm"></div>
                   <h4 className="font-bold text-slate-800">John Doe</h4>
                   <p className="text-xs text-slate-400 mb-4">Harrier Owner</p>
-                  <div className="h-2 w-full bg-[#4c35e6] rounded-full mb-2"></div>
-                  <p className="text-[10px] font-bold text-[#4c35e6]">70% Completed</p>
+                  <div className="h-2 w-full bg-[#4e158e] rounded-full mb-2"></div>
+                  <p className="text-[10px] font-bold text-[#4e158e]">70% Completed</p>
                 </div>
                 <div className="mt-20 px-6 space-y-3">
                   <div className="h-16 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center px-4 gap-3">
@@ -142,7 +142,7 @@ export default function AboutPage() {
               transition={{ delay: idx * 0.1 }}
               className="bg-white p-10 rounded-[2rem] shadow-xl shadow-slate-200/50 text-center group hover:-translate-y-2 transition-all duration-300 border border-slate-100"
             >
-              <div className="w-16 h-16 bg-purple-50 text-[#4c35e6] rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#4c35e6] group-hover:text-white transition-colors duration-300 rotate-3 group-hover:rotate-0">
+              <div className="w-16 h-16 bg-purple-50 text-[#4e158e] rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#4e158e] group-hover:text-white transition-colors duration-300 rotate-3 group-hover:rotate-0">
                 <feature.icon size={32} />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">{feature.title}</h3>
@@ -166,7 +166,7 @@ export default function AboutPage() {
                 { icon: Layers, title: "Completely syndicate cutting-edge interfaces." }
               ].map((item, idx) => (
                 <div key={idx} className="flex gap-4">
-                  <div className="w-12 h-12 bg-purple-50 text-[#4c35e6] rounded-xl flex items-center justify-center shrink-0">
+                  <div className="w-12 h-12 bg-purple-50 text-[#4e158e] rounded-xl flex items-center justify-center shrink-0">
                     <item.icon size={24} />
                   </div>
                   <div>
@@ -205,7 +205,7 @@ export default function AboutPage() {
 
 
       {/* CTA Section */}
-      <section className="relative mt-24 pt-32 pb-24 bg-[#4c35e6] overflow-hidden">
+      <section className="relative mt-24 pt-32 pb-24 bg-[#4e158e] overflow-hidden">
         {/* Top Curve SVG */}
         <div className="absolute top-0 left-0 right-0 w-full overflow-hidden leading-[0] rotate-180">
           <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="relative block w-full h-[100px]">

@@ -77,7 +77,7 @@ const AuthPage = () => {
                     placeholder="Full Name"
                     value={name}
                     onChange={e => setName(e.target.value)}
-                    className="w-full h-14 pl-12 pr-4 rounded-xl border border-slate-200 outline-none focus:border-[#4c35e6] focus:ring-1 focus:ring-[#4c35e6] transition font-medium placeholder:text-slate-400"
+                    className="w-full h-14 pl-12 pr-4 rounded-xl border border-slate-200 outline-none focus:border-[#4e158e] focus:ring-1 focus:ring-[#4e158e] transition font-medium placeholder:text-slate-400"
                   />
                 </div>
                 <div className="relative">
@@ -87,7 +87,7 @@ const AuthPage = () => {
                     placeholder="Phone Number"
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
-                    className="w-full h-14 pl-12 pr-4 rounded-xl border border-slate-200 outline-none focus:border-[#4c35e6] focus:ring-1 focus:ring-[#4c35e6] transition font-medium placeholder:text-slate-400"
+                    className="w-full h-14 pl-12 pr-4 rounded-xl border border-slate-200 outline-none focus:border-[#4e158e] focus:ring-1 focus:ring-[#4e158e] transition font-medium placeholder:text-slate-400"
                   />
                 </div>
                 <div className="relative">
@@ -97,7 +97,7 @@ const AuthPage = () => {
                     placeholder="Residence"
                     value={residence}
                     onChange={e => setResidence(e.target.value)}
-                    className="w-full h-14 pl-12 pr-4 rounded-xl border border-slate-200 outline-none focus:border-[#4c35e6] focus:ring-1 focus:ring-[#4c35e6] transition font-medium placeholder:text-slate-400"
+                    className="w-full h-14 pl-12 pr-4 rounded-xl border border-slate-200 outline-none focus:border-[#4e158e] focus:ring-1 focus:ring-[#4e158e] transition font-medium placeholder:text-slate-400"
                   />
                 </div>
               </>
@@ -110,7 +110,7 @@ const AuthPage = () => {
                 placeholder="Email Address"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full h-14 pl-12 pr-4 rounded-xl border border-slate-200 outline-none focus:border-[#4c35e6] focus:ring-1 focus:ring-[#4c35e6] transition font-medium placeholder:text-slate-400"
+                className="w-full h-14 pl-12 pr-4 rounded-xl border border-slate-200 outline-none focus:border-[#4e158e] focus:ring-1 focus:ring-[#4e158e] transition font-medium placeholder:text-slate-400"
               />
             </div>
 
@@ -121,7 +121,7 @@ const AuthPage = () => {
                 placeholder="Password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full h-14 pl-12 pr-12 rounded-xl border border-slate-200 outline-none focus:border-[#4c35e6] focus:ring-1 focus:ring-[#4c35e6] transition font-medium placeholder:text-slate-400"
+                className="w-full h-14 pl-12 pr-12 rounded-xl border border-slate-200 outline-none focus:border-[#4e158e] focus:ring-1 focus:ring-[#4e158e] transition font-medium placeholder:text-slate-400"
               />
               <button 
                 type="button"
@@ -134,8 +134,8 @@ const AuthPage = () => {
 
             {isLogin && (
               <div className="flex justify-start">
-                <button type="button" className="text-sm font-bold text-slate-700 hover:text-[#4c35e6] transition">
-                  Forgot password? <span className="text-[#4c35e6]">Reset it</span>
+                <button type="button" className="text-sm font-bold text-slate-700 hover:text-[#4e158e] transition">
+                  Forgot password? <span className="text-[#4e158e]">Reset it</span>
                 </button>
               </div>
             )}
@@ -145,7 +145,7 @@ const AuthPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-14 mt-4 bg-[#4c35e6] text-white font-bold text-[15px] rounded-xl hover:bg-[#3f2bc2] transition disabled:opacity-50 shadow-lg shadow-[#4c35e6]/20"
+              className="w-full h-14 mt-4 bg-[#4e158e] text-white font-bold text-[15px] rounded-xl hover:bg-[#3f2bc2] transition disabled:opacity-50 shadow-lg shadow-[#4e158e]/20"
             >
               {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Sign Up'}
             </button>
@@ -175,7 +175,7 @@ const AuthPage = () => {
             {isLogin ? "Don't have an account? " : 'Already have an account? '}
             <button
               onClick={() => { setIsLogin(!isLogin); setError(''); }}
-              className="text-[#4c35e6] hover:text-[#3f2bc2] transition"
+              className="text-[#4e158e] hover:text-[#3f2bc2] transition"
             >
               {isLogin ? 'Sign Up' : 'Sign In'}
             </button>

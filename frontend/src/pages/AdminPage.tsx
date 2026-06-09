@@ -95,7 +95,7 @@ const AdminPage = () => {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
-        <div className="w-12 h-12 border-4 border-slate-200 border-t-[#4c35e6] rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-slate-200 border-t-[#4e158e] rounded-full animate-spin"></div>
         <div className="text-slate-500 font-bold text-sm tracking-wide">Checking permissions...</div>
       </div>
     );
@@ -115,7 +115,7 @@ const AdminPage = () => {
           <div className="absolute bottom-[-50px] left-[-50px] w-48 h-48 rounded-full bg-indigo-600/10 blur-3xl pointer-events-none" />
 
           <div className="text-center mb-8 relative z-10">
-            <div className="w-16 h-16 bg-gradient-to-tr from-[#4c35e6] to-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#4c35e6]/20">
+            <div className="w-16 h-16 bg-gradient-to-tr from-[#4e158e] to-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#4e158e]/20">
               <Unlock size={28} className="text-white" />
             </div>
             <h1 className="font-chewy text-4xl tracking-wide mb-1.5 text-white">Welile Cars</h1>
@@ -134,7 +134,7 @@ const AdminPage = () => {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="admin@admin.com"
-                className="w-full h-13 px-4 rounded-xl bg-slate-950/60 border border-slate-800 outline-none focus:border-[#4c35e6] transition text-sm font-semibold text-white placeholder:text-slate-600"
+                className="w-full h-13 px-4 rounded-xl bg-slate-950/60 border border-slate-800 outline-none focus:border-[#4e158e] transition text-sm font-semibold text-white placeholder:text-slate-600"
               />
             </div>
 
@@ -146,7 +146,7 @@ const AdminPage = () => {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full h-13 px-4 rounded-xl bg-slate-950/60 border border-slate-800 outline-none focus:border-[#4c35e6] transition text-sm font-semibold text-white placeholder:text-slate-600"
+                className="w-full h-13 px-4 rounded-xl bg-slate-950/60 border border-slate-800 outline-none focus:border-[#4e158e] transition text-sm font-semibold text-white placeholder:text-slate-600"
               />
             </div>
 
@@ -157,7 +157,7 @@ const AdminPage = () => {
             <button
               type="submit"
               disabled={loginLoading}
-              className="w-full h-13 mt-6 bg-[#4c35e6] hover:bg-[#3f2bc2] text-white font-bold text-[14px] rounded-xl transition disabled:opacity-50 shadow-lg shadow-[#4c35e6]/20 flex items-center justify-center gap-2"
+              className="w-full h-13 mt-6 bg-[#4e158e] hover:bg-[#3f2bc2] text-white font-bold text-[14px] rounded-xl transition disabled:opacity-50 shadow-lg shadow-[#4e158e]/20 flex items-center justify-center gap-2"
             >
               {loginLoading ? 'Authenticating...' : 'Sign In to Dashboard'}
             </button>
@@ -186,7 +186,7 @@ const AdminPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
-        <div className="w-12 h-12 border-4 border-slate-200 border-t-[#4c35e6] rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-slate-200 border-t-[#4e158e] rounded-full animate-spin"></div>
         <div className="text-slate-500 font-bold text-sm tracking-wide">Loading Admin Workspace...</div>
       </div>
     );
@@ -276,7 +276,7 @@ const AdminPage = () => {
       
       {/* Premium Header */}
       <header className="bg-slate-900 text-white px-6 py-8 sm:px-12 rounded-b-[40px] shadow-xl relative overflow-hidden">
-        <div className="absolute top-[-30%] right-[-10%] w-96 h-96 rounded-full bg-[#4c35e6] opacity-20 blur-3xl pointer-events-none" />
+        <div className="absolute top-[-30%] right-[-10%] w-96 h-96 rounded-full bg-[#4e158e] opacity-20 blur-3xl pointer-events-none" />
         <div className="absolute bottom-[-20%] left-[-10%] w-80 h-80 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
         
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
@@ -303,7 +303,7 @@ const AdminPage = () => {
           {/* Metrics Overview */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-md shadow-slate-100 flex flex-col justify-between h-28">
-              <DollarSign size={20} className="text-[#4c35e6]" />
+              <DollarSign size={20} className="text-[#4e158e]" />
               <div>
                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Savings</p>
                 <p className="text-xl font-black text-slate-800">{formatUGX(totalSavings)}</p>
@@ -344,7 +344,7 @@ const AdminPage = () => {
                   placeholder="Search customer by name or phone..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl pl-11 pr-4 py-3 text-sm font-semibold outline-none focus:border-[#4c35e6] focus:bg-white transition-all text-slate-800"
+                  className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl pl-11 pr-4 py-3 text-sm font-semibold outline-none focus:border-[#4e158e] focus:bg-white transition-all text-slate-800"
                 />
               </div>
             </div>
@@ -355,7 +355,7 @@ const AdminPage = () => {
                 onClick={() => setActiveFilter('all')}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
                   activeFilter === 'all' 
-                    ? 'bg-[#4c35e6] text-white shadow-md shadow-[#4c35e6]/20' 
+                    ? 'bg-[#4e158e] text-white shadow-md shadow-[#4e158e]/20' 
                     : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
                 }`}
               >
@@ -365,7 +365,7 @@ const AdminPage = () => {
                 onClick={() => setActiveFilter('pending')}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
                   activeFilter === 'pending' 
-                    ? 'bg-[#4c35e6] text-white shadow-md shadow-[#4c35e6]/20' 
+                    ? 'bg-[#4e158e] text-white shadow-md shadow-[#4e158e]/20' 
                     : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
                 }`}
               >
@@ -375,7 +375,7 @@ const AdminPage = () => {
                 onClick={() => setActiveFilter('saving')}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
                   activeFilter === 'saving' 
-                    ? 'bg-[#4c35e6] text-white shadow-md shadow-[#4c35e6]/20' 
+                    ? 'bg-[#4e158e] text-white shadow-md shadow-[#4e158e]/20' 
                     : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
                 }`}
               >
@@ -385,7 +385,7 @@ const AdminPage = () => {
                 onClick={() => setActiveFilter('reached30')}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
                   activeFilter === 'reached30' 
-                    ? 'bg-[#4c35e6] text-white shadow-md shadow-[#4c35e6]/20' 
+                    ? 'bg-[#4e158e] text-white shadow-md shadow-[#4e158e]/20' 
                     : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
                 }`}
               >
@@ -395,7 +395,7 @@ const AdminPage = () => {
                 onClick={() => setActiveFilter('flagged')}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
                   activeFilter === 'flagged' 
-                    ? 'bg-[#4c35e6] text-white shadow-md shadow-[#4c35e6]/20' 
+                    ? 'bg-[#4e158e] text-white shadow-md shadow-[#4e158e]/20' 
                     : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
                 }`}
               >
@@ -405,7 +405,7 @@ const AdminPage = () => {
                 onClick={() => setActiveFilter('cfo_requests')}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
                   activeFilter === 'cfo_requests' 
-                    ? 'bg-[#4c35e6] text-white shadow-md shadow-[#4c35e6]/20' 
+                    ? 'bg-[#4e158e] text-white shadow-md shadow-[#4e158e]/20' 
                     : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
                 }`}
               >
@@ -505,7 +505,7 @@ const AdminPage = () => {
                           <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
                             <div 
                               className={`h-full rounded-full transition-all duration-500 ${
-                                progress >= 100 ? 'bg-emerald-500' : 'bg-[#4c35e6]'
+                                progress >= 100 ? 'bg-emerald-500' : 'bg-[#4e158e]'
                               }`}
                               style={{ width: `${progress}%` }}
                             />
@@ -555,7 +555,7 @@ const AdminPage = () => {
                             return (
                               <button 
                                 onClick={(e) => { e.stopPropagation(); handleRequestFinancing(user); }}
-                                className="flex-1 h-9 bg-[#4c35e6] hover:bg-[#3f2bc2] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-[#4c35e6]/20 flex items-center justify-center gap-1.5 animate-pulse"
+                                className="flex-1 h-9 bg-[#4e158e] hover:bg-[#3f2bc2] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-[#4e158e]/20 flex items-center justify-center gap-1.5 animate-pulse"
                               >
                                 <CheckCircle size={14} />
                                 <span>Request CFO Approval</span>
@@ -608,7 +608,7 @@ const AdminPage = () => {
         <div className="lg:col-span-4 space-y-6">
           <div className="bg-white rounded-3xl border border-slate-100 shadow-md shadow-slate-100 p-6">
             <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2 mb-6">
-              <Activity size={18} className="text-[#4c35e6]" />
+              <Activity size={18} className="text-[#4e158e]" />
               Platform Payments Feed
             </h3>
 
@@ -664,7 +664,7 @@ const AdminPage = () => {
               </button>
 
               <div className="flex items-center gap-4 border-b border-slate-100 pb-6 mb-6">
-                <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center text-[#4c35e6]">
+                <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center text-[#4e158e]">
                   <UserIcon size={28} />
                 </div>
                 <div>
@@ -726,7 +726,7 @@ const AdminPage = () => {
                     value={agentName} 
                     onChange={e => setAgentName(e.target.value)} 
                     placeholder="Enter Agent Name..."
-                    className="flex-1 h-11 px-4 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold outline-none focus:bg-white focus:border-[#4c35e6] transition-colors" 
+                    className="flex-1 h-11 px-4 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold outline-none focus:bg-white focus:border-[#4e158e] transition-colors" 
                   />
                   <button 
                     onClick={() => { assignAgent.mutate({ userId: selectedUser.user_id, agent: agentName }); setAgentName(''); }}
@@ -793,7 +793,7 @@ const AdminPage = () => {
               </button>
 
               <h3 className="text-lg font-extrabold text-slate-800 mb-2 flex items-center gap-1.5 mt-2">
-                <Unlock size={18} className="text-[#4c35e6]" />
+                <Unlock size={18} className="text-[#4e158e]" />
                 Submit CFO Approval Request
               </h3>
               <p className="text-xs text-slate-400 font-semibold mb-4">
@@ -811,7 +811,7 @@ const AdminPage = () => {
                   <textarea 
                     value={requestDetails}
                     onChange={e => setRequestDetails(e.target.value)}
-                    className="w-full h-32 px-4 py-3 rounded-2xl bg-slate-50 border-2 border-slate-100 text-xs font-semibold outline-none focus:bg-white focus:border-[#4c35e6] transition-colors resize-none text-slate-700 leading-relaxed"
+                    className="w-full h-32 px-4 py-3 rounded-2xl bg-slate-50 border-2 border-slate-100 text-xs font-semibold outline-none focus:bg-white focus:border-[#4e158e] transition-colors resize-none text-slate-700 leading-relaxed"
                   />
                 </div>
               </div>
@@ -834,7 +834,7 @@ const AdminPage = () => {
                       toast.error(err.message || "Failed to submit request.");
                     }
                   }}
-                  className="flex-1 h-11 bg-[#4c35e6] hover:bg-[#3f2bc2] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-500/20"
+                  className="flex-1 h-11 bg-[#4e158e] hover:bg-[#3f2bc2] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-500/20"
                 >
                   Submit to CFO
                 </button>

@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Welile Car | Own Your Dream Vehicle</title>
+<meta content="Save and finance your dream vehicle with Welile Car. 5% savings growth and 70% vehicle financing." name="description"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Manrope:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Config Verbatim -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed-dim": "#d8b9ff",
+                    "inverse-surface": "#2e3132",
+                    "primary": "#340069",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "on-secondary-fixed-variant": "#5e4200",
+                    "primary-fixed": "#eddcff",
+                    "error-container": "#ffdad6",
+                    "inverse-primary": "#d8b9ff",
+                    "surface-bright": "#f8f9fa",
+                    "error": "#ba1a1a",
+                    "tertiary": "#242424",
+                    "secondary-fixed-dim": "#f9bc45",
+                    "outline-variant": "#cdc3d4",
+                    "on-primary": "#ffffff",
+                    "surface-variant": "#e1e3e4",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-secondary-container": "#725000",
+                    "inverse-on-surface": "#f0f1f2",
+                    "tertiary-fixed": "#e5e2e1",
+                    "surface-container": "#edeeef",
+                    "primary-container": "#4e158f",
+                    "on-tertiary-fixed": "#1c1b1b",
+                    "secondary": "#7c5800",
+                    "on-tertiary-fixed-variant": "#474746",
+                    "on-primary-container": "#bc8cff",
+                    "surface-container-low": "#f3f4f5",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-container": "#a4a3a2",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed-variant": "#5c289d",
+                    "surface-dim": "#d9dadb",
+                    "surface-container-lowest": "#ffffff",
+                    "background": "#f8f9fa",
+                    "on-background": "#191c1d",
+                    "on-secondary-fixed": "#271900",
+                    "on-primary-fixed": "#290055",
+                    "on-surface": "#191c1d",
+                    "outline": "#7c7483",
+                    "on-error-container": "#93000a",
+                    "surface-container-high": "#e7e8e9",
+                    "secondary-container": "#ffc24a",
+                    "tertiary-container": "#3a3939",
+                    "surface-tint": "#7543b7",
+                    "secondary-fixed": "#ffdea8",
+                    "on-surface-variant": "#4b4452",
+                    "surface": "#f8f9fa"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "section-gap": "80px",
+                    "container-padding-desktop": "32px",
+                    "gutter": "24px",
+                    "container-padding-mobile": "20px"
+            },
+            "fontFamily": {
+                    "body-md": ["Manrope"],
+                    "display-lg-mobile": ["Inter"],
+                    "body-lg": ["Manrope"],
+                    "headline-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-md": ["Manrope"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Premium Calculator Styles */
+        .premium-transition {
+            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        
+        .calculator-card {
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+        }
+        .calculator-card:hover {
+            transform: translateY(-4px) scale(1.005);
+        }
+        .calculator-card:active {
+            transform: translateY(0) scale(0.995);
+        }
+
+        .shimmer-btn {
+            position: relative;
+            overflow: hidden;
+            animation: pulse-shadow 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+        }
+        .shimmer-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0) 40%,
+                rgba(255, 255, 255, 0.4) 50%,
+                rgba(255, 255, 255, 0) 60%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-150%) rotate(45deg); }
+            100% { transform: translateX(150%) rotate(45deg); }
+        }
+
+        @keyframes pulse-shadow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 194, 74, 0.4); }
+            50% { box-shadow: 0 0 20px 10px rgba(255, 194, 74, 0); }
+        }
+
+        .progress-ring {
+            transition: stroke-dashoffset 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        input[type="range"]:active::-webkit-slider-thumb {
+            transform: scale(1.5);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl shadow-sm dark:bg-surface-container-high transition-all duration-300 ease-in-out">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-container-padding-mobile md:px-container-padding-desktop py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="directions_car">directions_car</span>
+<span class="font-display-lg text-headline-sm md:text-headline-md text-primary tracking-tight">Welile Car</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-label-md text-label-md text-primary border-b-2 border-primary font-bold" href="#">Home</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Vehicles</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">How It Works</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Financing</a>
+</nav>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md text-label-md hover:shadow-lg transition-all">Get Started</button>
+</div>
+</header>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative min-h-[90vh] flex items-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img alt="Hero Background" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARR4aYRe1IMbxevQIQdgZibVigHO3oJW21upeowN2VoEqSriT9bCveZBQqnfOreFYfl22xwRHqioINeNG4HtsTALXiDNb5iH_t3z-U0sDovYXXNwpsH4eOn2VzMKYe0MtzWfisJrStB1tz3kkqDamu7g95UqTG1vinLoX4mwZSNE_Ec5H3F66h-guc4J7zztz0LAtfhwwgkXYlfUmM3R0mAYkxKIMo2rMhh2LS-6N0kquw9qSkZq3kbnxlK4H0bPC7KHwPMX9sjoBv"/>
+<div class="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary/20 to-transparent"></div>
+</div>
+<div class="relative z-10 max-w-7xl mx-auto px-container-padding-mobile md:px-container-padding-desktop py-16 grid lg:grid-cols-2 gap-12 items-center">
+<div class="text-white">
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg mb-6 leading-tight">
+                        Own Your Dream Vehicle Without Paying Everything Upfront
+                    </h1>
+<p class="font-body-lg text-body-lg mb-10 text-white/90 max-w-lg">
+                        Smart vehicle acquisition for the modern African professional. Save while earning a 5% return, and let us finance the rest.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4">
+<button class="bg-secondary-container text-on-secondary-container px-8 py-4 rounded-xl font-bold hover:scale-105 transition-transform">Start Saving</button>
+<button class="bg-white/10 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-xl font-bold hover:bg-white/20 transition-all">Explore Vehicles</button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="glass-card p-6 rounded-3xl shadow-xl transform hover:-translate-y-2 transition-transform">
+<span class="material-symbols-outlined text-primary mb-2 text-3xl" data-icon="trending_up">trending_up</span>
+<div class="text-primary font-bold text-2xl">5%</div>
+<div class="text-on-surface-variant text-sm">Savings Growth</div>
+</div>
+<div class="glass-card p-6 rounded-3xl shadow-xl transform hover:-translate-y-2 transition-transform mt-8">
+<span class="material-symbols-outlined text-primary mb-2 text-3xl" data-icon="payments">payments</span>
+<div class="text-primary font-bold text-2xl">70%</div>
+<div class="text-on-surface-variant text-sm">Vehicle Financing</div>
+</div>
+<div class="glass-card p-6 rounded-3xl shadow-xl transform hover:-translate-y-2 transition-transform">
+<span class="material-symbols-outlined text-primary mb-2 text-3xl" data-icon="groups">groups</span>
+<div class="text-primary font-bold text-2xl">1000+</div>
+<div class="text-on-surface-variant text-sm">Customers</div>
+</div>
+<div class="glass-card p-6 rounded-3xl shadow-xl transform hover:-translate-y-2 transition-transform mt-8">
+<span class="material-symbols-outlined text-primary mb-2 text-3xl" data-icon="calendar_month">calendar_month</span>
+<div class="text-primary font-bold text-2xl">Flexible</div>
+<div class="text-on-surface-variant text-sm">Repayment</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats Section (Animated) -->
+<section class="bg-surface-container py-12">
+<div class="max-w-7xl mx-auto px-container-padding-mobile md:px-container-padding-desktop">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+<div>
+<div class="text-primary font-headline-md text-headline-md mb-1" id="stat1">0</div>
+<div class="text-on-surface-variant font-label-md">Vehicles Financed</div>
+</div>
+<div>
+<div class="text-primary font-headline-md text-headline-md mb-1" id="stat2">0</div>
+<div class="text-on-surface-variant font-label-md">Active Customers</div>
+</div>
+<div>
+<div class="text-primary font-headline-md text-headline-md mb-1" id="stat3">0</div>
+<div class="text-on-surface-variant font-label-md">Billion Saved</div>
+</div>
+<div>
+<div class="text-primary font-headline-md text-headline-md mb-1" id="stat4">0</div>
+<div class="text-on-surface-variant font-label-md">Dealer Partners</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Calculator Section -->
+<section class="py-section-gap">
+<div class="max-w-7xl mx-auto px-container-padding-mobile md:px-container-padding-desktop">
+<div class="calculator-card bg-white rounded-[32px] shadow-2xl overflow-hidden grid lg:grid-cols-5 gap-0">
+<div class="lg:col-span-3 p-8 md:p-12">
+<div class="flex items-center justify-between mb-8">
+<h2 class="font-headline-md text-headline-md text-primary">Plan Your Journey</h2>
+<div class="relative w-20 h-20 flex items-center justify-center">
+<svg class="w-full h-full">
+<circle class="text-surface-container" cx="40" cy="40" fill="transparent" r="32" stroke="currentColor" stroke-width="6"></circle>
+<circle class="progress-ring text-primary" cx="40" cy="40" fill="transparent" id="progress-circle" r="32" stroke="currentColor" stroke-dasharray="201.06" stroke-dashoffset="201.06" stroke-linecap="round" stroke-width="6"></circle>
+</svg>
+<div class="absolute text-[10px] font-bold text-primary flex flex-col items-center">
+<span id="percent-val">0</span>%
+        <span class="text-[8px] uppercase tracking-tighter opacity-60">Deposit</span>
+</div>
+</div>
+</div>
+<div class="space-y-10">
+<div>
+<div class="flex justify-between mb-3">
+<span class="font-label-md text-on-surface-variant">Vehicle Price</span>
+<span class="font-bold text-primary">R <span id="price-val">450,000</span></span>
+</div>
+<input class="w-full h-2 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary premium-transition" id="price-slider" max="2000000" min="100000" step="10000" type="range" value="450000"/>
+<div class="flex justify-between mt-2 text-[10px] text-on-surface-variant/40 uppercase font-bold tracking-widest">
+<span>R100k</span>
+<span>R2m</span>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-3">
+<span class="font-label-md text-on-surface-variant">Deposit Goal</span>
+<span class="font-bold text-primary">R <span id="deposit-val">135,000</span> (<span id="deposit-percent-label">30</span>%)</span>
+</div>
+<input class="w-full h-2 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary premium-transition" id="deposit-slider" max="100" min="30" step="1" type="range" value="30"/>
+</div>
+<div>
+<div class="flex justify-between mb-3">
+<span class="font-label-md text-on-surface-variant">Monthly Savings</span>
+<span class="font-bold text-primary">R <span id="savings-val">5,000</span></span>
+</div>
+<input class="w-full h-2 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary premium-transition" id="savings-slider" max="50000" min="1000" step="500" type="range" value="5000"/>
+</div>
+</div>
+</div>
+<div class="lg:col-span-2 bg-primary p-8 md:p-12 text-white flex flex-col justify-center relative overflow-hidden">
+<div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.05),transparent)]"></div>
+<h3 class="font-headline-sm text-headline-sm mb-8 text-secondary-container relative z-10">Your Outlook</h3>
+<div class="space-y-8 relative z-10">
+<div class="pb-6 border-b border-white/10 premium-transition hover:translate-x-2">
+<div class="text-white/60 text-sm mb-1">Time to Qualify</div>
+<div class="text-4xl font-bold"><span class="tabular-nums" id="months-val">27</span> <span class="text-xl opacity-60">Months</span></div>
+</div>
+<div class="pb-6 border-b border-white/10 premium-transition hover:translate-x-2">
+<div class="text-white/60 text-sm mb-1">Estimated Finance Amount</div>
+<div class="text-4xl font-bold"><span class="text-xl opacity-60">R</span> <span class="tabular-nums" id="finance-val">315,000</span></div>
+</div>
+<div class="premium-transition hover:translate-x-2">
+<div class="text-white/60 text-sm mb-1">Monthly Repayment</div>
+<div class="text-4xl font-bold"><span class="text-xl opacity-60">R</span> <span class="tabular-nums" id="repay-val">6,250</span></div>
+</div>
+</div>
+<button class="shimmer-btn mt-10 bg-secondary-container text-on-secondary-container w-full py-5 rounded-2xl font-bold text-lg hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-black/20 z-10">Secure This Plan</button>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works Section -->
+<section class="py-section-gap bg-surface-container-lowest">
+<div class="max-w-7xl mx-auto px-container-padding-mobile md:px-container-padding-desktop">
+<div class="text-center max-w-2xl mx-auto mb-16">
+<h2 class="font-headline-md text-headline-md text-primary mb-4">Five Steps to Ownership</h2>
+<p class="text-on-surface-variant">Our unique fintech model empowers you to move from saving to driving with institutional support every step of the way.</p>
+</div>
+<div class="relative">
+<div class="absolute left-8 md:left-1/2 top-0 bottom-0 w-1 bg-primary/10 -translate-x-1/2 hidden md:block"></div>
+<div class="space-y-16">
+<!-- Step 1 -->
+<div class="reveal relative flex flex-col md:flex-row items-center md:justify-between group">
+<div class="md:w-5/12 text-left md:text-right">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">Save</h3>
+<p class="text-on-surface-variant">Open a high-yield vehicle savings account. Watch your deposit grow with a guaranteed 5% annual return.</p>
+</div>
+<div class="z-10 bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl my-6 md:my-0 shadow-lg group-hover:scale-110 transition-transform">1</div>
+<div class="md:w-5/12">
+<span class="material-symbols-outlined text-6xl text-primary/20" data-icon="savings">savings</span>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="reveal relative flex flex-col md:flex-row-reverse items-center md:justify-between group">
+<div class="md:w-5/12 text-left">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">Qualify</h3>
+<p class="text-on-surface-variant">Once you hit your 30% deposit target, you instantly unlock access to our premium vehicle financing pool.</p>
+</div>
+<div class="z-10 bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl my-6 md:my-0 shadow-lg group-hover:scale-110 transition-transform">2</div>
+<div class="md:w-5/12 flex md:justify-end">
+<span class="material-symbols-outlined text-6xl text-primary/20" data-icon="verified_user">verified_user</span>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="reveal relative flex flex-col md:flex-row items-center md:justify-between group">
+<div class="md:w-5/12 text-left md:text-right">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">Finance</h3>
+<p class="text-on-surface-variant">We bridge the remaining 70% with low-interest, transparent financing tailored to your income profile.</p>
+</div>
+<div class="z-10 bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl my-6 md:my-0 shadow-lg group-hover:scale-110 transition-transform">3</div>
+<div class="md:w-5/12">
+<span class="material-symbols-outlined text-6xl text-primary/20" data-icon="account_balance">account_balance</span>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="reveal relative flex flex-col md:flex-row-reverse items-center md:justify-between group">
+<div class="md:w-5/12 text-left">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">Own</h3>
+<p class="text-on-surface-variant">Select your vehicle from our verified dealer network. We handle all paperwork and logistics.</p>
+</div>
+<div class="z-10 bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl my-6 md:my-0 shadow-lg group-hover:scale-110 transition-transform">4</div>
+<div class="md:w-5/12 flex md:justify-end">
+<span class="material-symbols-outlined text-6xl text-primary/20" data-icon="key">key</span>
+</div>
+</div>
+<!-- Step 5 -->
+<div class="reveal relative flex flex-col md:flex-row items-center md:justify-between group">
+<div class="md:w-5/12 text-left md:text-right">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">Repay</h3>
+<p class="text-on-surface-variant">Enjoy your ride while making manageable monthly repayments with no hidden fees or penalties.</p>
+</div>
+<div class="z-10 bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl my-6 md:my-0 shadow-lg group-hover:scale-110 transition-transform">5</div>
+<div class="md:w-5/12">
+<span class="material-symbols-outlined text-6xl text-primary/20" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Vehicles Section -->
+<section class="py-section-gap overflow-hidden">
+<div class="max-w-7xl mx-auto px-container-padding-mobile md:px-container-padding-desktop">
+<div class="flex justify-between items-end mb-12">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary mb-2">Explore Our Range</h2>
+<div class="flex gap-4 mt-6 overflow-x-auto no-scrollbar pb-2">
+<button class="whitespace-nowrap bg-primary text-on-primary px-6 py-2 rounded-full text-sm font-bold">Personal</button>
+<button class="whitespace-nowrap bg-surface-container text-on-surface-variant px-6 py-2 rounded-full text-sm font-bold hover:bg-primary/5">Commercial</button>
+<button class="whitespace-nowrap bg-surface-container text-on-surface-variant px-6 py-2 rounded-full text-sm font-bold hover:bg-primary/5">Motorcycles</button>
+<button class="whitespace-nowrap bg-surface-container text-on-surface-variant px-6 py-2 rounded-full text-sm font-bold hover:bg-primary/5">Agricultural</button>
+</div>
+</div>
+<div class="hidden md:flex gap-2">
+<button class="w-12 h-12 rounded-full border border-outline flex items-center justify-center hover:bg-primary hover:text-white transition-all"><span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span></button>
+<button class="w-12 h-12 rounded-full border border-outline flex items-center justify-center hover:bg-primary hover:text-white transition-all"><span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span></button>
+</div>
+</div>
+<div class="flex gap-gutter overflow-x-auto no-scrollbar snap-x pb-8">
+<!-- Sedan Card -->
+<div class="snap-start min-w-[320px] md:min-w-[400px] bg-white rounded-[24px] shadow-lg group overflow-hidden border border-outline-variant/30">
+<div class="h-56 overflow-hidden">
+<img alt="Tesla Model S Sedan" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7gtQN3wBYDDlTrZDT5j-0fej-ZR6GG-2w6b8AvAE7Z3fpqvqwmjpq-U250axsri9mk067W5VmKY32b0M0R-D-NEcgk6WymVOFgWrh7QzCjwN3Xp82pTSC7NzZ7yNfXlssEY9ev5AMNr5fBcTTwNMvLDIeaXr7s31jgatILywQPxXu9WMpzQWbKG0HIUOhz74lB3kfBItdsK_Sr1gMvVCAivLxWtFgxfn7gEwLY-XVEbLRhg7dWirvHXy90wUz3tR-_u7IveDaJoU6"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-bold text-xl text-primary">Luxury Sedan</h3>
+<span class="text-sm text-on-surface-variant">Tesla Model S or similar</span>
+</div>
+<span class="bg-secondary-fixed text-on-secondary-fixed text-xs font-bold px-2 py-1 rounded">PREMIUM</span>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-6">
+<div class="bg-surface-container p-2 rounded-lg text-center">
+<div class="text-[10px] text-on-surface-variant uppercase">Deposit</div>
+<div class="font-bold text-sm">30%</div>
+</div>
+<div class="bg-surface-container p-2 rounded-lg text-center">
+<div class="text-[10px] text-on-surface-variant uppercase">Range</div>
+<div class="font-bold text-sm">600km</div>
+</div>
+<div class="bg-surface-container p-2 rounded-lg text-center">
+<div class="text-[10px] text-on-surface-variant uppercase">Rating</div>
+<div class="font-bold text-sm">5.0</div>
+</div>
+</div>
+<button class="w-full py-3 rounded-xl border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-all">View Details</button>
+</div>
+</div>
+<!-- Van Card -->
+<div class="snap-start min-w-[320px] md:min-w-[400px] bg-white rounded-[24px] shadow-lg group overflow-hidden border border-outline-variant/30">
+<div class="h-56 overflow-hidden">
+<img alt="Ford Transit Commercial Van" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKFSe0EWSzSmALhi5vZFKK6nHJIui6TkB7tGEr2Qs9Fx9_3yb298W0ck5nqFzDydX14RTsIxKZ7zaqRjRwiVVi9QyWLvSa3kySV_oEmtOu4uVcAHBaEihyNffrL0AYbO1eaA5PiDOnwl2WRv6X4VdJmjmPZAVgAfsQrO7H5sDzk7g9W6CeS5c2boVsSCXl4J-jD5Kx5r0cA0uA6aD_oikkqR6B3z3UttMCufLZtYmj_mN5njhKm9wfMz6dCsF8YHOqCy10aAoV62WO"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-bold text-xl text-primary">Commercial Van</h3>
+<span class="text-sm text-on-surface-variant">Ford Transit or similar</span>
+</div>
+<span class="bg-surface-variant text-on-surface-variant text-xs font-bold px-2 py-1 rounded">BUSINESS</span>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-6">
+<div class="bg-surface-container p-2 rounded-lg text-center">
+<div class="text-[10px] text-on-surface-variant uppercase">Deposit</div>
+<div class="font-bold text-sm">30%</div>
+</div>
+<div class="bg-surface-container p-2 rounded-lg text-center">
+<div class="text-[10px] text-on-surface-variant uppercase">Load</div>
+<div class="font-bold text-sm">1.5 Ton</div>
+</div>
+<div class="bg-surface-container p-2 rounded-lg text-center">
+<div class="text-[10px] text-on-surface-variant uppercase">Year</div>
+<div class="font-bold text-sm">2023+</div>
+</div>
+</div>
+<button class="w-full py-3 rounded-xl border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-all">View Details</button>
+</div>
+</div>
+<!-- Dynamic Placeholder -->
+<div class="snap-start min-w-[320px] md:min-w-[400px] bg-surface-container-low border-2 border-dashed border-outline-variant rounded-[24px] flex flex-col items-center justify-center p-12 text-center">
+<span class="material-symbols-outlined text-5xl text-outline mb-4" data-icon="add_circle">add_circle</span>
+<h4 class="font-bold text-primary">More Vehicles</h4>
+<p class="text-on-surface-variant text-sm mt-2">Check our full inventory of over 1000+ vehicles</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Why Choose Welile Section (Bento) -->
+<section class="py-section-gap bg-primary-container text-white">
+<div class="max-w-7xl mx-auto px-container-padding-mobile md:px-container-padding-desktop">
+<div class="text-center mb-16">
+<h2 class="font-headline-md text-headline-md mb-4 text-secondary-container">The Welile Advantage</h2>
+<p class="text-white/70">Engineered for security and financial growth.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-[24px] hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined text-secondary-container text-4xl mb-4" data-icon="speed">speed</span>
+<h3 class="font-bold text-xl mb-3">Fast Approval</h3>
+<p class="text-white/60 text-sm">Pre-qualification happens in under 24 hours once your savings target is achieved.</p>
+</div>
+<div class="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-[24px] hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined text-secondary-container text-4xl mb-4" data-icon="security">security</span>
+<h3 class="font-bold text-xl mb-3">Secure Savings</h3>
+<p class="text-white/60 text-sm">Your savings are protected by institutional-grade security and financial guarantees.</p>
+</div>
+<div class="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-[24px] hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined text-secondary-container text-4xl mb-4" data-icon="show_chart">show_chart</span>
+<h3 class="font-bold text-xl mb-3">5% Guaranteed Growth</h3>
+<p class="text-white/60 text-sm">We don't just hold your money; we grow it. Beat inflation while you plan your purchase.</p>
+</div>
+<div class="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-[24px] hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined text-secondary-container text-4xl mb-4" data-icon="edit_calendar">edit_calendar</span>
+<h3 class="font-bold text-xl mb-3">Flexible Financing</h3>
+<p class="text-white/60 text-sm">Choose repayment periods that match your cash flow, from 24 to 72 months.</p>
+</div>
+<div class="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-[24px] hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined text-secondary-container text-4xl mb-4" data-icon="verified">verified</span>
+<h3 class="font-bold text-xl mb-3">Dealer Verification</h3>
+<p class="text-white/60 text-sm">Every car in our network undergoes a rigorous 150-point technical inspection.</p>
+</div>
+<div class="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-[24px] hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined text-secondary-container text-4xl mb-4" data-icon="headset_mic">headset_mic</span>
+<h3 class="font-bold text-xl mb-3">Dedicated Support</h3>
+<p class="text-white/60 text-sm">A personal concierge to guide you through registration, insurance, and maintenance.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonials Section -->
+<section class="py-section-gap">
+<div class="max-w-7xl mx-auto px-container-padding-mobile md:px-container-padding-desktop">
+<h2 class="font-headline-md text-headline-md text-primary mb-12 text-center">Voices of Success</h2>
+<div class="grid md:grid-cols-2 gap-8">
+<!-- Testimonial 1 -->
+<div class="bg-white p-8 rounded-[32px] shadow-lg flex flex-col md:flex-row gap-6 items-center">
+<img alt="Happy Taxi Driver Testimonial" class="w-24 h-24 rounded-full object-cover shadow-md" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8IpPyE-Dm8e8csTi1Ho2EVPYMGAn-MmDHyqWlpn-gS7ztjZofsGeceC3sLmqOy1MhkslLb9E_1vfJt71r4VmfB4-risaH5e48rj7Vzdsgbh6IrQ9WvGrDREt4TEf6NRNXl0N9ZhO3mArOoEk8bNZJbTivSbNEkeQWCGTFnVRSnALQDdO50_Zws0aaQe0jRb2AKFFyflXNI8qfH4dnjLZZKJHjWbo57BrXbcb6DMFD9u9k75X9Jgut5409UrRaGP3l_L04zaslicO2"/>
+<div>
+<div class="text-primary mb-2 flex">
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="italic text-on-surface-variant mb-4">"Welile Car helped me get my first taxi without the massive upfront burden. The 5% growth on my savings was the cherry on top!"</p>
+<div class="font-bold text-primary">Sipho M.</div>
+<div class="text-xs text-on-surface-variant">Fleet Entrepreneur</div>
+</div>
+</div>
+<!-- Testimonial 2 -->
+<div class="bg-white p-8 rounded-[32px] shadow-lg flex flex-col md:flex-row gap-6 items-center">
+<img alt="Small Business Owner Testimonial" class="w-24 h-24 rounded-full object-cover shadow-md" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpZmKbSfPrJNRR1y5Co3tQkOO2uR1OcESrkOPvPGIjlArhBQhvPiuvvjhSpAG_65w_ioDubh6YPM5PZzePYWk-NcrZipntQkLGeI9Nrtx_gvLljXTLEaYsHt5xY4e_HZrBjZZg_2hCWRuuKXu1GFOPk7mUyYt1WF8xjuj5FTa1B-kqGff9C4g4OkoBQddnI0buz67RB6KDn7PsP-J80uhAPFFh-rZHcc52rfAChnULx6ykWhz8bY-tg2LImV7BWg8D3vLj6j0Vr2LQ"/>
+<div>
+<div class="text-primary mb-2 flex">
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="italic text-on-surface-variant mb-4">"Scaling my delivery business was a challenge until I found their commercial van program. The process was fast and transparent."</p>
+<div class="font-bold text-primary">Zanele K.</div>
+<div class="text-xs text-on-surface-variant">Logistics Manager</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-section-gap bg-background">
+<div class="max-w-7xl mx-auto px-container-padding-mobile md:px-container-padding-desktop">
+<div class="bg-primary-container rounded-[40px] p-12 md:p-24 text-center relative overflow-hidden">
+<!-- Background Accent -->
+<div class="absolute -top-24 -right-24 w-96 h-96 bg-secondary-container/10 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/20 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<h2 class="font-display-lg-mobile md:font-display-lg text-white mb-8">Ready to Own Your Next Vehicle?</h2>
+<p class="text-white/70 font-body-lg mb-12 max-w-2xl mx-auto">Join thousands of smart owners who are saving and financing with Welile Car. Start your 5% growth journey today.</p>
+<div class="flex flex-col sm:flex-row justify-center gap-6">
+<button class="bg-secondary-container text-on-secondary-container px-10 py-5 rounded-2xl font-bold text-lg hover:scale-105 transition-all shadow-xl shadow-black/20">Open Savings Account</button>
+<button class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-white/20 transition-all">Talk to a Consultant</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-highest dark:bg-inverse-surface w-full mt-section-gap border-t border-outline-variant dark:border-outline">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-gutter max-w-7xl mx-auto px-container-padding-mobile md:px-container-padding-desktop py-12">
+<div class="col-span-2">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="directions_car">directions_car</span>
+<span class="font-display-lg text-headline-sm text-primary dark:text-primary-fixed-dim">Welile Car</span>
+</div>
+<p class="text-on-surface-variant text-sm mb-6 max-w-xs">Pioneering a secure, transparent way for every South African to own the vehicles they need for life and business.</p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#"><span class="material-symbols-outlined" data-icon="public">public</span></a>
+<a class="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#"><span class="material-symbols-outlined" data-icon="alternate_email">alternate_email</span></a>
+<a class="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#"><span class="material-symbols-outlined" data-icon="smartphone">smartphone</span></a>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-primary mb-6">Links</h4>
+<ul class="space-y-4 text-sm text-on-surface-variant">
+<li><a class="hover:underline hover:text-primary transition-colors" href="#">Home</a></li>
+<li><a class="hover:underline hover:text-primary transition-colors" href="#">How It Works</a></li>
+<li><a class="hover:underline hover:text-primary transition-colors" href="#">Vehicles</a></li>
+<li><a class="hover:underline hover:text-primary transition-colors" href="#">Financing</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-primary mb-6">Company</h4>
+<ul class="space-y-4 text-sm text-on-surface-variant">
+<li><a class="hover:underline hover:text-primary transition-colors" href="#">About Us</a></li>
+<li><a class="hover:underline hover:text-primary transition-colors" href="#">Contact</a></li>
+<li><a class="hover:underline hover:text-primary transition-colors" href="#">Login</a></li>
+</ul>
+</div>
+<div class="col-span-2 lg:col-span-1">
+<h4 class="font-bold text-primary mb-6">Legal</h4>
+<ul class="space-y-4 text-sm text-on-surface-variant">
+<li><a class="hover:underline hover:text-primary transition-colors" href="#">Terms of Service</a></li>
+<li><a class="hover:underline hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-container-padding-mobile md:px-container-padding-desktop py-8 border-t border-outline-variant/30 text-center">
+<p class="text-sm text-on-surface-variant">© 2024 Welile Car. All rights reserved.</p>
+</div>
+</footer>
+<script>
+        // Reveal Animations
+        const reveal = () => {
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(el => {
+                const windowHeight = window.innerHeight;
+                const revealTop = el.getBoundingClientRect().top;
+                const revealPoint = 150;
+                if (revealTop < windowHeight - revealPoint) {
+                    el.classList.add('active');
+                }
+            });
+        }
+        window.addEventListener('scroll', reveal);
+        reveal();
+
+        // Counter Animations Helper
+        const animateValue = (id, start, end, duration) => {
+            if (start === end) return;
+            const obj = document.getElementById(id);
+            const range = end - start;
+            let current = start;
+            const increment = end > start ? 1 : -1;
+            const stepTime = Math.abs(Math.floor(duration / range));
+            
+            // For large ranges, use faster increments
+            const fastStep = range / (duration / 16); 
+            
+            let startTime = null;
+            const step = (timestamp) => {
+                if (!startTime) startTime = timestamp;
+                const progress = Math.min((timestamp - startTime) / duration, 1);
+                
+                // Use easeOutQuad for smoother feel
+                const easeProgress = 1 - (1 - progress) * (1 - progress);
+                const currentVal = Math.round(start + (end - start) * easeProgress);
+                
+                if (id === 'finance-val' || id === 'price-val' || id === 'repay-val' || id === 'deposit-val' || id === 'savings-val') {
+                    obj.innerText = currentVal.toLocaleString();
+                } else {
+                    obj.innerText = currentVal;
+                }
+                
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        };
+
+        // Main Stats Counter
+        const statsCounters = [
+            { id: 'stat1', target: 2450, suffix: '+' },
+            { id: 'stat2', target: 8200, suffix: '+' },
+            { id: 'stat3', target: 1.2, suffix: 'B', decimal: true },
+            { id: 'stat4', target: 145, suffix: '' }
+        ];
+
+        const animateCounters = () => {
+            statsCounters.forEach(c => {
+                const el = document.getElementById(c.id);
+                let current = 0;
+                const duration = 2000;
+                const startTime = performance.now();
+
+                const step = (now) => {
+                    const progress = Math.min((now - startTime) / duration, 1);
+                    const val = current + (c.target * (1 - Math.pow(1 - progress, 3))); // easeOutCubic
+                    
+                    if (c.decimal) {
+                        el.innerText = val.toFixed(1) + c.suffix;
+                    } else {
+                        el.innerText = Math.round(val) + c.suffix;
+                    }
+
+                    if (progress < 1) requestAnimationFrame(step);
+                };
+                requestAnimationFrame(step);
+            });
+        }
+
+        let counterTriggered = false;
+        window.addEventListener('scroll', () => {
+            const el = document.getElementById('stat1');
+            if(el && !counterTriggered && el.getBoundingClientRect().top < window.innerHeight) {
+                animateCounters();
+                counterTriggered = true;
+            }
+        });
+
+        // Advanced Calculator Logic
+        const pSlider = document.getElementById('price-slider');
+        const dSlider = document.getElementById('deposit-slider');
+        const sSlider = document.getElementById('savings-slider');
+        const progressCircle = document.getElementById('progress-circle');
+
+        let lastState = {
+            months: 0,
+            finance: 0,
+            repay: 0,
+            price: 450000,
+            deposit: 135000,
+            savings: 5000
+        };
+
+        const updateCalculator = (isInitial = false) => {
+            const price = parseInt(pSlider.value);
+            const depPercent = parseInt(dSlider.value);
+            const monthly = parseInt(sSlider.value);
+
+            const depositNeeded = price * (depPercent / 100);
+            const financeAmount = price - depositNeeded;
+            
+            // 5% interest on savings calculation
+            const monthlyRate = 0.05 / 12;
+            const months = Math.log((depositNeeded * monthlyRate / monthly) + 1) / Math.log(1 + monthlyRate);
+            const targetMonths = Math.ceil(months);
+
+            // Estimated repayment (10% APR over 60 months)
+            const repay = (financeAmount * 1.10) / 60;
+            const targetRepay = Math.round(repay);
+
+            // Update Progress Circle
+            const circumference = 2 * Math.PI * 32;
+            const offset = circumference - (depPercent / 100) * circumference;
+            progressCircle.style.strokeDashoffset = offset;
+            document.getElementById('percent-val').innerText = depPercent;
+
+            // Animate Numerical Transitions
+            const duration = isInitial ? 0 : 600;
+            animateValue('months-val', lastState.months, targetMonths, duration);
+            animateValue('finance-val', lastState.finance, Math.round(financeAmount), duration);
+            animateValue('repay-val', lastState.repay, targetRepay, duration);
+            
+            // Small updates for the labels (direct update for responsiveness)
+            document.getElementById('price-val').innerText = price.toLocaleString();
+            document.getElementById('deposit-val').innerText = Math.round(depositNeeded).toLocaleString();
+            document.getElementById('deposit-percent-label').innerText = depPercent;
+            document.getElementById('savings-val').innerText = monthly.toLocaleString();
+
+            lastState = {
+                months: targetMonths,
+                finance: Math.round(financeAmount),
+                repay: targetRepay,
+                price: price,
+                deposit: depositNeeded,
+                savings: monthly
+            };
+        }
+
+        // Event Listeners with high responsiveness
+        [pSlider, dSlider, sSlider].forEach(slider => {
+            slider.addEventListener('input', () => {
+                // For heavy numbers like the main results, we use the animation
+                // For current slider value labels, we update instantly
+                updateCalculator();
+            });
+        });
+
+        // Initialize
+        updateCalculator(true);
+    </script>
+</body></html>

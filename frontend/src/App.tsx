@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -30,18 +30,19 @@ import DealerDashboard from "./pages/admin/DealerDashboard";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <LanguageProvider>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <div className="sticky top-0 z-50 bg-slate-50 border-b border-slate-200/60 shadow-sm">
-              <Navbar />
-            </div>
-            <Routes>
+
+const AppLayout = () => {
+  const location = useLocation();
+  const isLanding = location.pathname === '/';
+
+  return (
+    <>
+      {!isLanding && (
+        <div className="sticky top-0 z-50 bg-slate-50 border-b border-slate-200/60 shadow-sm">
+          <Navbar />
+        </div>
+      )}
+      <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/benefits" element={<BenefitsPage />} />
@@ -62,8 +63,20 @@ const App = () => (
               <Route path="/cfo" element={<CfoPage />} />
               <Route path="/logbook" element={<LogbookPage />} />
               <Route path="/settings" element={<SettingsPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+          </Routes>
+    </>
+  );
+};
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <LanguageProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AppLayout />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>

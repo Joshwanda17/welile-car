@@ -250,7 +250,7 @@ export default function VehiclesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-[#4c35e6]/20 flex flex-col pb-24">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-[#4e158e]/20 flex flex-col pb-24">
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-grow flex flex-col justify-start w-full">
 
@@ -267,7 +267,7 @@ export default function VehiclesPage() {
               className="w-full bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-400 font-bold text-sm"
             />
           </div>
-          <button className="w-14 h-14 bg-[#4c35e6] hover:bg-[#3f2bc2] text-white rounded-2xl flex items-center justify-center shadow-lg shadow-[#4c35e6]/20 transition-all">
+          <button className="w-14 h-14 bg-[#4e158e] hover:bg-[#3f2bc2] text-white rounded-2xl flex items-center justify-center shadow-lg shadow-[#4e158e]/20 transition-all">
             <SlidersHorizontal size={20} />
           </button>
         </div>
@@ -282,7 +282,7 @@ export default function VehiclesPage() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-5 py-2.5 rounded-2xl text-xs font-black tracking-wider transition-all border whitespace-nowrap ${
                   isSelected 
-                    ? 'bg-[#4c35e6] text-white border-[#4c35e6] shadow-md shadow-[#4c35e6]/10' 
+                    ? 'bg-[#4e158e] text-white border-[#4e158e] shadow-md shadow-[#4e158e]/10' 
                     : 'bg-white text-slate-600 border-slate-100 hover:border-slate-300'
                 }`}
               >
@@ -310,13 +310,13 @@ export default function VehiclesPage() {
                 onClick={() => setSelectedCarId(car.id)}
                 className={`bg-white rounded-[28px] border p-4 pb-5 flex flex-col justify-between cursor-pointer transition-all duration-300 relative ${
                   isSelected 
-                    ? 'border-[#4c35e6] ring-2 ring-[#4c35e6] shadow-lg shadow-[#4c35e6]/10 -translate-y-1' 
+                    ? 'border-[#4e158e] ring-2 ring-[#4e158e] shadow-lg shadow-[#4e158e]/10 -translate-y-1' 
                     : 'border-slate-100 hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5'
                 }`}
               >
                 {/* Floating Selection Indicator */}
                 {isSelected && (
-                  <span className="absolute top-4 left-4 bg-[#4c35e6] text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full">
+                  <span className="absolute top-4 left-4 bg-[#4e158e] text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full">
                     Selected
                   </span>
                 )}
@@ -357,7 +357,7 @@ export default function VehiclesPage() {
                     <span className="text-amber-400 font-black text-sm">★</span>
                     <span className="text-xs font-black text-slate-700">{car.rating}</span>
                     <span className="text-slate-300 text-[10px]">|</span>
-                    <span className="text-[11px] font-black text-[#4c35e6]">{car.priceStr}</span>
+                    <span className="text-[11px] font-black text-[#4e158e]">{car.priceStr}</span>
                   </div>
                   
                   <button 
@@ -406,13 +406,13 @@ export default function VehiclesPage() {
                   <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Selected Car</p>
                   <p className="text-xl font-extrabold text-slate-900 flex items-center gap-3">
                     {selectedCar.name} 
-                    <span className="text-[#4c35e6] bg-[#4c35e6]/10 px-3 py-1 rounded-full text-sm">{selectedCar.priceStr}</span>
+                    <span className="text-[#4e158e] bg-[#4e158e]/10 px-3 py-1 rounded-full text-sm">{selectedCar.priceStr}</span>
                   </p>
                 </div>
               </div>
               <button 
                 onClick={() => setShowFinancing(true)}
-                className="w-full sm:w-auto bg-[#4c35e6] hover:bg-[#3f2bc2] text-white px-8 py-4 rounded-xl font-bold text-[15px] shadow-lg shadow-[#4c35e6]/30 transition-all"
+                className="w-full sm:w-auto bg-[#4e158e] hover:bg-[#3f2bc2] text-white px-8 py-4 rounded-xl font-bold text-[15px] shadow-lg shadow-[#4e158e]/30 transition-all"
               >
                 View Payment Schedule
               </button>
@@ -448,7 +448,7 @@ export default function VehiclesPage() {
               <div className="p-8 md:p-12 lg:flex gap-12">
                 <div className="lg:w-1/3 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-slate-100 pb-8 lg:pb-0 lg:pr-12">
                   <h2 className="text-3xl font-extrabold text-slate-900 mb-2">{selectedCar.name}</h2>
-                  <p className="text-lg text-[#4c35e6] font-bold mb-6">
+                  <p className="text-lg text-[#4e158e] font-bold mb-6">
                     {formatCurrency(carPrice)} <span className="text-xs font-semibold text-slate-400 capitalize">({carCondition})</span>
                   </p>
                   <img src={selectedCar.image} alt={selectedCar.name} className="w-full h-auto object-contain mix-blend-multiply drop-shadow-xl mb-6" />
@@ -466,7 +466,7 @@ export default function VehiclesPage() {
                         onClick={() => handleConditionChange('used')}
                         className={`py-2 rounded-lg text-xs font-black transition-all ${
                           carCondition === 'used'
-                            ? 'bg-white text-[#4c35e6] shadow-sm'
+                            ? 'bg-white text-[#4e158e] shadow-sm'
                             : 'text-slate-500 hover:text-slate-800'
                         }`}
                       >
@@ -477,7 +477,7 @@ export default function VehiclesPage() {
                         onClick={() => handleConditionChange('new')}
                         className={`py-2 rounded-lg text-xs font-black transition-all ${
                           carCondition === 'new'
-                            ? 'bg-white text-[#4c35e6] shadow-sm'
+                            ? 'bg-white text-[#4e158e] shadow-sm'
                             : 'text-slate-500 hover:text-slate-800'
                         }`}
                       >
@@ -533,7 +533,7 @@ export default function VehiclesPage() {
                         step={500000}
                         value={customPrice}
                         onChange={(e) => setCustomPrice(Number(e.target.value))}
-                        className="w-full h-1.5 rounded-lg bg-slate-200 accent-[#4c35e6] cursor-pointer"
+                        className="w-full h-1.5 rounded-lg bg-slate-200 accent-[#4e158e] cursor-pointer"
                       />
                       
                       {/* Presets */}
@@ -569,7 +569,7 @@ export default function VehiclesPage() {
 
                   <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
                     <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Target Deposit (30%)</p>
-                    <p className="text-3xl font-black text-[#4c35e6] mb-2">{formatCurrency(targetAmount)}</p>
+                    <p className="text-3xl font-black text-[#4e158e] mb-2">{formatCurrency(targetAmount)}</p>
                     <p className="text-sm font-medium text-slate-500 mb-3">Required before handing over the vehicle. We finance the remaining 70%.</p>
                     <div className="border-t border-slate-200/60 pt-3">
                       <p className="text-xs font-bold text-emerald-600 flex items-center gap-1.5">
@@ -618,28 +618,28 @@ export default function VehiclesPage() {
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
                         <div 
                           onClick={() => setSelectedSchedule('daily')}
-                          className={`bg-white border-2 rounded-2xl p-6 transition-all cursor-pointer ${selectedSchedule === 'daily' ? 'border-[#4c35e6] shadow-md shadow-[#4c35e6]/10' : 'border-slate-100 hover:border-slate-300 hover:shadow-lg'}`}
+                          className={`bg-white border-2 rounded-2xl p-6 transition-all cursor-pointer ${selectedSchedule === 'daily' ? 'border-[#4e158e] shadow-md shadow-[#4e158e]/10' : 'border-slate-100 hover:border-slate-300 hover:shadow-lg'}`}
                         >
-                          <p className={`text-sm font-bold uppercase tracking-wider mb-2 ${selectedSchedule === 'daily' ? 'text-[#4c35e6]' : 'text-slate-500'}`}>Daily</p>
+                          <p className={`text-sm font-bold uppercase tracking-wider mb-2 ${selectedSchedule === 'daily' ? 'text-[#4e158e]' : 'text-slate-500'}`}>Daily</p>
                           <p className="text-xl font-black text-slate-900">{formatCurrency(dailyPayment)}</p>
                           <p className="text-xs font-bold text-slate-400 mt-2">365 payments</p>
                         </div>
                         
                         <div 
                           onClick={() => setSelectedSchedule('weekly')}
-                          className={`bg-white border-2 rounded-2xl p-6 transition-all cursor-pointer ${selectedSchedule === 'weekly' ? 'border-[#4c35e6] shadow-md shadow-[#4c35e6]/10' : 'border-slate-100 hover:border-slate-300 hover:shadow-lg'}`}
+                          className={`bg-white border-2 rounded-2xl p-6 transition-all cursor-pointer ${selectedSchedule === 'weekly' ? 'border-[#4e158e] shadow-md shadow-[#4e158e]/10' : 'border-slate-100 hover:border-slate-300 hover:shadow-lg'}`}
                         >
-                          <p className={`text-sm font-bold uppercase tracking-wider mb-2 ${selectedSchedule === 'weekly' ? 'text-[#4c35e6]' : 'text-slate-500'}`}>Weekly</p>
+                          <p className={`text-sm font-bold uppercase tracking-wider mb-2 ${selectedSchedule === 'weekly' ? 'text-[#4e158e]' : 'text-slate-500'}`}>Weekly</p>
                           <p className="text-xl font-black text-slate-900">{formatCurrency(weeklyPayment)}</p>
                           <p className="text-xs font-bold text-slate-400 mt-2">52 payments</p>
                         </div>
 
                         <div 
                           onClick={() => setSelectedSchedule('monthly')}
-                          className={`bg-white border-2 rounded-2xl p-6 transition-all cursor-pointer relative overflow-hidden ${selectedSchedule === 'monthly' ? 'border-[#4c35e6] shadow-md shadow-[#4c35e6]/10' : 'border-slate-100 hover:border-slate-300 hover:shadow-lg'}`}
+                          className={`bg-white border-2 rounded-2xl p-6 transition-all cursor-pointer relative overflow-hidden ${selectedSchedule === 'monthly' ? 'border-[#4e158e] shadow-md shadow-[#4e158e]/10' : 'border-slate-100 hover:border-slate-300 hover:shadow-lg'}`}
                         >
-                          <div className="absolute top-0 right-0 bg-[#4c35e6] text-white text-[10px] font-bold px-3 py-1.5 rounded-bl-lg">POPULAR</div>
-                          <p className={`text-sm font-bold uppercase tracking-wider mb-2 ${selectedSchedule === 'monthly' ? 'text-[#4c35e6]' : 'text-slate-500'}`}>Monthly</p>
+                          <div className="absolute top-0 right-0 bg-[#4e158e] text-white text-[10px] font-bold px-3 py-1.5 rounded-bl-lg">POPULAR</div>
+                          <p className={`text-sm font-bold uppercase tracking-wider mb-2 ${selectedSchedule === 'monthly' ? 'text-[#4e158e]' : 'text-slate-500'}`}>Monthly</p>
                           <p className="text-xl font-black text-slate-900">{formatCurrency(monthlyPayment)}</p>
                           <p className="text-xs font-bold text-slate-400 mt-2">12 payments</p>
                         </div>
@@ -647,7 +647,7 @@ export default function VehiclesPage() {
 
                       <button 
                         onClick={() => setKycModalStep(1)}
-                        className="w-full bg-slate-900 hover:bg-[#4c35e6] text-white font-bold py-4 rounded-2xl transition-colors shadow-xl"
+                        className="w-full bg-slate-900 hover:bg-[#4e158e] text-white font-bold py-4 rounded-2xl transition-colors shadow-xl"
                       >
                         Confirm & Proceed
                       </button>
@@ -660,9 +660,9 @@ export default function VehiclesPage() {
                       <div className="space-y-4">
                         <button 
                           onClick={() => { setPaymentSource('wallet'); setKycModalStep(3); }}
-                          className="w-full bg-white border-2 border-slate-100 p-6 rounded-2xl flex items-center gap-4 hover:border-[#4c35e6] hover:bg-[#4c35e6]/5 transition-all text-left group"
+                          className="w-full bg-white border-2 border-slate-100 p-6 rounded-2xl flex items-center gap-4 hover:border-[#4e158e] hover:bg-[#4e158e]/5 transition-all text-left group"
                         >
-                          <div className="w-12 h-12 bg-[#4c35e6]/10 text-[#4c35e6] rounded-full flex items-center justify-center font-black group-hover:bg-[#4c35e6] group-hover:text-white transition-colors">
+                          <div className="w-12 h-12 bg-[#4e158e]/10 text-[#4e158e] rounded-full flex items-center justify-center font-black group-hover:bg-[#4e158e] group-hover:text-white transition-colors">
                             W
                           </div>
                           <div>
@@ -702,7 +702,7 @@ export default function VehiclesPage() {
                             value={mobileNumber}
                             onChange={(e) => setMobileNumber(e.target.value)}
                             placeholder="e.g. 077X XXX XXX"
-                            className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-4 font-bold text-slate-900 focus:outline-none focus:border-[#4c35e6] focus:bg-white transition-colors"
+                            className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-4 font-bold text-slate-900 focus:outline-none focus:border-[#4e158e] focus:bg-white transition-colors"
                           />
                         </div>
                         <div>
@@ -717,7 +717,7 @@ export default function VehiclesPage() {
                         <button 
                           onClick={() => setKycModalStep(3)}
                           disabled={!mobileNumber}
-                          className="w-full mt-4 bg-slate-900 hover:bg-[#4c35e6] disabled:bg-slate-300 text-white font-bold py-4 rounded-xl transition-colors shadow-lg"
+                          className="w-full mt-4 bg-slate-900 hover:bg-[#4e158e] disabled:bg-slate-300 text-white font-bold py-4 rounded-xl transition-colors shadow-lg"
                         >
                           Send Prompt
                         </button>
@@ -729,7 +729,7 @@ export default function VehiclesPage() {
                     </div>
                   ) : kycModalStep === 3 ? (
                     <div className="py-20 flex flex-col items-center justify-center animate-in fade-in duration-300">
-                      <div className="w-16 h-16 border-4 border-slate-200 border-t-[#4c35e6] rounded-full animate-spin mb-6"></div>
+                      <div className="w-16 h-16 border-4 border-slate-200 border-t-[#4e158e] rounded-full animate-spin mb-6"></div>
                       <h3 className="text-2xl font-bold text-slate-900 mb-2">Processing Payment...</h3>
                       <p className="text-slate-500 font-medium text-center">
                         {paymentSource === 'wallet' 
@@ -750,7 +750,7 @@ export default function VehiclesPage() {
                       
                       <button 
                         onClick={() => navigate('/logbook')}
-                        className="w-full bg-[#4c35e6] hover:bg-[#3f2bc2] text-white font-bold py-4 rounded-xl transition-colors shadow-lg"
+                        className="w-full bg-[#4e158e] hover:bg-[#3f2bc2] text-white font-bold py-4 rounded-xl transition-colors shadow-lg"
                       >
                         Go to My Wallet
                       </button>
