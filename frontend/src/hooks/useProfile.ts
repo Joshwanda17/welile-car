@@ -266,16 +266,31 @@ export function useApplyGrowth() {
 }
 
 export function useRequestFinancing() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
-      if (!user) throw new Error('Not authenticated');
-      updateMockProfile(user.id, { financing_unlocked: true, financing_status: 'pending' });
+    mutationFn: async ({ carId, carName, carPrice, requestedAmount }: { carId: string, carName: string, carPrice: number, requestedAmount: number }) => {
+      if (!user || !token) throw new Error('Not authenticated');
+      
+      const res = await fetch(`http://${window.location.hostname}:3005/api/loans/apply`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ carId, carName, carPrice, requestedAmount })
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to submit loan application');
+      }
+
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardSummary'] });
     },
   });
 }
