@@ -11,7 +11,7 @@ const SavingsDashboard = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-            <PiggyBank size={24} className="text-[#4e158e] mb-4" />
+            <PiggyBank size={24} className="text-[#4C158D] mb-4" />
             <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Total Savings Held</p>
             <p className="text-2xl font-black text-slate-800">{formatUGX(450000000)}</p>
           </div>

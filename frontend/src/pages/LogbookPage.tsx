@@ -45,7 +45,7 @@ export default function LogbookPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-200 flex justify-center selection:bg-[#4e158e]/20 font-sans sm:py-8">
+    <div className="min-h-screen bg-slate-200 flex justify-center selection:bg-[#4C158D]/20 font-sans sm:py-8">
       
       {/* Mobile Device Simulator Container */}
       <main className="w-full max-w-[400px] bg-white min-h-screen sm:min-h-[850px] relative sm:rounded-[40px] shadow-2xl sm:border-[8px] sm:border-slate-800 overflow-hidden flex flex-col">

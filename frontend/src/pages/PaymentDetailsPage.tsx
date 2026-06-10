@@ -1,0 +1,280 @@
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, CheckCircle2, Sparkles, Upload } from 'lucide-react';
+import { carsData, Car } from '@/data/cars';
+import { formatUGX } from '@/lib/format';
+
+const PaymentDetailsPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const searchParams = new URLSearchParams(location.search);
+  const method = searchParams.get('method');
+  const carId = searchParams.get('carId');
+  const deficitStr = searchParams.get('deficit');
+  const deficit = deficitStr ? parseInt(deficitStr, 10) : 0;
+
+  const [car, setCar] = useState<Car | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [ussdMessage, setUssdMessage] = useState('');
+
+  // Form states
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [expiry, setExpiry] = useState('');
+  const [cvv, setCvv] = useState('');
+  const [receiptUploaded, setReceiptUploaded] = useState(false);
+
+  useEffect(() => {
+    if (carId) {
+      const foundCar = carsData.find((c) => c.id === carId);
+      if (foundCar) setCar(foundCar);
+    }
+  }, [carId]);
+
+  const handleConfirm = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsProcessing(true);
+    
+    if (method === 'mtn' || method === 'airtel' || (method === 'wallet' && deficit > 0)) {
+      setUssdMessage('Connecting to USSD... Please check your phone to enter your Mobile Money PIN.');
+      setTimeout(() => {
+        setUssdMessage('Processing transaction...');
+        setTimeout(() => {
+          setIsProcessing(false);
+          setUssdMessage('');
+          setSuccess(true);
+          setTimeout(() => navigate('/vehicles'), 3000);
+        }, 1500);
+      }, 3000);
+    } else {
+      setTimeout(() => {
+        setIsProcessing(false);
+        setSuccess(true);
+        setTimeout(() => navigate('/vehicles'), 3000);
+      }, 2000);
+    }
+  };
+
+  if (!car) return null;
+
+  return (
+    <div className="min-h-screen bg-background pb-20">
+      <header className="sticky top-0 z-40 bg-surface/80 backdrop-blur-md border-b border-border/40 p-4 flex items-center gap-4">
+        <Link to="/wallet" className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary/50 text-foreground">
+          <ChevronLeft size={24} />
+        </Link>
+        <h1 className="text-xl font-bold font-heading">Payment Details</h1>
+      </header>
+
+      <main className="p-4 max-w-lg mx-auto">
+        <AnimatePresence>
+          {isProcessing && ussdMessage && (
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+            >
+              <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl flex flex-col items-center">
+                <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-6" />
+                <h3 className="text-xl font-bold font-heading mb-2 text-slate-800">Awaiting PIN</h3>
+                <p className="text-muted-foreground font-medium">{ussdMessage}</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {success ? (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="py-20 flex flex-col items-center text-center space-y-4"
+            >
+              <div className="w-24 h-24 bg-success/20 text-success rounded-full flex items-center justify-center mb-4">
+                <Sparkles size={48} />
+              </div>
+              <h2 className="text-3xl font-bold font-heading">Payment Successful!</h2>
+              <p className="text-muted-foreground text-lg">You are now the proud owner of the {car.name}.</p>
+              <p className="text-sm mt-4 text-primary font-medium animate-pulse">Redirecting to marketplace...</p>
+            </motion.div>
+          ) : (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              
+              {/* Order Summary */}
+              <div className="bg-white rounded-2xl p-4 shadow-sm border border-border/50 mb-6 flex gap-4 items-center">
+                <img src={car.image} alt={car.name} className="w-24 h-16 object-contain mix-blend-multiply bg-secondary/50 rounded-lg p-1" />
+                <div>
+                  <p className="text-sm text-muted-foreground font-medium uppercase tracking-wider mb-1">Order Summary</p>
+                  <p className="font-bold text-lg leading-tight">{car.name}</p>
+                  <p className="text-primary font-bold">{formatUGX(car.priceUgx)}</p>
+                </div>
+              </div>
+
+              <form onSubmit={handleConfirm} className="space-y-6">
+                
+                {/* Mobile Money Form */}
+                {(method === 'mtn' || method === 'airtel') && (
+                  <div className="bg-white p-5 rounded-2xl shadow-sm border border-border/50 space-y-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                        <span className="material-symbols-outlined">phone_iphone</span>
+                      </div>
+                      <h3 className="font-bold font-heading text-lg">
+                        {method === 'mtn' ? 'MTN MoMo' : 'Airtel Money'} Details
+                      </h3>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold mb-2">Mobile Number</label>
+                      <input 
+                        type="tel" 
+                        required
+                        placeholder={method === 'mtn' ? '077/078...' : '070/075...'}
+                        className="w-full h-14 bg-surface rounded-xl px-4 border-2 border-border focus:border-primary focus:ring-0 outline-none transition-colors"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Please ensure your mobile money account has sufficient funds. You will receive a prompt on your phone to enter your PIN to confirm the payment.
+                    </p>
+                  </div>
+                )}
+
+                {/* Credit Card Form */}
+                {method === 'card' && (
+                  <div className="bg-white p-5 rounded-2xl shadow-sm border border-border/50 space-y-4">
+                     <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                        <span className="material-symbols-outlined">credit_card</span>
+                      </div>
+                      <h3 className="font-bold font-heading text-lg">Credit Card Details</h3>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold mb-2">Card Number</label>
+                      <input 
+                        type="text" 
+                        required
+                        placeholder="0000 0000 0000 0000"
+                        className="w-full h-14 bg-surface rounded-xl px-4 border-2 border-border focus:border-primary outline-none transition-colors"
+                        value={cardNumber}
+                        onChange={(e) => setCardNumber(e.target.value)}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">Expiry Date</label>
+                        <input 
+                          type="text" 
+                          required
+                          placeholder="MM/YY"
+                          className="w-full h-14 bg-surface rounded-xl px-4 border-2 border-border focus:border-primary outline-none transition-colors"
+                          value={expiry}
+                          onChange={(e) => setExpiry(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">CVV</label>
+                        <input 
+                          type="password" 
+                          required
+                          maxLength={3}
+                          placeholder="***"
+                          className="w-full h-14 bg-surface rounded-xl px-4 border-2 border-border focus:border-primary outline-none transition-colors"
+                          value={cvv}
+                          onChange={(e) => setCvv(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Bank Transfer Form */}
+                {method === 'bank' && (
+                  <div className="bg-white p-5 rounded-2xl shadow-sm border border-border/50 space-y-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                        <span className="material-symbols-outlined">account_balance</span>
+                      </div>
+                      <h3 className="font-bold font-heading text-lg">Bank Transfer Details</h3>
+                    </div>
+                    <div className="bg-surface p-4 rounded-xl border border-border/60">
+                      <p className="text-sm text-muted-foreground mb-1">Bank Name</p>
+                      <p className="font-bold mb-3">Stanbic Bank Uganda</p>
+                      <p className="text-sm text-muted-foreground mb-1">Account Name</p>
+                      <p className="font-bold mb-3">Welile Car Limited</p>
+                      <p className="text-sm text-muted-foreground mb-1">Account Number</p>
+                      <p className="font-mono text-lg font-bold text-primary tracking-wider">9030001234567</p>
+                    </div>
+                    <div className="pt-2">
+                      <label className="block text-sm font-semibold mb-3">Upload Transfer Receipt</label>
+                      <button 
+                        type="button"
+                        onClick={() => setReceiptUploaded(true)}
+                        className={`w-full h-16 border-2 border-dashed rounded-xl flex items-center justify-center gap-2 transition-colors ${
+                          receiptUploaded ? 'bg-success/10 border-success text-success' : 'border-primary/40 bg-primary/5 text-primary hover:bg-primary/10'
+                        }`}
+                      >
+                        {receiptUploaded ? (
+                          <><CheckCircle2 size={20} /> Receipt Uploaded</>
+                        ) : (
+                          <><Upload size={20} /> Tap to Upload PDF/Image</>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Wallet Form */}
+                {method === 'wallet' && (
+                  <div className="bg-white p-5 rounded-2xl shadow-sm border border-border/50 space-y-4 text-center">
+                    <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
+                      <span className="material-symbols-outlined text-3xl">account_balance_wallet</span>
+                    </div>
+                    {deficit > 0 ? (
+                      <>
+                        <h3 className="font-bold font-heading text-xl">Top Up Wallet</h3>
+                        <p className="text-muted-foreground text-sm mb-4">
+                          Your wallet balance is insufficient by <strong>{formatUGX(deficit)}</strong>. Please top up via Mobile Money to proceed with the purchase.
+                        </p>
+                        <div className="text-left mt-4">
+                          <label className="block text-sm font-semibold mb-2">Mobile Number</label>
+                          <input 
+                            type="tel" 
+                            required
+                            placeholder="077/070..."
+                            className="w-full h-14 bg-surface rounded-xl px-4 border-2 border-border focus:border-primary focus:ring-0 outline-none transition-colors"
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <h3 className="font-bold font-heading text-xl">Pay from Wallet</h3>
+                        <p className="text-muted-foreground">
+                          The amount of <strong>{formatUGX(car.priceUgx)}</strong> will be instantly deducted from your Welile Wallet balance.
+                        </p>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                <button 
+                  type="submit"
+                  disabled={isProcessing || (method === 'bank' && !receiptUploaded)}
+                  className="w-full h-14 gradient-primary text-primary-foreground font-bold rounded-2xl disabled:opacity-50 text-lg flex items-center justify-center gap-2 shadow-lg shadow-primary/20 mt-8"
+                >
+                  {isProcessing ? 'Processing Payment...' : 'Confirm Payment'}
+                </button>
+
+              </form>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
+    </div>
+  );
+};
+
+export default PaymentDetailsPage;

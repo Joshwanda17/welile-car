@@ -88,7 +88,7 @@ const CfoPage = () => {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
-        <div className="w-12 h-12 border-4 border-slate-200 border-t-[#4e158e] rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-slate-200 border-t-[#4C158D] rounded-full animate-spin"></div>
         <div className="text-slate-500 font-bold text-sm tracking-wide">Verifying CFO credentials...</div>
       </div>
     );
@@ -97,7 +97,7 @@ const CfoPage = () => {
   // CFO Gateway Login
   if (!isCfo) {
     return (
-      <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 px-4 py-12 text-white font-sans selection:bg-purple-500/20">
+      <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 px-4 py-12 text-white font-sans selection:bg-primary/20">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -287,7 +287,7 @@ const CfoPage = () => {
             .logo-title {
               font-size: 26px;
               font-weight: 800;
-              color: #4e158e;
+              color: #4C158D;
               letter-spacing: -0.5px;
             }
             .subtitle {
@@ -638,14 +638,14 @@ const CfoPage = () => {
           </div>
 
           <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-md shadow-slate-100/50 flex flex-col justify-between h-32 relative overflow-hidden">
-            <div className="absolute top-4 right-4 w-10 h-10 rounded-2xl bg-purple-50 flex items-center justify-center text-[#4e158e]">
+            <div className="absolute top-4 right-4 w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-[#4C158D]">
               <TrendingUp size={20} />
             </div>
             <div>
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Growth Credited</p>
               <p className="text-2xl font-black text-slate-800 mt-1">{formatUGX(totalGrowthCredited)}</p>
             </div>
-            <p className="text-[10px] text-[#4e158e] font-bold flex items-center gap-0.5 mt-2">
+            <p className="text-[10px] text-[#4C158D] font-bold flex items-center gap-0.5 mt-2">
               <TrendingUp size={12} /> 2% - 5% Yields Disbursed
             </p>
           </div>
@@ -685,7 +685,7 @@ const CfoPage = () => {
             onClick={() => setActivePanelTab('operations')}
             className={`px-6 py-3 text-sm font-extrabold transition-all border-b-2 flex items-center gap-2 ${
               activePanelTab === 'operations'
-                ? 'border-[#4e158e] text-[#4e158e]'
+                ? 'border-[#4C158D] text-[#4C158D]'
                 : 'border-transparent text-slate-400 hover:text-slate-600'
             }`}
           >
@@ -696,7 +696,7 @@ const CfoPage = () => {
             onClick={() => setActivePanelTab('statements')}
             className={`px-6 py-3 text-sm font-extrabold transition-all border-b-2 flex items-center gap-2 ${
               activePanelTab === 'statements'
-                ? 'border-[#4e158e] text-[#4e158e]'
+                ? 'border-[#4C158D] text-[#4C158D]'
                 : 'border-transparent text-slate-400 hover:text-slate-600'
             }`}
           >
@@ -715,7 +715,7 @@ const CfoPage = () => {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div>
                     <h3 className="text-lg font-extrabold text-slate-800 flex items-center gap-2">
-                      <UserCheck size={20} className="text-[#4e158e]" />
+                      <UserCheck size={20} className="text-[#4C158D]" />
                       Credit & Financing Requests Queue
                     </h3>
                     <p className="text-xs text-slate-400 font-semibold mt-0.5">Admin-submitted approvals awaiting CFO sign-off</p>
@@ -924,7 +924,7 @@ const CfoPage = () => {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-6">
               <div>
                 <h3 className="text-xl font-extrabold text-slate-800 flex items-center gap-2">
-                  <FileText size={22} className="text-[#4e158e]" />
+                  <FileText size={22} className="text-[#4C158D]" />
                   Corporate Financial Statements
                 </h3>
                 <p className="text-xs text-slate-400 font-semibold mt-1">Generated dynamically from active platform balances</p>
@@ -996,7 +996,7 @@ const CfoPage = () => {
                         </tr>
                         <tr className="bg-slate-50 font-bold border-t border-slate-200">
                           <td className="p-4 pl-4 text-slate-800">Total Revenue</td>
-                          <td className="p-4 text-right text-[#4e158e]">{formatUGX(financingRevenue)}</td>
+                          <td className="p-4 text-right text-[#4C158D]">{formatUGX(financingRevenue)}</td>
                         </tr>
 
                         <tr>
@@ -1050,7 +1050,7 @@ const CfoPage = () => {
                           </tr>
                           <tr className="bg-slate-100 font-black text-sm border-t-2 border-slate-300">
                             <td className="p-4 text-slate-800">Total Assets</td>
-                            <td className="p-4 text-right text-[#4e158e]">{formatUGX(totalAssets)}</td>
+                            <td className="p-4 text-right text-[#4C158D]">{formatUGX(totalAssets)}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -1085,7 +1085,7 @@ const CfoPage = () => {
                           </tr>
                           <tr className="bg-slate-100 font-black text-sm border-t-2 border-slate-300">
                             <td className="p-4 text-slate-800">Total Liabilities & Equity</td>
-                            <td className="p-4 text-right text-[#4e158e]">{formatUGX(totalLiabilitiesAndEquity)}</td>
+                            <td className="p-4 text-right text-[#4C158D]">{formatUGX(totalLiabilitiesAndEquity)}</td>
                           </tr>
                         </tbody>
                       </table>

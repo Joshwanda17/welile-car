@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { API_URL } from '@/config';
 import { useAuth } from '@/hooks/useAuth';
+import { carsData, Car } from '@/data/cars';
 import { useProfile, useTransactions, useDeposit } from '@/hooks/useProfile';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedNumber from '@/components/AnimatedNumber';
 import BottomNav from '@/components/BottomNav';
 import { formatUGX, formatDate } from '@/lib/format';
-import { ArrowDownLeft, ArrowUpRight, Sparkles, X } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, Sparkles, X, Check } from 'lucide-react';
 
 const paymentMethods = [
   { id: 'mtn', name: 'MTN MoMo', color: '#FFCC00' },
@@ -16,9 +17,18 @@ const paymentMethods = [
 
 const quickAmounts = [50000, 100000, 200000, 500000];
 
+const purchasePaymentMethods = [
+  { id: 'wallet', name: 'Fund from Wallet', icon: 'account_balance_wallet' },
+  { id: 'mtn', name: 'MTN MoMo', icon: 'phone_iphone' },
+  { id: 'airtel', name: 'Airtel Money', icon: 'phone_iphone' },
+  { id: 'bank', name: 'Bank Transfer', icon: 'account_balance' },
+  { id: 'card', name: 'Credit Card', icon: 'credit_card' },
+];
+
 const WalletPage = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { data: profile, isLoading } = useProfile();
   const { data: transactions = [] } = useTransactions();
   const deposit = useDeposit();
@@ -30,6 +40,25 @@ const WalletPage = () => {
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loadingDashboard, setLoadingDashboard] = useState(true);
   const { session } = useAuth();
+
+  // Purchase State
+  const searchParams = new URLSearchParams(location.search);
+  const purchaseCarId = searchParams.get('purchaseCarId');
+  const [purchaseCar, setPurchaseCar] = useState<Car | null>(null);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [purchaseMethod, setPurchaseMethod] = useState('wallet');
+  const [purchaseSuccess, setPurchaseSuccess] = useState(false);
+  const [isPurchasing, setIsPurchasing] = useState(false);
+
+  useEffect(() => {
+    if (purchaseCarId) {
+      const car = carsData.find(c => c.id === purchaseCarId);
+      if (car) {
+        setPurchaseCar(car);
+        setShowPurchaseModal(true);
+      }
+    }
+  }, [purchaseCarId]);
 
   useEffect(() => {
     if (!user) return;
@@ -79,6 +108,14 @@ const WalletPage = () => {
 
     setAmount('');
     setShowDeposit(false);
+  };
+
+  const handlePurchase = () => {
+    setShowPurchaseModal(false);
+    const deficit = purchaseCar && dashboardData?.savings?.totalSaved < purchaseCar.priceUgx 
+      ? purchaseCar.priceUgx - dashboardData.savings.totalSaved 
+      : 0;
+    navigate(`/payment-details?method=${purchaseMethod}&carId=${purchaseCar?.id}&deficit=${deficit}`);
   };
 
   const handleCalculate = async () => {
@@ -143,13 +180,13 @@ const WalletPage = () => {
 
       {/* Savings Calculator Widget */}
       <div className="px-6 mt-6">
-        <div className="bg-purple-600 rounded-3xl p-6 text-white shadow-lg shadow-purple-600/30">
+        <div className="bg-primary rounded-3xl p-6 text-white shadow-lg shadow-primary/30">
           <h2 className="font-extrabold text-lg flex items-center gap-2 mb-4">
             <Sparkles size={18} /> Savings Calculator
           </h2>
           <div className="space-y-4">
             <div>
-              <p className="text-xs text-purple-200 font-bold mb-1">Vehicle Target Deposit (UGX)</p>
+              <p className="text-xs text-primary/40 font-bold mb-1">Vehicle Target Deposit (UGX)</p>
               <input 
                 type="number" 
                 placeholder="e.g. 15000000"
@@ -159,7 +196,7 @@ const WalletPage = () => {
               />
             </div>
             <div>
-              <p className="text-xs text-purple-200 font-bold mb-1">Monthly Contribution (UGX)</p>
+              <p className="text-xs text-primary/40 font-bold mb-1">Monthly Contribution (UGX)</p>
               <input 
                 type="number" 
                 placeholder="e.g. 500000"
@@ -172,11 +209,11 @@ const WalletPage = () => {
             {calcResult && (
               <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-white/10 p-4 rounded-xl border border-white/20">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-purple-100">Estimated Time</span>
+                  <span className="text-sm font-medium text-primary/20">Estimated Time</span>
                   <span className="font-bold">{calcResult.estimatedMonths} Months</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-purple-100">Total Interest Earned</span>
+                  <span className="text-sm font-medium text-primary/20">Total Interest Earned</span>
                   <span className="font-bold text-emerald-300">+{formatUGX(calcResult.estimatedInterest)}</span>
                 </div>
               </motion.div>
@@ -185,7 +222,7 @@ const WalletPage = () => {
             <button 
               onClick={handleCalculate}
               disabled={isCalculating}
-              className="w-full bg-white text-purple-600 font-bold py-3 rounded-xl hover:bg-slate-50 transition disabled:opacity-50"
+              className="w-full bg-white text-primary font-bold py-3 rounded-xl hover:bg-slate-50 transition disabled:opacity-50"
             >
               {isCalculating ? 'Calculating...' : 'Calculate Estimation'}
             </button>
@@ -224,7 +261,7 @@ const WalletPage = () => {
             onClick={() => setShowDeposit(false)}>
             <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25 }}
-              className="bg-card w-full max-w-lg rounded-t-3xl p-6"
+              className="bg-white w-full max-w-lg rounded-t-3xl p-6"
               onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="font-bold font-heading text-lg">Deposit Money</h2>
@@ -253,6 +290,80 @@ const WalletPage = () => {
                 className="mt-6 w-full h-12 gradient-primary text-primary-foreground font-semibold rounded-2xl">
                 Confirm Deposit
               </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Checkout / Purchase Modal */}
+      <AnimatePresence>
+        {showPurchaseModal && purchaseCar && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-slate-900/60 z-50 flex items-end justify-center"
+            onClick={() => !isPurchasing && !purchaseSuccess && setShowPurchaseModal(false)}>
+            <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25 }}
+              className="bg-white w-full max-w-lg rounded-t-3xl p-6 relative overflow-y-auto max-h-[90vh] shadow-2xl"
+              onClick={e => e.stopPropagation()}>
+              
+              {purchaseSuccess ? (
+                <div className="py-12 flex flex-col items-center text-center">
+                  <div className="w-20 h-20 bg-success/20 text-success rounded-full flex items-center justify-center mb-6">
+                    <Sparkles size={40} />
+                  </div>
+                  <h2 className="text-2xl font-bold font-heading mb-2">Purchase Successful!</h2>
+                  <p className="text-muted-foreground">You are now the proud owner of the {purchaseCar.name}.</p>
+                  <p className="text-sm mt-4 text-muted-foreground animate-pulse">Redirecting to marketplace...</p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="font-bold font-heading text-lg">Checkout</h2>
+                    <button onClick={() => setShowPurchaseModal(false)}><X size={20} className="text-muted-foreground" /></button>
+                  </div>
+                  
+                  <div className="bg-[#4C158D] p-4 rounded-2xl flex gap-4 items-center mb-6 text-white shadow-lg shadow-[#4C158D]/30 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/20" />
+                    <img src={purchaseCar.image} alt={purchaseCar.name} className="w-24 h-16 object-contain drop-shadow-md relative z-10" />
+                    <div className="relative z-10">
+                      <p className="font-bold">{purchaseCar.name}</p>
+                      <p className="text-white/90 font-bold text-lg drop-shadow-sm">{formatUGX(purchaseCar.priceUgx)}</p>
+                    </div>
+                  </div>
+
+                  <p className="text-sm font-bold mb-3 uppercase tracking-wider text-muted-foreground">Select Payment Method</p>
+                  <div className="space-y-3 mb-6">
+                    {purchasePaymentMethods.map(pm => (
+                      <button 
+                        key={pm.id} 
+                        onClick={() => setPurchaseMethod(pm.id)}
+                        className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all ${
+                          purchaseMethod === pm.id ? 'border-primary bg-primary/5' : 'border-border hover:border-border/80'
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-primary">{pm.icon}</span>
+                        <span className="font-bold text-sm flex-1 text-left">{pm.name}</span>
+                        {purchaseMethod === pm.id && <div className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center"><Check size={12} strokeWidth={4} /></div>}
+                      </button>
+                    ))}
+                  </div>
+
+                  {purchaseMethod === 'wallet' && dashboardData?.savings?.totalSaved < purchaseCar.priceUgx && (
+                    <div className="mb-6 bg-orange-500/10 text-orange-600 p-3 rounded-xl text-sm font-semibold flex items-center gap-2">
+                      <span className="material-symbols-outlined">info</span>
+                      Your wallet balance is low. You will be prompted to top up your wallet via Mobile Money in the next step.
+                    </div>
+                  )}
+
+                  <button 
+                    onClick={handlePurchase}
+                    disabled={isPurchasing}
+                    className="w-full h-14 gradient-primary text-primary-foreground font-bold rounded-2xl disabled:opacity-50 text-lg flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
+                  >
+                    Continue to Payment Details
+                  </button>
+                </>
+              )}
             </motion.div>
           </motion.div>
         )}

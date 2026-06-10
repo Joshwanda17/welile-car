@@ -23,6 +23,7 @@ import AdminPage from "./pages/AdminPage";
 import CfoPage from "./pages/CfoPage";
 import LogbookPage from "./pages/LogbookPage";
 import SettingsPage from "./pages/SettingsPage";
+import PaymentDetailsPage from "./pages/PaymentDetailsPage";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ExecutiveDashboard from "./pages/admin/ExecutiveDashboard";
@@ -37,7 +38,8 @@ const queryClient = new QueryClient();
 const CUSTOMER_ROUTES = [
   '/dashboard', '/wallet', '/vehicles', '/cars', '/profile', 
   '/financing', '/logbook', '/settings', '/savings-history', 
-  '/applications', '/my-vehicle', '/repayments', '/support'
+  '/applications', '/my-vehicle', '/repayments', '/support',
+  '/payment-details'
 ];
 
 const AppLayout = () => {
@@ -73,6 +75,7 @@ const AppLayout = () => {
         <Route path="/vehicles/:id" element={<ProtectedRoute><CustomerLayout><CarDetailsPage /></CustomerLayout></ProtectedRoute>} />
         <Route path="/cars" element={<ProtectedRoute><CustomerLayout><CarsPage /></CustomerLayout></ProtectedRoute>} />
         <Route path="/wallet" element={<ProtectedRoute><CustomerLayout><WalletPage /></CustomerLayout></ProtectedRoute>} />
+        <Route path="/payment-details" element={<ProtectedRoute><CustomerLayout><PaymentDetailsPage /></CustomerLayout></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><CustomerLayout><ProfilePage /></CustomerLayout></ProtectedRoute>} />
         <Route path="/financing" element={<ProtectedRoute><CustomerLayout><FinancingPage /></CustomerLayout></ProtectedRoute>} />
         <Route path="/logbook" element={<ProtectedRoute><CustomerLayout><LogbookPage /></CustomerLayout></ProtectedRoute>} />

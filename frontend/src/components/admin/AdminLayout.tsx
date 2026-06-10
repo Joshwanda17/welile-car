@@ -31,7 +31,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
                 to={link.path}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${
                   isActive 
-                    ? 'bg-[#4e158e] text-white shadow-lg shadow-[#4e158e]/20' 
+                    ? 'bg-[#4C158D] text-white shadow-lg shadow-[#4C158D]/20' 
                     : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
               >

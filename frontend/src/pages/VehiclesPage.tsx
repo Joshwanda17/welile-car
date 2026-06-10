@@ -34,11 +34,11 @@ export default function VehiclesPage() {
   });
 
   return (
-    <div className="bg-[#f8f9fa] min-h-screen pb-24 font-sans text-slate-900 selection:bg-[#4e158e]/20 selection:text-[#4e158e]">
+    <div className="bg-[#f8f9fa] min-h-screen pb-24 font-sans text-slate-900 selection:bg-[#4C158D]/20 selection:text-[#4C158D]">
       
       {/* Header section (retained from old styling but without sticky Navbar as AppLayout provides it) */}
       <header className="bg-white border-b border-slate-200/60 pt-6 pb-6 px-4 sm:px-6 relative overflow-hidden z-10 shadow-sm">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[#4e158e]/5 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#4C158D]/5 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2"></div>
         
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-4">
@@ -52,16 +52,16 @@ export default function VehiclesPage() {
           
           <div className="flex gap-2">
             <div className="relative flex-1 group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#4e158e] transition-colors" size={18} />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#4C158D] transition-colors" size={18} />
               <input 
                 type="text" 
                 placeholder="Search for your ideal car..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 pl-11 pr-4 text-sm font-semibold placeholder:text-slate-400 placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-[#4e158e]/20 focus:border-[#4e158e] transition-all shadow-inner"
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 pl-11 pr-4 text-sm font-semibold placeholder:text-slate-400 placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-[#4C158D]/20 focus:border-[#4C158D] transition-all shadow-inner"
               />
             </div>
-            <button className="bg-[#4e158e] text-white p-3.5 rounded-2xl flex items-center justify-center hover:bg-[#3f2bc2] hover:shadow-lg hover:shadow-[#4e158e]/20 transition-all">
+            <button className="bg-[#4C158D] text-white p-3.5 rounded-2xl flex items-center justify-center hover:bg-[#3f2bc2] hover:shadow-lg hover:shadow-[#4C158D]/20 transition-all">
               <SlidersHorizontal size={18} />
             </button>
           </div>
@@ -80,7 +80,7 @@ export default function VehiclesPage() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-5 py-2.5 rounded-2xl text-xs font-black tracking-wider transition-all border whitespace-nowrap ${
                   isSelected 
-                    ? 'bg-[#4e158e] text-white border-[#4e158e] shadow-md shadow-[#4e158e]/10' 
+                    ? 'bg-[#4C158D] text-white border-[#4C158D] shadow-md shadow-[#4C158D]/10' 
                     : 'bg-white text-slate-600 border-slate-100 hover:border-slate-300'
                 }`}
               >
@@ -143,7 +143,7 @@ export default function VehiclesPage() {
                     <span className="text-amber-400 font-black text-sm">★</span>
                     <span className="text-xs font-black text-slate-700">{car.rating}</span>
                     <span className="text-slate-300 text-[10px]">|</span>
-                    <span className="text-[11px] font-black text-[#4e158e]">{car.priceStr}</span>
+                    <span className="text-[11px] font-black text-[#4C158D]">{car.priceStr}</span>
                   </div>
                   
                   <button 

@@ -41,7 +41,7 @@ const AuthPage: React.FC = () => {
           residence,
         });
       }
-      navigate('/dashboard');
+      navigate('/vehicles');
     } catch (err: any) {
       setError(err.message || 'Authentication failed. Please try again.');
     }

@@ -171,10 +171,10 @@ const CarDetailsPage = () => {
                 </button>
               )}
               <button 
-                disabled={!isEligible}
-                className={`w-full font-bold py-4 rounded-xl transition-all ${isEligible ? 'bg-primary hover:bg-[#3f2bc2] text-white shadow-lg shadow-primary/20' : 'bg-slate-100 text-slate-400 cursor-not-allowed'}`}
+                onClick={() => navigate(`/wallet?purchaseCarId=${car.id}`)}
+                className={`w-full font-bold py-4 rounded-xl transition-all bg-primary hover:bg-[#3f2bc2] text-white shadow-lg shadow-primary/20`}
               >
-                Apply For Financing
+                Purchase Vehicle
               </button>
             </div>
           </div>
@@ -193,7 +193,7 @@ const CarDetailsPage = () => {
             </div>
           )}
           {car.condition.serviceRecords && (
-            <div className="bg-purple-50 text-purple-700 border border-purple-100 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 shrink-0">
+            <div className="bg-primary/10 text-primary border border-primary/20 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 shrink-0">
               <CheckCircle2 size={16} /> Service Records Available
             </div>
           )}
