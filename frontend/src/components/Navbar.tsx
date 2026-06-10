@@ -15,9 +15,9 @@ export default function Navbar() {
   const getLinkClass = (path: string) => {
     const isActive = location.pathname === path;
     if (isActive) {
-      return "text-[#4c35e6] font-bold transition-colors";
+      return "text-[#4e158e] font-bold transition-colors";
     }
-    return "text-slate-600 hover:text-[#4c35e6] font-semibold transition-colors";
+    return "text-slate-600 hover:text-[#4e158e] font-semibold transition-colors";
   };
 
   return (
@@ -27,23 +27,22 @@ export default function Navbar() {
       <div className="flex flex-1 justify-start">
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="text-slate-800 hover:text-[#4c35e6] transition-colors focus:outline-none"
+          className="text-slate-800 hover:text-[#4e158e] transition-colors focus:outline-none"
         >
           {isMenuOpen ? <X size={24} strokeWidth={2.5} /> : <Menu size={24} strokeWidth={2.5} />}
         </button>
       </div>
 
       {/* Centered Logo */}
-      <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-        <Car className="text-[#4c35e6] hidden sm:block" size={28} />
-        <span className="font-chewy text-3xl sm:text-4xl md:text-5xl tracking-wide text-slate-900">Welile Cars</span>
+      <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
+        <img src="/welile_car_logo.png" alt="Welile Cars Logo" className="h-10 sm:h-12 md:h-14 object-contain" />
       </Link>
 
       {/* Right Container with Avatar */}
       <div className="flex flex-1 justify-end">
         <Link
           to="/profile"
-          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-purple-100 flex items-center justify-center text-[#4c35e6] shadow-sm hover:opacity-80 transition-opacity overflow-hidden"
+          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-purple-100 flex items-center justify-center text-[#4e158e] shadow-sm hover:opacity-80 transition-opacity overflow-hidden"
         >
           {user?.user_metadata?.avatar_url ? (
             <img

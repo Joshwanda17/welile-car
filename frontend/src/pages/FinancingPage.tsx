@@ -4,7 +4,8 @@ import { useProfile, useRequestFinancing, CARS } from '@/hooks/useProfile';
 import { motion } from 'framer-motion';
 import { formatUGX } from '@/lib/format';
 import BottomNav from '@/components/BottomNav';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { API_URL } from '@/config';
 
 const FinancingPage = () => {
   const { user, loading: authLoading } = useAuth();
@@ -12,9 +13,33 @@ const FinancingPage = () => {
   const { data: profile, isLoading } = useProfile();
   const requestFinancing = useRequestFinancing();
   const [plan, setPlan] = useState<'daily' | 'weekly' | 'monthly'>('daily');
+  
+  // Live Data State
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [loadingDashboard, setLoadingDashboard] = useState(true);
+  const { session } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`${API_URL}/dashboard/summary`, {
+          headers: { 'Authorization': `Bearer ${session?.access_token}` }
+        });
+        if (res.ok) {
+          setDashboardData(await res.json());
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoadingDashboard(false);
+      }
+    };
+    fetchData();
+  }, [user, session]);
 
   if (!authLoading && !user) { navigate('/'); return null; }
-  if (isLoading || !profile) {
+  if (isLoading || loadingDashboard || !profile || !dashboardData) {
     return <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="animate-pulse text-muted-foreground">Loading...</div>
     </div>;
@@ -23,10 +48,10 @@ const FinancingPage = () => {
   const car = CARS.find(c => c.id === profile.selected_car_id);
   if (!car) { navigate('/cars'); return null; }
 
-  const saved = profile.wallet_balance;
+  const saved = dashboardData.savings.totalSaved;
   const remaining = car.price - saved;
-  const target = car.price * 0.3;
-  const isUnlocked = saved >= target;
+  const target = dashboardData.savings.targetAmount || car.price * 0.3;
+  const isUnlocked = dashboardData.savings.progressPercent >= 100;
 
   const plans = {
     daily: { label: 'Daily', amount: Math.round(remaining / 180), period: '6 months' },
@@ -34,9 +59,19 @@ const FinancingPage = () => {
     monthly: { label: 'Monthly', amount: Math.round(remaining / 6), period: '6 months' },
   };
 
-  const handleProceed = () => {
-    requestFinancing.mutate();
-    navigate('/dashboard');
+  const handleProceed = async () => {
+    try {
+      await requestFinancing.mutateAsync({
+        carId: car.id,
+        carName: car.name,
+        carPrice: car.price,
+        requestedAmount: remaining
+      });
+      navigate('/dashboard');
+    } catch (e) {
+      console.error(e);
+      alert('Application failed. Please try again later.');
+    }
   };
 
   return (
@@ -101,12 +136,12 @@ const FinancingPage = () => {
           </div>
         )}
 
-        {profile.financing_status !== 'none' && (
+        {dashboardData.vehicle && (
           <div className="bg-secondary rounded-2xl p-4 text-center">
             <p className="text-xs text-muted-foreground uppercase tracking-wider">Status</p>
-            <p className="font-semibold capitalize mt-1">{profile.financing_status}</p>
-            {profile.savings_locked && (
-              <p className="text-xs text-muted-foreground mt-2">🔒 Your savings are now part of your car ownership</p>
+            <p className="font-semibold capitalize mt-1">Application Submitted</p>
+            {dashboardData.journey.currentStep === 'Repayment' && (
+              <p className="text-xs text-muted-foreground mt-2">🔒 Your vehicle has been financed successfully!</p>
             )}
           </div>
         )}

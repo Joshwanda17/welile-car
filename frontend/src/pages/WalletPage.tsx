@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '@/config';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile, useTransactions, useDeposit } from '@/hooks/useProfile';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -25,19 +26,82 @@ const WalletPage = () => {
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('mtn');
 
+  // Live Data State
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [loadingDashboard, setLoadingDashboard] = useState(true);
+  const { session } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`${API_URL}/dashboard/summary`, {
+          headers: { 'Authorization': `Bearer ${session?.access_token}` }
+        });
+        if (res.ok) {
+          const json = await res.json();
+          setDashboardData(json);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoadingDashboard(false);
+      }
+    };
+    fetchData();
+  }, [user, session]);
+
+  // Calculator State
+  const [calcTarget, setCalcTarget] = useState('');
+  const [calcMonthly, setCalcMonthly] = useState('');
+  const [calcResult, setCalcResult] = useState<any>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
+
   if (!authLoading && !user) { navigate('/'); return null; }
-  if (isLoading || !profile) {
+  if (isLoading || loadingDashboard || !profile || !dashboardData) {
     return <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="animate-pulse text-muted-foreground">Loading...</div>
     </div>;
   }
 
-  const handleDeposit = () => {
+  const handleDeposit = async () => {
     const val = parseInt(amount);
     if (!val || val < 1000) return;
-    deposit.mutate({ amount: val, method });
+    await deposit.mutateAsync({ amount: val, method });
+    
+    // Refresh dashboard data
+    const res = await fetch(`${API_URL}/dashboard/summary`, {
+      headers: { 'Authorization': `Bearer ${session?.access_token}` }
+    });
+    if (res.ok) {
+      setDashboardData(await res.json());
+    }
+
     setAmount('');
     setShowDeposit(false);
+  };
+
+  const handleCalculate = async () => {
+    if (!calcTarget || !calcMonthly) return;
+    setIsCalculating(true);
+    try {
+      const res = await fetch(`${API_URL}/savings/calculate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetAmount: parseInt(calcTarget),
+          monthlyContribution: parseInt(calcMonthly)
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCalcResult(data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsCalculating(false);
+    }
   };
 
   const iconForType = (type: string) => {

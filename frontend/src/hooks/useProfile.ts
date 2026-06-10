@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from './useAuth';
+import { API_URL } from '@/config';
 
 // Mock Profile type
 export interface Profile {
@@ -150,39 +151,50 @@ export function useUpdateProfile() {
 }
 
 export function useTransactions() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   return useQuery({
     queryKey: ['transactions', user?.id],
     queryFn: async () => {
-      if (!user) return [];
-      return getMockTransactions(user.id);
+      if (!user || !token) return [];
+      const res = await fetch(`${API_URL}/transactions/history`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!res.ok) throw new Error('Failed to fetch transactions');
+      const data = await res.json();
+      return data.transactions;
     },
-    enabled: !!user,
+    enabled: !!user && !!token,
   });
 }
 
 export function useDeposit() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ amount, method }: { amount: number; method: string }) => {
-      if (!user) throw new Error('Not authenticated');
+      if (!user || !token) throw new Error('Not authenticated');
 
-      addMockTransaction(user.id, { type: 'deposit', amount, method });
-
-      const profile = getMockProfile(user.id);
-      updateMockProfile(user.id, {
-        wallet_balance: profile.wallet_balance + amount,
-        total_deposits: profile.total_deposits + amount,
-        deposits_this_month: profile.deposits_this_month + 1,
-        last_deposit_date: new Date().toISOString(),
+      const res = await fetch(`${API_URL}/transactions/deposit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ amount, method })
       });
+
+      if (!res.ok) {
+        throw new Error('Failed to deposit');
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardSummary'] });
     },
   });
 }
@@ -255,16 +267,31 @@ export function useApplyGrowth() {
 }
 
 export function useRequestFinancing() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
-      if (!user) throw new Error('Not authenticated');
-      updateMockProfile(user.id, { financing_unlocked: true, financing_status: 'pending' });
+    mutationFn: async ({ carId, carName, carPrice, requestedAmount }: { carId: string, carName: string, carPrice: number, requestedAmount: number }) => {
+      if (!user || !token) throw new Error('Not authenticated');
+      
+      const res = await fetch(`${API_URL}/loans/apply`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ carId, carName, carPrice, requestedAmount })
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to submit loan application');
+      }
+
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardSummary'] });
     },
   });
 }
