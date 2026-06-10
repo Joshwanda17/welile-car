@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Bell, Gift, ArrowUpRight, ArrowDownLeft, 
   Download, LayoutGrid, DollarSign, Home, 
-  Activity, Fingerprint, CreditCard, User, X
+  Activity, Fingerprint, CreditCard, User, X, Wallet, Car
 } from 'lucide-react';
 
 import vitzImg from '@/assets/car-vitz.jpg';
@@ -25,7 +25,7 @@ interface Transaction {
 
 export default function LogbookPage() {
   const navigate = useNavigate();
-  const [totalPaid] = useState<number>(0);
+  const [totalPaid] = useState<number>(4037960);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [selectedMerchant, setSelectedMerchant] = useState<string | null>(null);
   const remainingBalance = INITIAL_LOAN - totalPaid;
@@ -84,18 +84,63 @@ export default function LogbookPage() {
 
           {/* Main Balance Card with Cutout Design */}
           <div className="relative mb-8 mt-2">
-            {/* Main Purple Card */}
-            <div className="bg-[#310c87] text-white p-6 rounded-[32px] shadow-lg relative overflow-hidden z-10 h-[200px]">
-              <p className="text-[11px] text-white/60 font-bold uppercase tracking-wider mb-1">Remaining Balance</p>
-              <p className="text-3xl font-bold tracking-tight mb-10">{formatCurrency(remainingBalance)}</p>
+            <div className="bg-[#4c35e6] rounded-[32px] p-6 text-white shadow-2xl shadow-[#4c35e6]/30 relative overflow-hidden z-10">
+              {/* Active Badge */}
+              <div className="absolute top-6 right-6 flex items-center gap-1.5 bg-white/20 px-3 py-1 rounded-full backdrop-blur-md">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                <span className="text-[10px] font-bold tracking-wider text-white">ACTIVE</span>
+              </div>
               
-              {/* Decorative Intersecting Circles */}
-              <div className="absolute top-6 right-6 opacity-40 flex items-center">
-                <div className="w-5 h-5 rounded-full border-[1.5px] border-white"></div>
-                <div className="w-5 h-5 rounded-full border-[1.5px] border-white -ml-2"></div>
+              {/* Header */}
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#4c35e6]">
+                  <Wallet size={20} />
+                </div>
+                <p className="font-bold tracking-widest text-sm text-white/90 uppercase">Customer Wallet</p>
+              </div>
+
+              {/* Balance */}
+              <p className="text-xs text-white/70 uppercase tracking-widest mb-2 flex items-center gap-2 font-medium">
+                <Wallet size={14} className="opacity-70" /> WITHDRAWABLE BALANCE
+              </p>
+              <p className="text-4xl font-extrabold tracking-tight mb-8">Shs 25,000</p>
+
+              {/* 3 Grid Boxes */}
+              <div className="grid grid-cols-3 gap-3 mb-8">
+                <div className="bg-white/10 rounded-2xl p-3 flex flex-col items-center justify-center backdrop-blur-md">
+                   <Car size={18} className="text-white/70 mb-2" />
+                   <p className="text-[9px] text-white/60 uppercase tracking-wider mb-1 font-semibold">Vehicles</p>
+                   <p className="text-base font-bold">1</p>
+                </div>
+                <div className="bg-white/10 rounded-2xl p-3 flex flex-col items-center justify-center backdrop-blur-md">
+                   <Activity size={18} className="text-white/70 mb-2" />
+                   <p className="text-[9px] text-white/60 uppercase tracking-wider mb-1 font-semibold">Growth/Mo</p>
+                   <p className="text-base font-bold">5%</p>
+                </div>
+                <div className="bg-white/10 rounded-2xl p-3 flex flex-col items-center justify-center backdrop-blur-md">
+                   <Fingerprint size={18} className="text-white/70 mb-2" />
+                   <p className="text-[9px] text-white/60 uppercase tracking-wider mb-1 font-semibold">Target</p>
+                   <p className="text-base font-bold">30%</p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between mb-4 px-1">
+                 <span className="text-white/80 text-sm font-medium">Invested (Deposits)</span>
+                 <span className="text-white font-bold">{formatCurrency(totalPaid)}</span>
+              </div>
+
+              {/* Banner at bottom */}
+              <div className="bg-[#3826a6] border border-[#5d46f5]/50 rounded-2xl p-4 shadow-inner">
+                 <p className="text-[10px] text-[#ffc107] font-bold tracking-widest uppercase flex items-center gap-1.5 mb-2">
+                   <Gift size={12} />
+                   BALANCE GROWING · 5% / INSTALLMENT
+                 </p>
+                 <p className="text-[13px] text-white/80 font-medium">
+                    <span className="font-bold text-white">{formatCurrency(totalPaid)}</span> parked · 
+                    <span className="text-emerald-400 font-bold ml-1">+{formatCurrency(totalPaid * 0.05)}</span> earned
+                 </p>
               </div>
             </div>
-
           </div>
 
           {/* Quick Actions Grid */}
@@ -185,14 +230,14 @@ export default function LogbookPage() {
                         <>
                           <p>To deposit funds into your Welile wallet, use the merchant codes below:</p>
                           <div className="space-y-3">
-                            <div onClick={() => setSelectedMerchant('MTN')} className="bg-[#ffcc00]/10 border border-[#ffcc00]/20 p-4 rounded-xl flex justify-between items-center cursor-pointer hover:bg-[#ffcc00]/20 transition-colors">
+                            <div onClick={() => setSelectedMerchant('MTN')} className="bg-yellow-50 border border-yellow-200 p-4 rounded-xl flex justify-between items-center cursor-pointer hover:bg-yellow-100 transition-colors">
                               <div>
                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">MTN Merchant Code</p>
                                 <p className="font-extrabold text-slate-900 text-[18px] tracking-tight">090777</p>
                               </div>
                               <button className="text-[#310c87] font-bold text-[12px] bg-white px-3 py-1.5 rounded-lg shadow-sm border border-slate-100 pointer-events-none">Select</button>
                             </div>
-                            <div onClick={() => setSelectedMerchant('Airtel')} className="bg-[#ff0000]/5 border border-[#ff0000]/10 p-4 rounded-xl flex justify-between items-center cursor-pointer hover:bg-[#ff0000]/10 transition-colors">
+                            <div onClick={() => setSelectedMerchant('Airtel')} className="bg-red-50 border border-red-200 p-4 rounded-xl flex justify-between items-center cursor-pointer hover:bg-red-100 transition-colors">
                               <div>
                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Airtel Merchant Code</p>
                                 <p className="font-extrabold text-slate-900 text-[18px] tracking-tight">4380664</p>

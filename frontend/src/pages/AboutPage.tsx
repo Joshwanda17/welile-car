@@ -33,27 +33,7 @@ export default function AboutPage() {
               Our vehicle financing solutions are fresh and simple and will benefit your journey greatly. Learn more about our work!
             </motion.p>
             
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="flex flex-col sm:flex-row items-center gap-6 pt-4"
-            >
-              <div className="relative w-full sm:w-auto flex-1 max-w-md">
-                <input 
-                  type="email" 
-                  placeholder="info@yourdomain.com"
-                  className="w-full bg-white/10 border border-white/20 text-white placeholder:text-white/50 rounded-full py-4 pl-6 pr-32 focus:outline-none focus:ring-2 focus:ring-white/50 backdrop-blur-sm"
-                />
-                <button className="absolute right-2 top-2 bottom-2 px-6 bg-white text-[#4c35e6] font-bold rounded-full hover:bg-slate-50 transition-colors shadow-lg shadow-white/10">
-                  Subscribe
-                </button>
-              </div>
-              <button className="flex items-center gap-3 text-white font-bold hover:text-white/80 transition-colors shrink-0">
-                <PlayCircle size={40} className="fill-white/20 stroke-[1.5px]" />
-                Watch Video Overview
-              </button>
-            </motion.div>
+
           </div>
 
           {/* Hero Phone Mockup */}
@@ -159,22 +139,7 @@ export default function AboutPage() {
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight">
               Use Your Phone or Device to Manage Everything
             </h2>
-            <div className="space-y-6">
-              {[
-                { icon: Smartphone, title: "Proactively syndicate open-source e-markets." },
-                { icon: MonitorSmartphone, title: "Without seamlessly empower interface." },
-                { icon: Layers, title: "Completely syndicate cutting-edge interfaces." }
-              ].map((item, idx) => (
-                <div key={idx} className="flex gap-4">
-                  <div className="w-12 h-12 bg-purple-50 text-[#4c35e6] rounded-xl flex items-center justify-center shrink-0">
-                    <item.icon size={24} />
-                  </div>
-                  <div>
-                    <p className="font-medium text-slate-600 mt-2.5">{item.title}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+
           </div>
 
           <div className="flex-1 relative flex justify-center lg:justify-end min-h-[600px] w-full">

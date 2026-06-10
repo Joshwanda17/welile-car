@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedNumber from '@/components/AnimatedNumber';
 import BottomNav from '@/components/BottomNav';
 import { formatUGX, formatDate } from '@/lib/format';
-import { ArrowDownLeft, ArrowUpRight, Sparkles, X } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, Sparkles, X, Wallet, Car, TrendingUp, ShieldCheck } from 'lucide-react';
 
 const paymentMethods = [
   { id: 'mtn', name: 'MTN MoMo', color: '#FFCC00' },
@@ -52,28 +52,75 @@ const WalletPage = () => {
         <h1 className="text-2xl font-bold font-heading">Wallet</h1>
       </div>
 
-      <div className="px-6 mt-4">
-        <div className="bg-card rounded-2xl p-5 card-shadow">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider">Available Balance</p>
-          <AnimatedNumber value={profile.wallet_balance} className="text-3xl font-bold font-heading block mt-1" />
-          {profile.savings_locked && (
-            <p className="text-xs text-warning font-medium mt-2">🔒 Savings locked for car ownership</p>
-          )}
-          <button onClick={() => setShowDeposit(true)} disabled={profile.savings_locked}
-            className="mt-4 w-full h-11 gradient-primary text-primary-foreground font-semibold rounded-2xl text-sm disabled:opacity-50">
-            Deposit Money
-          </button>
-        </div>
-      </div>
+      <div className="px-4 mt-4">
+        <div className="bg-[#6b2cc4] rounded-[32px] p-6 text-white shadow-2xl shadow-[#6b2cc4]/30 relative overflow-hidden">
+          {/* Active Badge */}
+          <div className="absolute top-6 right-6 flex items-center gap-1.5 bg-white/20 px-3 py-1 rounded-full backdrop-blur-md">
+            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+            <span className="text-[10px] font-bold tracking-wider text-white">ACTIVE</span>
+          </div>
+          
+          {/* Header */}
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#6b2cc4]">
+              <Wallet size={20} />
+            </div>
+            <p className="font-bold tracking-widest text-sm text-white/90">WELILE WALLET</p>
+          </div>
 
-      <div className="px-6 mt-4 grid grid-cols-2 gap-3">
-        <div className="bg-card rounded-2xl p-4 card-shadow">
-          <p className="text-[10px] text-muted-foreground uppercase">Total Deposits</p>
-          <p className="text-lg font-bold font-heading mt-1">{formatUGX(profile.total_deposits)}</p>
-        </div>
-        <div className="bg-card rounded-2xl p-4 card-shadow">
-          <p className="text-[10px] text-muted-foreground uppercase">Growth Earned</p>
-          <p className="text-lg font-bold font-heading mt-1 text-gradient">{formatUGX(profile.growth_earned)}</p>
+          {/* Balance */}
+          <p className="text-xs text-white/70 uppercase tracking-widest mb-2 flex items-center gap-2 font-medium">
+            <Wallet size={14} className="opacity-70" /> WITHDRAWABLE BALANCE
+          </p>
+          <AnimatedNumber value={profile.wallet_balance} className="text-4xl md:text-5xl font-extrabold tracking-tight block mb-8" />
+
+          {/* 3 Grid Boxes */}
+          <div className="grid grid-cols-3 gap-3 mb-8">
+            <div className="bg-white/10 rounded-2xl p-3 flex flex-col items-center justify-center backdrop-blur-md">
+               <Car size={18} className="text-white/70 mb-2" />
+               <p className="text-[9px] text-white/60 uppercase tracking-wider mb-1 font-semibold">Vehicles</p>
+               <p className="text-base font-bold">1</p>
+            </div>
+            <div className="bg-white/10 rounded-2xl p-3 flex flex-col items-center justify-center backdrop-blur-md">
+               <TrendingUp size={18} className="text-white/70 mb-2" />
+               <p className="text-[9px] text-white/60 uppercase tracking-wider mb-1 font-semibold">Growth/Mo</p>
+               <p className="text-base font-bold">5%</p>
+            </div>
+            <div className="bg-white/10 rounded-2xl p-3 flex flex-col items-center justify-center backdrop-blur-md">
+               <ShieldCheck size={18} className="text-white/70 mb-2" />
+               <p className="text-[9px] text-white/60 uppercase tracking-wider mb-1 font-semibold">Target</p>
+               <p className="text-base font-bold">30%</p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between mb-4 px-1">
+             <span className="text-white/80 text-sm font-medium">Invested (Deposits)</span>
+             <span className="text-white font-bold">{formatUGX(profile.total_deposits)}</span>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex gap-3 mb-8">
+             <button onClick={() => setShowDeposit(true)} disabled={profile.savings_locked} className="flex-1 bg-white text-[#6b2cc4] rounded-2xl py-3.5 px-4 flex items-center justify-center gap-2 font-bold text-sm shadow-sm hover:bg-white/90 disabled:opacity-50 transition-all">
+               <ArrowDownLeft size={18} className="text-emerald-500" />
+               Deposit
+             </button>
+             <button className="flex-1 bg-white text-[#6b2cc4] rounded-2xl py-3.5 px-4 flex items-center justify-center gap-2 font-bold text-sm shadow-sm hover:bg-white/90 transition-all">
+               <ArrowUpRight size={18} className="text-rose-500" />
+               Withdraw
+             </button>
+          </div>
+
+          {/* Banner at bottom */}
+          <div className="bg-[#4d169e] border border-[#7f41df]/50 rounded-2xl p-4 shadow-inner">
+             <p className="text-[10px] text-[#ffc107] font-bold tracking-widest uppercase flex items-center gap-1.5 mb-2">
+               <Sparkles size={12} />
+               BALANCE GROWING · 5% / INSTALLMENT
+             </p>
+             <p className="text-sm text-white/80 font-medium">
+                <span className="font-bold text-white">{formatUGX(profile.total_deposits)}</span> parked · 
+                <span className="text-emerald-400 font-bold ml-1">+{formatUGX(profile.growth_earned)}</span> earned
+             </p>
+          </div>
         </div>
       </div>
 

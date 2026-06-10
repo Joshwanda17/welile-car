@@ -2,7 +2,7 @@ import { PlayCircle, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
-import harrierImg from '@/assets/harrier-white.png';
+
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -61,9 +61,9 @@ export default function LandingPage() {
           className="flex-1 relative w-full flex justify-end"
         >
           <img 
-            src={harrierImg} 
-            alt="Toyota Harrier" 
-            className="w-full h-auto object-contain max-w-2xl drop-shadow-2xl translate-x-4 mix-blend-multiply" 
+            src="/FLYER.jpeg" 
+            alt="Welile Flyer" 
+            className="w-full h-auto object-contain max-w-2xl drop-shadow-2xl translate-x-4 rounded-2xl" 
           />
         </motion.div>
       </main>

@@ -78,13 +78,17 @@ export default function Navbar() {
               className="absolute top-24 left-4 sm:left-6 bg-white shadow-2xl rounded-2xl p-6 border border-slate-100 z-50 min-w-[240px] flex flex-col gap-6"
             >
               <div className="border-b border-slate-100 pb-4 mb-2">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Navigation Menu</p>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Navigation</p>
               </div>
               <Link to="/profile" onClick={() => setIsMenuOpen(false)} className={getLinkClass("/profile")}>{t('settings.account')}</Link>
               <Link to="/logbook" onClick={() => setIsMenuOpen(false)} className={getLinkClass("/logbook")}>{t('nav.wallet')}</Link>
-              <Link to="/admin" onClick={() => setIsMenuOpen(false)} className={getLinkClass("/admin")}>Admin Panel</Link>
-              <Link to="/cfo" onClick={() => setIsMenuOpen(false)} className={getLinkClass("/cfo")}>CFO Portal</Link>
-              <Link to="/settings" onClick={() => setIsMenuOpen(false)} className={getLinkClass("/settings")}>{t('settings.menu')}</Link>
+              {isAdmin && (
+                <Link to="/admin" onClick={() => setIsMenuOpen(false)} className={getLinkClass("/admin")}>Admin Panel</Link>
+              )}
+              {isCfo && (
+                <Link to="/cfo" onClick={() => setIsMenuOpen(false)} className={getLinkClass("/cfo")}>CFO Portal</Link>
+              )}
+              <Link to="/settings" onClick={() => setIsMenuOpen(false)} className={getLinkClass("/settings")}>Settings</Link>
               <Link to="/about" onClick={() => setIsMenuOpen(false)} className="text-slate-600 hover:text-[#4c35e6] font-semibold transition-colors">{t('nav.about')}</Link>
             </motion.div>
           </>
