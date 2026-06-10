@@ -18,7 +18,7 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // Create user
+    // Create user and a linked SavingsAccount
     const user = await prisma.user.create({
       data: {
         email,
@@ -26,7 +26,13 @@ const register = async (req, res) => {
         name,
         phone,
         status: 'PENDING_KYC',
-        kycStatus: 'PENDING'
+        kycStatus: 'PENDING',
+        savingsAccount: {
+          create: {
+            balance: 0.00,
+            targetAmount: 90000000 // Default target, user can update later
+          }
+        }
       }
     });
 

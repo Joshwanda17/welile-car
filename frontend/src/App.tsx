@@ -24,6 +24,7 @@ import CfoPage from "./pages/CfoPage";
 import LogbookPage from "./pages/LogbookPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import ExecutiveDashboard from "./pages/admin/ExecutiveDashboard";
 import LoanDashboard from "./pages/admin/LoanDashboard";
 import RecoveryDashboard from "./pages/admin/RecoveryDashboard";
@@ -58,31 +59,31 @@ const AppLayout = () => {
         <Route path="/auth" element={<AuthPage />} />
         
         {/* Admin Routes */}
-        <Route path="/admin" element={<AdminPage />} />
-        <Route path="/admin/executive" element={<ExecutiveDashboard />} />
-        <Route path="/admin/loans" element={<LoanDashboard />} />
-        <Route path="/admin/recovery" element={<RecoveryDashboard />} />
-        <Route path="/admin/savings" element={<SavingsDashboard />} />
-        <Route path="/admin/dealers" element={<DealerDashboard />} />
-        <Route path="/cfo" element={<CfoPage />} />
+        <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminPage /></ProtectedRoute>} />
+        <Route path="/admin/executive" element={<ProtectedRoute requireAdmin><ExecutiveDashboard /></ProtectedRoute>} />
+        <Route path="/admin/loans" element={<ProtectedRoute requireAdmin><LoanDashboard /></ProtectedRoute>} />
+        <Route path="/admin/recovery" element={<ProtectedRoute requireAdmin><RecoveryDashboard /></ProtectedRoute>} />
+        <Route path="/admin/savings" element={<ProtectedRoute requireAdmin><SavingsDashboard /></ProtectedRoute>} />
+        <Route path="/admin/dealers" element={<ProtectedRoute requireAdmin><DealerDashboard /></ProtectedRoute>} />
+        <Route path="/cfo" element={<ProtectedRoute><CfoPage /></ProtectedRoute>} />
 
         {/* Customer Routes with Sidebar */}
-        <Route path="/dashboard" element={<CustomerLayout><DashboardPage /></CustomerLayout>} />
-        <Route path="/vehicles" element={<CustomerLayout><VehiclesPage /></CustomerLayout>} />
-        <Route path="/vehicles/:id" element={<CustomerLayout><CarDetailsPage /></CustomerLayout>} />
-        <Route path="/cars" element={<CustomerLayout><CarsPage /></CustomerLayout>} />
-        <Route path="/wallet" element={<CustomerLayout><WalletPage /></CustomerLayout>} />
-        <Route path="/profile" element={<CustomerLayout><ProfilePage /></CustomerLayout>} />
-        <Route path="/financing" element={<CustomerLayout><FinancingPage /></CustomerLayout>} />
-        <Route path="/logbook" element={<CustomerLayout><LogbookPage /></CustomerLayout>} />
-        <Route path="/settings" element={<CustomerLayout><SettingsPage /></CustomerLayout>} />
+        <Route path="/dashboard" element={<ProtectedRoute><CustomerLayout><DashboardPage /></CustomerLayout></ProtectedRoute>} />
+        <Route path="/vehicles" element={<ProtectedRoute><CustomerLayout><VehiclesPage /></CustomerLayout></ProtectedRoute>} />
+        <Route path="/vehicles/:id" element={<ProtectedRoute><CustomerLayout><CarDetailsPage /></CustomerLayout></ProtectedRoute>} />
+        <Route path="/cars" element={<ProtectedRoute><CustomerLayout><CarsPage /></CustomerLayout></ProtectedRoute>} />
+        <Route path="/wallet" element={<ProtectedRoute><CustomerLayout><WalletPage /></CustomerLayout></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><CustomerLayout><ProfilePage /></CustomerLayout></ProtectedRoute>} />
+        <Route path="/financing" element={<ProtectedRoute><CustomerLayout><FinancingPage /></CustomerLayout></ProtectedRoute>} />
+        <Route path="/logbook" element={<ProtectedRoute><CustomerLayout><LogbookPage /></CustomerLayout></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><CustomerLayout><SettingsPage /></CustomerLayout></ProtectedRoute>} />
         
         {/* Placeholder Routes mapped to existing pages for now */}
-        <Route path="/savings-history" element={<CustomerLayout><WalletPage /></CustomerLayout>} />
-        <Route path="/applications" element={<CustomerLayout><FinancingPage /></CustomerLayout>} />
-        <Route path="/my-vehicle" element={<CustomerLayout><LogbookPage /></CustomerLayout>} />
-        <Route path="/repayments" element={<CustomerLayout><FinancingPage /></CustomerLayout>} />
-        <Route path="/support" element={<CustomerLayout><div className="p-8"><h1 className="text-2xl font-bold mb-4 text-slate-900">Support</h1><p className="text-slate-500">Support center coming soon.</p></div></CustomerLayout>} />
+        <Route path="/savings-history" element={<ProtectedRoute><CustomerLayout><WalletPage /></CustomerLayout></ProtectedRoute>} />
+        <Route path="/applications" element={<ProtectedRoute><CustomerLayout><FinancingPage /></CustomerLayout></ProtectedRoute>} />
+        <Route path="/my-vehicle" element={<ProtectedRoute><CustomerLayout><LogbookPage /></CustomerLayout></ProtectedRoute>} />
+        <Route path="/repayments" element={<ProtectedRoute><CustomerLayout><FinancingPage /></CustomerLayout></ProtectedRoute>} />
+        <Route path="/support" element={<ProtectedRoute><CustomerLayout><div className="p-8"><h1 className="text-2xl font-bold mb-4 text-slate-900">Support</h1><p className="text-slate-500">Support center coming soon.</p></div></CustomerLayout></ProtectedRoute>} />
       </Routes>
     </>
   );
