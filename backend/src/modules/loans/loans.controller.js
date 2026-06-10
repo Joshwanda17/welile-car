@@ -3,10 +3,26 @@ const { calculateRiskScore } = require('../../shared/utils/risk.util');
 
 const prisma = new PrismaClient();
 
+const VEHICLE_CATALOG = {
+  'vitz': { name: 'Toyota Vitz', price: 25000000 },
+  'premio': { name: 'Toyota Premio', price: 35000000 },
+  'wish': { name: 'Toyota Wish', price: 30000000 },
+  'passo': { name: 'Toyota Passo', price: 20000000 },
+  'harrier': { name: 'Toyota Harrier', price: 65000000 }
+};
+
 const applyForLoan = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { carId, carName, carPrice, requestedAmount } = req.body;
+    const { carId, requestedAmount } = req.body;
+
+    const catalogVehicle = VEHICLE_CATALOG[carId];
+    if (!catalogVehicle) {
+      return res.status(400).json({ error: 'Invalid vehicle selected' });
+    }
+
+    const trueCarPrice = catalogVehicle.price;
+    const trueCarName = catalogVehicle.name;
 
     // Fetch user and savings to calculate risk score
     const user = await prisma.user.findUnique({
@@ -17,7 +33,7 @@ const applyForLoan = async (req, res) => {
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     const totalSaved = Number(user.savingsAccount?.balance || 0);
-    const vehicleTarget = carPrice * 0.3; // 30% deposit requirement
+    const vehicleTarget = trueCarPrice * 0.3; // Secure 30% deposit requirement
 
     // Calculate Risk Score
     const riskScore = calculateRiskScore(user, totalSaved, vehicleTarget);
@@ -36,27 +52,30 @@ const applyForLoan = async (req, res) => {
 
     // Since the frontend sends string IDs for cars (e.g., 'wish'), we'll find or create a numeric Vehicle for it.
     let vehicle = await prisma.vehicle.findFirst({
-      where: { make: carName }
+      where: { make: trueCarName }
     });
 
     if (!vehicle) {
       vehicle = await prisma.vehicle.create({
         data: {
-          make: carName,
-          model: carId, // 'wish'
+          make: trueCarName,
+          model: carId,
           year: 2015,
-          price: carPrice,
+          price: trueCarPrice,
           status: 'RESERVED'
         }
       });
     }
 
     // Create the Application
+    // We enforce that the requested amount is exactly what is needed (70%), we ignore frontend requestedAmount to be perfectly secure
+    const secureRequestedAmount = trueCarPrice - vehicleTarget;
+
     const application = await prisma.loanApplication.create({
       data: {
         userId,
         vehicleId: vehicle.id,
-        requestedAmount: requestedAmount,
+        requestedAmount: secureRequestedAmount,
         riskScore: riskScore,
         status: status
       }
@@ -64,39 +83,58 @@ const applyForLoan = async (req, res) => {
 
     // If approved, create a Financing Agreement and lock savings
     if (status === 'APPROVED') {
-      await prisma.$transaction([
+      await prisma.$transaction(async (tx) => {
         // Freeze savings
-        prisma.savingsAccount.update({
+        await tx.savingsAccount.update({
           where: { userId },
           data: { status: 'FROZEN' }
-        }),
+        });
+
         // Create Financing Agreement
-        prisma.financingAgreement.create({
+        const monthlyInstallmentAmount = secureRequestedAmount / 6;
+        const agreement = await tx.financingAgreement.create({
           data: {
             customerId: userId,
             vehicleId: vehicle.id,
-            principalAmount: requestedAmount,
-            monthlyInstallment: requestedAmount / 6, // 6 months simplistic term
-            interestRate: 15.00, // 15% flat rate
+            principalAmount: secureRequestedAmount,
+            monthlyInstallment: monthlyInstallmentAmount,
+            interestRate: 15.00,
             endDate: new Date(new Date().setMonth(new Date().getMonth() + 6)),
             status: 'ACTIVE'
           }
-        }),
+        });
+
+        // Generate 6 Monthly Repayments
+        const repaymentsData = [];
+        for (let i = 1; i <= 6; i++) {
+          const dueDate = new Date();
+          dueDate.setMonth(dueDate.getMonth() + i);
+          repaymentsData.push({
+            agreementId: agreement.id,
+            amount: monthlyInstallmentAmount,
+            dueDate: dueDate,
+            status: 'PENDING'
+          });
+        }
+        await tx.repayment.createMany({
+          data: repaymentsData
+        });
+
         // Log action
-        prisma.auditLog.create({
+        await tx.auditLog.create({
           data: {
             userId,
             action: 'LOAN_APPROVED',
-            details: `Auto-approved loan for ${carName} based on score ${riskScore}`
+            details: `Auto-approved loan for ${trueCarName} based on score ${riskScore}. Generated 6 repayments.`
           }
-        })
-      ]);
+        });
+      });
     } else {
       await prisma.auditLog.create({
         data: {
           userId,
           action: 'LOAN_APPLIED',
-          details: `Applied for loan for ${carName}. Status: ${status}. Score: ${riskScore}`
+          details: `Applied for loan for ${trueCarName}. Status: ${status}. Score: ${riskScore}`
         }
       });
     }

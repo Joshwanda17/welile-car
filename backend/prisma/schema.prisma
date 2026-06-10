@@ -78,6 +78,8 @@ model SavingsTransaction {
   account      SavingsAccount    @relation(fields: [accountId], references: [id])
   amount       Decimal           @db.Decimal(12, 2)
   type         SavingsTxType
+  status       TransactionStatus @default(COMPLETED)
+  reference    String?           @unique
   date         DateTime          @default(now())
 }
 
@@ -171,6 +173,12 @@ enum SavingsTxType {
   WITHDRAWAL
   BONUS
   INTEREST
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
 }
 
 enum LoanAppStatus {
