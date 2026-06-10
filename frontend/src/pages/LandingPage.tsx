@@ -1,8 +1,5 @@
-import { PlayCircle, ChevronRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import Navbar from '@/components/Navbar';
-
+import { useEffect, useState, useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -109,9 +106,9 @@ const LandingPage = () => {
         <section className="relative min-h-[90vh] flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
-            src="/FLYER.jpeg" 
-            alt="Welile Flyer" 
-            className="w-full h-auto object-contain max-w-2xl drop-shadow-2xl translate-x-4 rounded-2xl" 
+            alt="Hero Background" 
+            className="w-full h-full object-cover" 
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuARR4aYRe1IMbxevQIQdgZibVigHO3oJW21upeowN2VoEqSriT9bCveZBQqnfOreFYfl22xwRHqioINeNG4HtsTALXiDNb5iH_t3z-U0sDovYXXNwpsH4eOn2VzMKYe0MtzWfisJrStB1tz3kkqDamu7g95UqTG1vinLoX4mwZSNE_Ec5H3F66h-guc4J7zztz0LAtfhwwgkXYlfUmM3R0mAYkxKIMo2rMhh2LS-6N0kquw9qSkZq3kbnxlK4H0bPC7KHwPMX9sjoBv"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary/20 to-transparent"></div>
         </div>
