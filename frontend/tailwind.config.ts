@@ -13,136 +13,146 @@ export default {
       },
     },
     extend: {
-      fontFamily: {
-        heading: ["Space Grotesk", "sans-serif"],
-        body: ["Inter", "sans-serif"],
-        "body-md": ["Manrope"],
-        "display-lg-mobile": ["Inter"],
-        "body-lg": ["Manrope"],
-        "headline-sm": ["Inter"],
-        "headline-md": ["Inter"],
-        "label-md": ["Manrope"],
-        "display-lg": ["Inter"]
-      },
-      fontSize: {
-        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
-        "display-lg-mobile": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }],
-        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
-        "headline-sm": ["24px", { lineHeight: "32px", fontWeight: "600" }],
-        "headline-md": ["32px", { lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600" }],
-        "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.05em", fontWeight: "600" }],
-        "display-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700" }]
-      },
-      spacing: {
-        "base": "8px",
-        "section-gap": "80px",
-        "container-padding-desktop": "32px",
-        "gutter": "24px",
-        "container-padding-mobile": "20px"
-      },
       colors: {
-        "primary-fixed-dim": "#d8b9ff",
-        "inverse-surface": "#2e3132",
-        "tertiary-fixed-dim": "#c8c6c5",
-        "on-secondary-fixed-variant": "#5e4200",
-        "primary-fixed": "#eddcff",
-        "error-container": "#ffdad6",
-        "inverse-primary": "#d8b9ff",
-        "surface-bright": "#f8f9fa",
-        "error": "#ba1a1a",
-        "tertiary": "#242424",
-        "secondary-fixed-dim": "#f9bc45",
-        "outline-variant": "#cdc3d4",
-        "surface-variant": "#e1e3e4",
-        "surface-container-highest": "#e1e3e4",
-        "on-secondary-container": "#725000",
-        "inverse-on-surface": "#f0f1f2",
-        "tertiary-fixed": "#e5e2e1",
-        "surface-container": "#edeeef",
-        "primary-container": "#4e158f",
-        "on-tertiary-fixed": "#1c1b1b",
-        "on-tertiary-fixed-variant": "#474746",
-        "on-primary-container": "#bc8cff",
-        "surface-container-low": "#f3f4f5",
-        "on-tertiary": "#ffffff",
-        "on-secondary": "#ffffff",
-        "on-tertiary-container": "#a4a3a2",
-        "on-error": "#ffffff",
-        "on-primary-fixed-variant": "#5c289d",
-        "surface-dim": "#d9dadb",
-        "surface-container-lowest": "#ffffff",
-        "on-background": "#191c1d",
-        "on-secondary-fixed": "#271900",
-        "on-primary-fixed": "#290055",
-        "on-surface": "#191c1d",
-        "outline": "#7c7483",
-        "on-error-container": "#93000a",
-        "surface-container-high": "#e7e8e9",
-        "secondary-container": "#ffc24a",
-        "tertiary-container": "#3a3939",
-        "surface-tint": "#7543b7",
-        "secondary-fixed": "#ffdea8",
-        "on-surface-variant": "#4b4452",
-        "surface": "#f8f9fa",
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
-        success: {
-          DEFAULT: "hsl(var(--success))",
-          foreground: "hsl(var(--success-foreground))",
-        },
-        warning: {
-          DEFAULT: "hsl(var(--warning))",
-          foreground: "hsl(var(--warning-foreground))",
-        },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
-        },
-      },
+      "on-surface": "#131b2e",
+      "surface": "#faf8ff",
+      "secondary-fixed-dim": "#3cddc7",
+      "outline-variant": "#cfc2d7",
+      "tertiary-fixed": "#ffddb8",
+      "surface-dim": "#d2d9f4",
+      "surface-container-low": "#f2f3ff",
+      "outline": "#7e7386",
+      "tertiary-container": "#965e00",
+      "on-primary-fixed": "#2c0051",
+      "primary-fixed-dim": "#ddb8ff",
+      "error-container": "#ffdad6",
+      "on-primary-fixed-variant": "#6800b4",
+      "primary-fixed": "#f0dbff",
+      "surface-container": "#eaedff",
+      "on-primary": "#ffffff",
+      "inverse-primary": "#ddb8ff",
+      "error": "#ba1a1a",
+      "on-tertiary-fixed-variant": "#653e00",
+      "on-secondary-fixed": "#00201c",
+      "surface-container-high": "#e2e7ff",
+      "on-surface-variant": "#4d4354",
+      "tertiary-fixed-dim": "#ffb95f",
+      "secondary-container": "#62fae3",
+      "primary": "#7800ce",
+      "tertiary": "#754900",
+      "surface-tint": "#861fdd",
+      "surface-container-highest": "#dae2fd",
+      "on-error-container": "#93000a",
+      "on-secondary-container": "#007165",
+      "background": "#faf8ff",
+      "inverse-on-surface": "#eef0ff",
+      "on-primary-container": "#f6e6ff",
+      "primary-container": "#9333ea",
+      "surface-bright": "#faf8ff",
+      "surface-variant": "#dae2fd",
+      "secondary-fixed": "#62fae3",
+      "inverse-surface": "#283044",
+      "on-background": "#131b2e",
+      "on-tertiary-container": "#ffe8d1",
+      "surface-container-lowest": "#ffffff",
+      "on-secondary-fixed-variant": "#005047",
+      "on-secondary": "#ffffff",
+      "on-error": "#ffffff",
+      "on-tertiary": "#ffffff",
+      "secondary": "#006b5f",
+      "on-tertiary-fixed": "#2a1700"
+},
       borderRadius: {
-        "2xl": "1rem",
-        "3xl": "1.5rem",
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
+      "DEFAULT": "0.25rem",
+      "lg": "0.5rem",
+      "xl": "0.75rem",
+      "full": "9999px"
+},
+      spacing: {
+      "base": "4px",
+      "stack-lg": "24px",
+      "stack-md": "16px",
+      "stack-sm": "8px",
+      "margin-mobile": "20px",
+      "gutter": "16px",
+      "section-gap": "40px"
+},
+      fontFamily: {
+      "body-md": [
+            "Manrope"
+      ],
+      "headline-lg": [
+            "Plus Jakarta Sans"
+      ],
+      "body-lg": [
+            "Manrope"
+      ],
+      "label-sm": [
+            "Manrope"
+      ],
+      "label-md": [
+            "Manrope"
+      ],
+      "headline-lg-mobile": [
+            "Plus Jakarta Sans"
+      ],
+      "headline-xl": [
+            "Plus Jakarta Sans"
+      ]
+},
+      fontSize: {
+      "body-md": [
+            "16px",
+            {
+                  "lineHeight": "1.6",
+                  "fontWeight": "400"
+            }
+      ],
+      "headline-lg": [
+            "24px",
+            {
+                  "lineHeight": "1.3",
+                  "fontWeight": "700"
+            }
+      ],
+      "body-lg": [
+            "18px",
+            {
+                  "lineHeight": "1.6",
+                  "fontWeight": "400"
+            }
+      ],
+      "label-sm": [
+            "12px",
+            {
+                  "lineHeight": "1.4",
+                  "fontWeight": "500"
+            }
+      ],
+      "label-md": [
+            "14px",
+            {
+                  "lineHeight": "1.4",
+                  "letterSpacing": "0.05em",
+                  "fontWeight": "600"
+            }
+      ],
+      "headline-lg-mobile": [
+            "22px",
+            {
+                  "lineHeight": "1.3",
+                  "fontWeight": "700"
+            }
+      ],
+      "headline-xl": [
+            "32px",
+            {
+                  "lineHeight": "1.2",
+                  "letterSpacing": "-0.02em",
+                  "fontWeight": "800"
+            }
+      ]
+},
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
@@ -183,5 +193,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/forms"), require("@tailwindcss/container-queries")],
 } satisfies Config;

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vantage Motors | Create an Account</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Manrope:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#f8f9fa",
+                        "surface-tint": "#7543b7",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#5c289d",
+                        "outline": "#7c7483",
+                        "on-primary-container": "#bc8cff",
+                        "on-secondary-container": "#725000",
+                        "on-primary-fixed": "#290055",
+                        "primary-fixed": "#eddcff",
+                        "surface-container-low": "#f3f4f5",
+                        "surface-container": "#edeeef",
+                        "inverse-surface": "#2e3132",
+                        "inverse-primary": "#d8b9ff",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#271900",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-container-high": "#e7e8e9",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#f9bc45",
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-fixed": "#e5e2e1",
+                        "primary-container": "#4e158f",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "on-secondary-fixed-variant": "#5e4200",
+                        "tertiary": "#242424",
+                        "surface-dim": "#d9dadb",
+                        "tertiary-container": "#3a3939",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-background": "#191c1d",
+                        "on-tertiary-container": "#a4a3a2",
+                        "background": "#f8f9fa",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#ffc24a",
+                        "secondary-fixed": "#ffdea8",
+                        "on-surface": "#191c1d",
+                        "primary-fixed-dim": "#d8b9ff",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#7c5800",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#4b4452",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "surface-bright": "#f8f9fa",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "on-error-container": "#93000a",
+                        "primary": "#340069",
+                        "outline-variant": "#cdc3d4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding-desktop": "32px",
+                        "gutter": "24px",
+                        "base": "8px",
+                        "container-padding-mobile": "20px",
+                        "section-gap": "80px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "label-md": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "headline-md": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "body-md": ["Manrope"],
+                        "headline-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-md": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .auth-card {
+            box-shadow: 0px 4px 40px rgba(78, 21, 143, 0.08);
+            backdrop-filter: blur(8px);
+        }
+        .form-transition {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .floating-label-input:focus-within label,
+        .floating-label-input input:not(:placeholder-shown) + label {
+            transform: translateY(-20px) scale(0.85);
+            color: #340069;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl shadow-sm">
+<div class="max-w-[1280px] mx-auto px-container-padding-desktop py-4 flex justify-between items-center">
+<div class="flex items-center gap-4">
+<span class="font-display-lg text-headline-sm font-bold text-primary dark:text-primary-fixed-dim">Vantage Motors</span>
+</div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-on-surface-variant font-medium hover:text-primary-container transition-colors" href="#">Buy</a>
+<a class="text-on-surface-variant font-medium hover:text-primary-container transition-colors" href="#">Sell</a>
+<a class="text-on-surface-variant font-medium hover:text-primary-container transition-colors" href="#">Finance</a>
+<a class="text-on-surface-variant font-medium hover:text-primary-container transition-colors" href="#">Support</a>
+<button class="bg-primary-container text-white px-6 py-2 rounded-full font-bold transition-all scale-95 active:opacity-80">Dealer Portal</button>
+</nav>
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</header>
+<main class="min-h-screen pt-32 pb-section-gap flex items-center justify-center relative overflow-hidden">
+<!-- Atmospheric Background Element -->
+<div class="absolute inset-0 z-0 pointer-events-none opacity-40">
+<div class="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-secondary-container/10 rounded-full blur-[120px]"></div>
+</div>
+<div class="container relative z-10 px-container-padding-mobile md:px-container-padding-desktop flex justify-center">
+<!-- Auth Container -->
+<div class="auth-card bg-surface-container-lowest w-full max-w-[500px] rounded-[24px] overflow-hidden border border-outline-variant/30">
+<!-- Tab Headers -->
+<div class="flex border-b border-outline-variant/20">
+<button class="flex-1 py-5 font-headline-sm text-center text-primary border-b-2 border-primary transition-all" id="tab-signup" onclick="toggleAuth('signup')">
+                        Sign Up
+                    </button>
+<button class="flex-1 py-5 font-headline-sm text-center text-on-surface-variant hover:bg-surface-container transition-all" id="tab-signin" onclick="toggleAuth('signin')">
+                        Sign In
+                    </button>
+</div>
+<div class="p-8 md:p-12">
+<!-- Header -->
+<div class="mb-8">
+<h1 class="font-display-lg text-headline-md text-primary mb-2" id="auth-title">Create an account</h1>
+<p class="text-on-surface-variant font-body-md" id="auth-subtitle">Start your journey to car ownership today.</p>
+</div>
+<!-- Sign Up Form -->
+<form class="form-transition space-y-6" id="signup-form">
+<div class="relative border-b-2 border-outline-variant focus-within:border-primary transition-all">
+<div class="flex items-center gap-3 py-2">
+<span class="material-symbols-outlined text-outline">person</span>
+<input class="w-full bg-transparent border-none focus:ring-0 p-0 text-on-surface placeholder:text-outline-variant font-body-md" placeholder="Full Name" type="text"/>
+</div>
+</div>
+<div class="relative border-b-2 border-outline-variant focus-within:border-primary transition-all">
+<div class="flex items-center gap-3 py-2">
+<span class="material-symbols-outlined text-outline">call</span>
+<input class="w-full bg-transparent border-none focus:ring-0 p-0 text-on-surface placeholder:text-outline-variant font-body-md" placeholder="Phone Number" type="tel"/>
+</div>
+</div>
+<div class="relative border-b-2 border-outline-variant focus-within:border-primary transition-all">
+<div class="flex items-center gap-3 py-2">
+<span class="material-symbols-outlined text-outline">location_on</span>
+<input class="w-full bg-transparent border-none focus:ring-0 p-0 text-on-surface placeholder:text-outline-variant font-body-md" placeholder="Residence" type="text"/>
+</div>
+</div>
+<div class="relative border-b-2 border-outline-variant focus-within:border-primary transition-all">
+<div class="flex items-center gap-3 py-2">
+<span class="material-symbols-outlined text-outline">mail</span>
+<input class="w-full bg-transparent border-none focus:ring-0 p-0 text-on-surface placeholder:text-outline-variant font-body-md" placeholder="Email Address" type="email"/>
+</div>
+</div>
+<div class="relative border-b-2 border-outline-variant focus-within:border-primary transition-all">
+<div class="flex items-center justify-between gap-3 py-2">
+<div class="flex items-center gap-3 w-full">
+<span class="material-symbols-outlined text-outline">lock</span>
+<input class="w-full bg-transparent border-none focus:ring-0 p-0 text-on-surface placeholder:text-outline-variant font-body-md" placeholder="Password" type="password"/>
+</div>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">visibility_off</span>
+</div>
+</div>
+<button class="w-full bg-primary-container text-white py-4 rounded-xl font-bold text-body-lg shadow-lg hover:shadow-primary-container/20 hover:scale-[1.01] active:scale-[0.98] transition-all mt-4" type="submit">
+                            Sign Up
+                        </button>
+<p class="text-center text-on-surface-variant font-body-md mt-6">
+                            Already have an account? <a class="text-primary font-bold hover:underline" href="javascript:toggleAuth('signin')">Sign In</a>
+</p>
+</form>
+<!-- Sign In Form (Hidden by default) -->
+<form class="form-transition hidden space-y-6" id="signin-form">
+<div class="relative border-b-2 border-outline-variant focus-within:border-primary transition-all">
+<div class="flex items-center gap-3 py-2">
+<span class="material-symbols-outlined text-outline">mail</span>
+<input class="w-full bg-transparent border-none focus:ring-0 p-0 text-on-surface placeholder:text-outline-variant font-body-md" placeholder="Email Address" type="email"/>
+</div>
+</div>
+<div class="relative border-b-2 border-outline-variant focus-within:border-primary transition-all">
+<div class="flex items-center justify-between gap-3 py-2">
+<div class="flex items-center gap-3 w-full">
+<span class="material-symbols-outlined text-outline">lock</span>
+<input class="w-full bg-transparent border-none focus:ring-0 p-0 text-on-surface placeholder:text-outline-variant font-body-md" placeholder="Password" type="password"/>
+</div>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">visibility_off</span>
+</div>
+</div>
+<div class="flex justify-end">
+<a class="text-primary font-bold text-label-md hover:underline" href="#">Forgot Password?</a>
+</div>
+<button class="w-full bg-primary-container text-white py-4 rounded-xl font-bold text-body-lg shadow-lg hover:shadow-primary-container/20 hover:scale-[1.01] active:scale-[0.98] transition-all mt-4" type="submit">
+                            Sign In
+                        </button>
+<p class="text-center text-on-surface-variant font-body-md mt-6">
+                            Don't have an account? <a class="text-primary font-bold hover:underline" href="javascript:toggleAuth('signup')">Sign Up</a>
+</p>
+</form>
+</div>
+<!-- Social Login Section -->
+<div class="p-8 bg-surface-container-low/50 border-t border-outline-variant/10 text-center">
+<p class="text-label-md text-on-surface-variant mb-4 uppercase tracking-widest">Or continue with</p>
+<div class="flex justify-center gap-4">
+<button class="p-3 bg-white rounded-full border border-outline-variant/30 hover:border-primary/50 transition-all shadow-sm">
+<img alt="Google" class="w-6 h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0kbTo4OFWdzf6hLh25OgrYMywaiqZ4C81omnWRel688SUO-KH2tJ9tvpmskl9ZaqAlJ7Mk9s6iVB1PX8zCrkVAHergenB4jd4xDLQ8TIyrUfeZ4S1MPAh6XM0U1UtWTXwxW0gS5q6sLg6G4nPAAGsN1yEtrVaeeXM3PmEhK9CmVSEbpnTSHDbM6t31NE8hE2rpvVZnC4rX38IpxiTPBHjRkBPOtPVRDdiS6uSHFzsyGb5s7mV5rPDOli61iT_qems_H-F5r97QYfi"/>
+</button>
+<button class="p-3 bg-white rounded-full border border-outline-variant/30 hover:border-primary/50 transition-all shadow-sm">
+<span class="material-symbols-outlined text-[#1877F2]" data-weight="fill">face_nod</span>
+</button>
+<button class="p-3 bg-white rounded-full border border-outline-variant/30 hover:border-primary/50 transition-all shadow-sm">
+<span class="material-symbols-outlined text-black" data-weight="fill">apps</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full px-container-padding-desktop py-base mt-section-gap flex flex-col md:flex-row justify-between items-center max-w-[1280px] mx-auto border-t border-outline-variant bg-surface dark:bg-surface-dim">
+<div class="flex flex-col items-center md:items-start mb-6 md:mb-0">
+<span class="font-display-lg text-display-lg text-primary mb-2">Vantage Motors</span>
+<p class="text-on-surface-variant font-body-md max-w-xs text-center md:text-left">© 2024 Vantage Motors. Premium Automotive Finance. All Rights Reserved.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-6 md:gap-12">
+<div class="flex flex-col gap-3">
+<span class="font-bold text-primary mb-2">Legal</span>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">Terms of Service</a>
+</div>
+<div class="flex flex-col gap-3">
+<span class="font-bold text-primary mb-2">Company</span>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">Security</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">Cookie Settings</a>
+</div>
+</div>
+</footer>
+<script>
+        function toggleAuth(mode) {
+            const signupForm = document.getElementById('signup-form');
+            const signinForm = document.getElementById('signin-form');
+            const signupTab = document.getElementById('tab-signup');
+            const signinTab = document.getElementById('tab-signin');
+            const title = document.getElementById('auth-title');
+            const subtitle = document.getElementById('auth-subtitle');
+
+            if (mode === 'signin') {
+                signupForm.classList.add('hidden');
+                signinForm.classList.remove('hidden');
+                
+                signupTab.classList.remove('text-primary', 'border-b-2', 'border-primary');
+                signupTab.classList.add('text-on-surface-variant', 'hover:bg-surface-container');
+                
+                signinTab.classList.add('text-primary', 'border-b-2', 'border-primary');
+                signinTab.classList.remove('text-on-surface-variant', 'hover:bg-surface-container');
+                
+                title.innerText = 'Welcome Back';
+                subtitle.innerText = 'Securely access your personalized automotive portal.';
+            } else {
+                signinForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                
+                signinTab.classList.remove('text-primary', 'border-b-2', 'border-primary');
+                signinTab.classList.add('text-on-surface-variant', 'hover:bg-surface-container');
+                
+                signupTab.classList.add('text-primary', 'border-b-2', 'border-primary');
+                signupTab.classList.remove('text-on-surface-variant', 'hover:bg-surface-container');
+                
+                title.innerText = 'Create an account';
+                subtitle.innerText = 'Start your journey to car ownership today.';
+            }
+        }
+
+        // Simple mouse tracking for subtle background effect
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            const movingElements = document.querySelectorAll('.absolute.blur-[120px]');
+            movingElements.forEach((el, index) => {
+                const speed = index === 0 ? 20 : -20;
+                el.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+            });
+        });
+    </script>
+</body></html>
