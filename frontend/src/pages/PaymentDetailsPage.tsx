@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, CheckCircle2, Sparkles, Upload } from 'lucide-react';
 import { carsData, Car } from '@/data/cars';
 import { formatUGX } from '@/lib/format';
-import { useDeposit } from '@/hooks/useProfile';
+import { useDeposit, usePayFromWallet } from '@/hooks/useProfile';
 
 const PaymentDetailsPage = () => {
   const location = useLocation();
@@ -20,6 +20,7 @@ const PaymentDetailsPage = () => {
   const [success, setSuccess] = useState(false);
   const [ussdMessage, setUssdMessage] = useState('');
   const { mutateAsync: makeDeposit } = useDeposit();
+  const { mutateAsync: payFromWallet } = usePayFromWallet();
 
   // Form states
   const [amountToPay, setAmountToPay] = useState('');
@@ -61,8 +62,16 @@ const PaymentDetailsPage = () => {
           setSuccess(true);
           setTimeout(() => navigate('/wallet'), 3000);
         }, 3000);
+      } else if (method === 'wallet') {
+        setUssdMessage('Processing payment securely from your wallet...');
+        await payFromWallet({ amount: parsedAmount, reason: `Payment for ${car?.name || 'Vehicle'}` });
+        
+        setIsProcessing(false);
+        setUssdMessage('');
+        setSuccess(true);
+        setTimeout(() => navigate('/logbook'), 3000);
       } else {
-        // Fallback for mock flows (wallet, bank, etc)
+        // Fallback for mock flows (bank, etc)
         setTimeout(() => {
           setIsProcessing(false);
           setSuccess(true);
@@ -72,10 +81,10 @@ const PaymentDetailsPage = () => {
           setTimeout(() => navigate('/logbook'), 3000);
         }, 2000);
       }
-    } catch (err) {
+    } catch (err: any) {
       setIsProcessing(false);
       setUssdMessage('');
-      alert('Transaction failed. Please try again.');
+      alert(err.message || 'Transaction failed. Please try again.');
     }
   };
 
