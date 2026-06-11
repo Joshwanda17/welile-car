@@ -8,9 +8,11 @@ import {
 } from 'lucide-react';
 
 import vitzImg from '@/assets/car-vitz.jpg';
+import { carsData } from '@/data/cars';
+import { useProfile } from '@/hooks/useProfile';
 
-// Initial Mock Data
-const INITIAL_LOAN = 16380000;
+// Mock Data
+// INITIAL_LOAN will be derived dynamically
 
 interface Transaction {
   id: string;
@@ -22,13 +24,18 @@ interface Transaction {
   icon: any;
   iconColor: string;
 }
-
 export default function LogbookPage() {
   const navigate = useNavigate();
-  const [totalPaid] = useState<number>(0);
+  const { data: profile } = useProfile();
+  const [totalPaid] = useState<number>(Number(localStorage.getItem('mockTotalPaid') || 0));
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [selectedMerchant, setSelectedMerchant] = useState<string | null>(null);
-  const remainingBalance = INITIAL_LOAN - totalPaid;
+
+  const purchasedCarId = localStorage.getItem('mockPurchasedCarId') || profile?.selected_car_id;
+  const activeCar = carsData.find(c => c.id === purchasedCarId) || carsData[0];
+  const initialLoan = activeCar.priceUgx;
+  
+  const remainingBalance = initialLoan - totalPaid;
 
   const formatCurrency = (num: number) => {
     return 'Shs ' + new Intl.NumberFormat('en-US', {
@@ -48,7 +55,7 @@ export default function LogbookPage() {
     <div className="min-h-screen bg-slate-200 flex justify-center selection:bg-[#4C158D]/20 font-sans sm:py-8">
       
       {/* Mobile Device Simulator Container */}
-      <main className="w-full max-w-[400px] bg-white min-h-screen sm:min-h-[850px] relative sm:rounded-[40px] shadow-2xl sm:border-[8px] sm:border-slate-800 overflow-hidden flex flex-col">
+      <main className="w-full max-w-[400px] bg-white h-[100dvh] sm:h-[850px] relative sm:rounded-[40px] shadow-2xl sm:border-[8px] sm:border-slate-800 overflow-hidden flex flex-col">
         
         {/* Content Area (scrollable) */}
         <div className="flex-1 overflow-y-auto pb-32 px-6 pt-12 scrollbar-hide">
@@ -74,11 +81,11 @@ export default function LogbookPage() {
           {/* Active Vehicle Pill */}
           <div className="bg-[#f4f5f9] p-2 pr-5 rounded-2xl border border-slate-100 flex items-center gap-3 mb-6">
             <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center p-1.5 shrink-0">
-              <img src={vitzImg} alt="Toyota Vitz" className="w-full h-full object-contain mix-blend-multiply" />
+              <img src={activeCar.image} alt={activeCar.name} className="w-full h-full object-contain mix-blend-multiply" />
             </div>
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-0.5">Active Vehicle</p>
-              <p className="font-extrabold text-slate-800 text-[13px] tracking-tight">Toyota Vitz (UBM 492X)</p>
+              <p className="font-extrabold text-slate-800 text-[13px] tracking-tight">{activeCar.name} (UBM 492X)</p>
             </div>
           </div>
 
@@ -99,7 +106,13 @@ export default function LogbookPage() {
           </div>
 
           {/* Quick Actions Grid */}
-          <div className="flex justify-center gap-12 mb-10">
+          <div className="flex justify-center gap-8 mb-10">
+            <div onClick={() => navigate(`/payment-details?method=wallet&carId=${activeCar.id}&deficit=0`)} className="flex flex-col items-center gap-2 cursor-pointer group">
+              <div className="w-16 h-16 bg-[#310c87] border border-slate-100 rounded-2xl flex items-center justify-center text-white group-hover:bg-[#20075c] transition-all shadow-md">
+                <CreditCard size={24} strokeWidth={2.5} />
+              </div>
+              <span className="text-[12px] font-bold text-slate-700">Pay Installment</span>
+            </div>
             <div onClick={() => setActiveModal('deposit')} className="flex flex-col items-center gap-2 cursor-pointer group">
               <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-700 group-hover:bg-[#310c87] group-hover:text-white transition-all shadow-sm">
                 <ArrowDownLeft size={24} strokeWidth={2.5} />

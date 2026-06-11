@@ -96,6 +96,9 @@ const DashboardPage = () => {
 
   const isQualified = data.health.creditScore >= 70 && data.savings.progressPercent >= 30;
 
+  const walletDeduction = Number(localStorage.getItem('mockWalletDeduction') || 0);
+  const availableBalance = data.savings.totalSaved - walletDeduction;
+
   return (
     <div className="p-4 md:p-8 space-y-6 max-w-7xl mx-auto pb-24">
       {/* Header */}
@@ -110,7 +113,7 @@ const DashboardPage = () => {
         
         <div className="relative z-10">
           <p className="text-primary-fixed-dim font-bold uppercase tracking-wider text-xs mb-1">Savings Balance</p>
-          <h2 className="text-4xl font-black mb-6">{formatUGX(data.savings.totalSaved)}</h2>
+          <h2 className="text-4xl font-black mb-6">{formatUGX(availableBalance)}</h2>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-white/10 p-3 rounded-2xl">
@@ -202,7 +205,7 @@ const DashboardPage = () => {
               </div>
               <div className="flex justify-between items-center border-b border-slate-50 pb-3">
                 <span className="text-sm text-slate-500 font-medium">Remaining Amount</span>
-                <span className="font-bold text-slate-900">{formatUGX(data.savings.targetAmount - data.savings.totalSaved)}</span>
+                <span className="font-bold text-slate-900">{formatUGX(data.savings.targetAmount - availableBalance)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-500 font-medium">Est. Completion</span>

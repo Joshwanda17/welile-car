@@ -20,6 +20,7 @@ const PaymentDetailsPage = () => {
   const [ussdMessage, setUssdMessage] = useState('');
 
   // Form states
+  const [amountToPay, setAmountToPay] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [expiry, setExpiry] = useState('');
@@ -29,15 +30,23 @@ const PaymentDetailsPage = () => {
   useEffect(() => {
     if (carId) {
       const foundCar = carsData.find((c) => c.id === carId);
-      if (foundCar) setCar(foundCar);
+      if (foundCar) {
+        setCar(foundCar);
+        setAmountToPay(foundCar.priceUgx.toString());
+      }
     }
   }, [carId]);
 
+  const walletBalance = car ? car.priceUgx - deficit : 0;
+  const parsedAmount = parseInt(amountToPay || '0', 10);
+  const currentDeficit = method === 'wallet' ? Math.max(0, parsedAmount - walletBalance) : 0;
+
   const handleConfirm = (e: React.FormEvent) => {
     e.preventDefault();
+    if (parsedAmount <= 0) return;
     setIsProcessing(true);
     
-    if (method === 'mtn' || method === 'airtel' || (method === 'wallet' && deficit > 0)) {
+    if (method === 'mtn' || method === 'airtel' || (method === 'wallet' && currentDeficit > 0)) {
       setUssdMessage('Connecting to USSD... Please check your phone to enter your Mobile Money PIN.');
       setTimeout(() => {
         setUssdMessage('Processing transaction...');
@@ -45,14 +54,28 @@ const PaymentDetailsPage = () => {
           setIsProcessing(false);
           setUssdMessage('');
           setSuccess(true);
-          setTimeout(() => navigate('/vehicles'), 3000);
+          const currentTotal = Number(localStorage.getItem('mockTotalPaid') || 0);
+          localStorage.setItem('mockTotalPaid', (currentTotal + parsedAmount).toString());
+          if (car) localStorage.setItem('mockPurchasedCarId', car.id);
+          if (method === 'wallet') {
+            const currentDeduction = Number(localStorage.getItem('mockWalletDeduction') || 0);
+            localStorage.setItem('mockWalletDeduction', (currentDeduction + (parsedAmount - currentDeficit)).toString());
+          }
+          setTimeout(() => navigate('/logbook'), 3000);
         }, 1500);
       }, 3000);
     } else {
       setTimeout(() => {
         setIsProcessing(false);
         setSuccess(true);
-        setTimeout(() => navigate('/vehicles'), 3000);
+        const currentTotal = Number(localStorage.getItem('mockTotalPaid') || 0);
+        localStorage.setItem('mockTotalPaid', (currentTotal + parsedAmount).toString());
+        if (car) localStorage.setItem('mockPurchasedCarId', car.id);
+        if (method === 'wallet') {
+          const currentDeduction = Number(localStorage.getItem('mockWalletDeduction') || 0);
+          localStorage.setItem('mockWalletDeduction', (currentDeduction + (parsedAmount - currentDeficit)).toString());
+        }
+        setTimeout(() => navigate('/logbook'), 3000);
       }, 2000);
     }
   };
@@ -95,8 +118,8 @@ const PaymentDetailsPage = () => {
                 <Sparkles size={48} />
               </div>
               <h2 className="text-3xl font-bold font-heading">Payment Successful!</h2>
-              <p className="text-muted-foreground text-lg">You are now the proud owner of the {car.name}.</p>
-              <p className="text-sm mt-4 text-primary font-medium animate-pulse">Redirecting to marketplace...</p>
+              <p className="text-muted-foreground text-lg">Your payment of <strong>{formatUGX(parsedAmount)}</strong> has been processed successfully.</p>
+              <p className="text-sm mt-4 text-primary font-medium animate-pulse">Redirecting to Logbook...</p>
             </motion.div>
           ) : (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
@@ -112,6 +135,22 @@ const PaymentDetailsPage = () => {
               </div>
 
               <form onSubmit={handleConfirm} className="space-y-6">
+                
+                <div className="bg-white p-5 rounded-2xl shadow-sm border border-border/50">
+                  <label className="block text-sm font-semibold mb-2">Amount to Pay (UGX)</label>
+                  <input 
+                    type="number" 
+                    required
+                    min="1000"
+                    max={car.priceUgx}
+                    className="w-full h-14 bg-surface rounded-xl px-4 border-2 border-border focus:border-primary focus:ring-0 outline-none transition-colors text-lg font-bold"
+                    value={amountToPay}
+                    onChange={(e) => setAmountToPay(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground mt-2">
+                    You can pay the full amount or make an installment payment.
+                  </p>
+                </div>
                 
                 {/* Mobile Money Form */}
                 {(method === 'mtn' || method === 'airtel') && (
@@ -231,11 +270,11 @@ const PaymentDetailsPage = () => {
                     <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
                       <span className="material-symbols-outlined text-3xl">account_balance_wallet</span>
                     </div>
-                    {deficit > 0 ? (
+                    {currentDeficit > 0 ? (
                       <>
                         <h3 className="font-bold font-heading text-xl">Top Up Wallet</h3>
                         <p className="text-muted-foreground text-sm mb-4">
-                          Your wallet balance is insufficient by <strong>{formatUGX(deficit)}</strong>. Please top up via Mobile Money to proceed with the purchase.
+                          Your wallet balance is insufficient by <strong>{formatUGX(currentDeficit)}</strong> for this payment. Please top up via Mobile Money to proceed.
                         </p>
                         <div className="text-left mt-4">
                           <label className="block text-sm font-semibold mb-2">Mobile Number</label>
@@ -253,7 +292,7 @@ const PaymentDetailsPage = () => {
                       <>
                         <h3 className="font-bold font-heading text-xl">Pay from Wallet</h3>
                         <p className="text-muted-foreground">
-                          The amount of <strong>{formatUGX(car.priceUgx)}</strong> will be instantly deducted from your Welile Wallet balance.
+                          The amount of <strong>{formatUGX(parsedAmount || 0)}</strong> will be instantly deducted from your Welile Wallet balance.
                         </p>
                       </>
                     )}

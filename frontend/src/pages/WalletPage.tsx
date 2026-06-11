@@ -93,6 +93,9 @@ const WalletPage = () => {
     </div>;
   }
 
+  const walletDeduction = Number(localStorage.getItem('mockWalletDeduction') || 0);
+  const availableBalance = dashboardData.savings.totalSaved - walletDeduction;
+
   const handleDeposit = async () => {
     const val = parseInt(amount);
     if (!val || val < 1000) return;
@@ -112,8 +115,8 @@ const WalletPage = () => {
 
   const handlePurchase = () => {
     setShowPurchaseModal(false);
-    const deficit = purchaseCar && dashboardData?.savings?.totalSaved < purchaseCar.priceUgx 
-      ? purchaseCar.priceUgx - dashboardData.savings.totalSaved 
+    const deficit = purchaseCar && availableBalance < purchaseCar.priceUgx 
+      ? purchaseCar.priceUgx - availableBalance 
       : 0;
     navigate(`/payment-details?method=${purchaseMethod}&carId=${purchaseCar?.id}&deficit=${deficit}`);
   };
@@ -156,7 +159,7 @@ const WalletPage = () => {
       <div className="px-6 mt-4">
         <div className="bg-card rounded-2xl p-5 card-shadow">
           <p className="text-xs text-muted-foreground uppercase tracking-wider">Available Balance</p>
-          <AnimatedNumber value={dashboardData.savings.totalSaved} className="text-3xl font-bold font-heading block mt-1" />
+          <AnimatedNumber value={availableBalance} className="text-3xl font-bold font-heading block mt-1" />
           {profile.savings_locked && (
             <p className="text-xs text-warning font-medium mt-2">🔒 Savings locked for car ownership</p>
           )}
@@ -170,7 +173,7 @@ const WalletPage = () => {
       <div className="px-6 mt-4 grid grid-cols-2 gap-3">
         <div className="bg-card rounded-2xl p-4 card-shadow">
           <p className="text-[10px] text-muted-foreground uppercase">Total Deposits</p>
-          <p className="text-lg font-bold font-heading mt-1">{formatUGX(dashboardData.savings.totalSaved)}</p>
+          <p className="text-lg font-bold font-heading mt-1">{formatUGX(availableBalance)}</p>
         </div>
         <div className="bg-card rounded-2xl p-4 card-shadow">
           <p className="text-[10px] text-muted-foreground uppercase">Growth Earned</p>
