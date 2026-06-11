@@ -1,9 +1,27 @@
-import vitzImg from '@/assets/car-vitz.jpg';
-import premioImg from '@/assets/car-premio.jpg';
-import wishImg from '@/assets/car-wish.jpg';
-import harrierImg from '@/assets/harrier-white.png';
-import heroCarImg from '@/assets/hero-car.png';
-import passoImg from '@/assets/car-passo.png';
+import vitzImg from '@/assets/vitz_front_red_1781174112015.png';
+import premioImg from '@/assets/premio_front_white_1781174123286.png';
+import wishImg from '@/assets/wish_front_black_1781174134311.png';
+import harrierImg from '@/assets/harrier_front_white_1781174155158.png';
+import heroCarImg from '@/assets/noah_front_silver_1781174164666.png';
+import passoImg from '@/assets/passo_front_pink_1781174174814.png';
+import premioRearImg from '@/assets/premio_rear_1781172353320.png';
+import premioSideImg from '@/assets/premio_side_1781172365181.png';
+import premioInteriorImg from '@/assets/premio_interior_1781172375260.png';
+import vitzRearImg from '@/assets/vitz_rear_red_1781173928915.png';
+import vitzSideImg from '@/assets/vitz_side_red_1781173940597.png';
+import vitzInteriorImg from '@/assets/vitz_interior_1781172560845.png';
+import wishRearImg from '@/assets/wish_rear_1781172579968.png';
+import wishSideImg from '@/assets/wish_side_1781172590058.png';
+import wishInteriorImg from '@/assets/wish_interior_1781172601381.png';
+import harrierRearImg from '@/assets/harrier_rear_1781172621558.png';
+import harrierSideImg from '@/assets/harrier_side_1781172630906.png';
+import harrierInteriorImg from '@/assets/harrier_interior_1781172642495.png';
+import noahRearImg from '@/assets/noah_rear_1781172660954.png';
+import noahSideImg from '@/assets/noah_side_1781172671922.png';
+import noahInteriorImg from '@/assets/noah_interior_1781172684000.png';
+import passoRearImg from '@/assets/passo_rear_1781172702484.png';
+import passoSideImg from '@/assets/passo_side_1781172713577.png';
+import passoInteriorImg from '@/assets/passo_interior_1781172725525.png';
 
 export interface Car {
   id: string;
@@ -79,8 +97,8 @@ export const carsData: Car[] = [
     newMin: 24000000,
     newMax: 28000000,
     image: vitzImg,
-    gallery: [vitzImg, vitzImg, vitzImg], // Duplicated for mock gallery
-    specs: { year: 2016, engine: '1.0L', fuel: 'Petrol', transmission: 'Automatic', mileage: '65,000 km', seats: 5, color: 'Silver', drivetrain: '2WD' },
+    gallery: [vitzImg, vitzSideImg, vitzRearImg, vitzInteriorImg],
+    specs: { year: 2016, engine: '1.0L', fuel: 'Petrol', transmission: 'Automatic', mileage: '65,000 km', seats: 5, color: 'Red', drivetrain: '2WD' },
     category: 'Ride-Hailing',
     rating: 4.8,
     condition: { verified: true, inspected: true, serviceRecords: true, accidentHistory: 'None', ownershipHistory: '1 Previous Owner' },
@@ -106,7 +124,7 @@ export const carsData: Car[] = [
     newMin: 38000000,
     newMax: 45000000,
     image: premioImg,
-    gallery: [premioImg, premioImg, premioImg],
+    gallery: [premioImg, premioSideImg, premioRearImg, premioInteriorImg],
     specs: { year: 2018, engine: '1.8L', fuel: 'Petrol', transmission: 'Automatic', mileage: '50,000 km', seats: 5, color: 'Pearl White', drivetrain: '2WD' },
     category: 'Sedan',
     rating: 4.7,
@@ -133,7 +151,7 @@ export const carsData: Car[] = [
     newMin: 32000000,
     newMax: 38000000,
     image: wishImg,
-    gallery: [wishImg, wishImg, wishImg],
+    gallery: [wishImg, wishSideImg, wishRearImg, wishInteriorImg],
     specs: { year: 2014, engine: '1.8L', fuel: 'Petrol', transmission: 'Automatic', mileage: '70,000 km', seats: 7, color: 'Black', drivetrain: '2WD' },
     category: 'Family',
     rating: 4.6,
@@ -160,7 +178,7 @@ export const carsData: Car[] = [
     newMin: 110000000,
     newMax: 130000000,
     image: harrierImg,
-    gallery: [harrierImg, harrierImg, harrierImg],
+    gallery: [harrierImg, harrierSideImg, harrierRearImg, harrierInteriorImg],
     specs: { year: 2017, engine: '2.0L Turbo', fuel: 'Petrol', transmission: 'Automatic', mileage: '35,000 km', seats: 5, color: 'White', drivetrain: '4WD' },
     category: 'SUV',
     rating: 4.9,
@@ -187,7 +205,7 @@ export const carsData: Car[] = [
     newMin: 48000000,
     newMax: 58000000,
     image: heroCarImg,
-    gallery: [heroCarImg, heroCarImg, heroCarImg],
+    gallery: [heroCarImg, noahSideImg, noahRearImg, noahInteriorImg],
     specs: { year: 2015, engine: '2.0L', fuel: 'Petrol', transmission: 'Automatic', mileage: '60,000 km', seats: 8, color: 'Silver', drivetrain: '2WD' },
     category: 'Family',
     rating: 4.8,
@@ -214,7 +232,7 @@ export const carsData: Car[] = [
     newMin: 22000000,
     newMax: 26000000,
     image: passoImg,
-    gallery: [passoImg, passoImg, passoImg],
+    gallery: [passoImg, passoSideImg, passoRearImg, passoInteriorImg],
     specs: { year: 2016, engine: '1.0L', fuel: 'Petrol', transmission: 'Automatic', mileage: '80,000 km', seats: 5, color: 'Pink', drivetrain: '2WD' },
     category: 'Economy',
     rating: 4.5,

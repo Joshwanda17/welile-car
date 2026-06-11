@@ -8,38 +8,47 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedNumber from '@/components/AnimatedNumber';
 import BottomNav from '@/components/BottomNav';
 import { formatUGX, formatDate } from '@/lib/format';
-import { ArrowDownLeft, ArrowUpRight, Sparkles, X, Check } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, Sparkles, X, Check, Wallet, PlusCircle, MinusCircle, TrendingUp, ShieldCheck, Calculator, Printer } from 'lucide-react';
+import { Slider } from '@/components/ui/slider';
+import { toast } from 'sonner';
 
 const paymentMethods = [
-  { id: 'mtn', name: 'MTN MoMo', color: '#FFCC00' },
-  { id: 'airtel', name: 'Airtel Money', color: '#ED1C24' },
+  { id: 'mtn', name: 'MTN MoMo', color: '#FFCC00', icon: '📱' },
+  { id: 'airtel', name: 'Airtel Money', color: '#ED1C24', icon: '📱' },
 ];
 
 const quickAmounts = [50000, 100000, 200000, 500000];
 
 const purchasePaymentMethods = [
-  { id: 'wallet', name: 'Fund from Wallet', icon: 'account_balance_wallet' },
-  { id: 'mtn', name: 'MTN MoMo', icon: 'phone_iphone' },
-  { id: 'airtel', name: 'Airtel Money', icon: 'phone_iphone' },
-  { id: 'bank', name: 'Bank Transfer', icon: 'account_balance' },
-  { id: 'card', name: 'Credit Card', icon: 'credit_card' },
+  { id: 'wallet', name: 'Fund from Wallet', icon: '👛' },
+  { id: 'mtn', name: 'MTN MoMo', icon: '📱' },
+  { id: 'airtel', name: 'Airtel Money', icon: '📱' },
+  { id: 'bank', name: 'Bank Transfer', icon: '🏦' },
+  { id: 'card', name: 'Credit Card', icon: '💳' },
 ];
 
 const WalletPage = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, session } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { data: profile, isLoading } = useProfile();
   const { data: transactions = [] } = useTransactions();
   const deposit = useDeposit();
+  
   const [showDeposit, setShowDeposit] = useState(false);
+  const [showWithdraw, setShowWithdraw] = useState(false);
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('mtn');
+  
+  const [isDepositing, setIsDepositing] = useState(false);
+  const [depositSuccess, setDepositSuccess] = useState(false);
+
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [withdrawSuccess, setWithdrawSuccess] = useState(false);
 
   // Live Data State
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loadingDashboard, setLoadingDashboard] = useState(true);
-  const { session } = useAuth();
 
   // Purchase State
   const searchParams = new URLSearchParams(location.search);
@@ -80,16 +89,29 @@ const WalletPage = () => {
     fetchData();
   }, [user, session]);
 
-  // Calculator State
-  const [calcTarget, setCalcTarget] = useState('');
-  const [calcMonthly, setCalcMonthly] = useState('');
+  // Calculator State (Sliders)
+  const [calcTarget, setCalcTarget] = useState<number[]>([15000000]);
+  const [calcMonthly, setCalcMonthly] = useState<number[]>([500000]);
   const [calcResult, setCalcResult] = useState<any>(null);
-  const [isCalculating, setIsCalculating] = useState(false);
+
+  // Auto-calculate when sliders change
+  useEffect(() => {
+    const target = calcTarget[0];
+    const monthly = calcMonthly[0];
+    if (target > 0 && monthly > 0) {
+      const months = Math.ceil(target / monthly);
+      const totalInterest = Math.round(target * 0.05);
+      setCalcResult({
+        estimatedMonths: months,
+        estimatedInterest: totalInterest
+      });
+    }
+  }, [calcTarget, calcMonthly]);
 
   if (!authLoading && !user) { navigate('/'); return null; }
   if (isLoading || loadingDashboard || !profile || !dashboardData) {
-    return <div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="animate-pulse text-muted-foreground">Loading...</div>
+    return <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="animate-pulse text-slate-400 font-medium">Loading Wallet...</div>
     </div>;
   }
 
@@ -99,18 +121,73 @@ const WalletPage = () => {
   const handleDeposit = async () => {
     const val = parseInt(amount);
     if (!val || val < 1000) return;
-    await deposit.mutateAsync({ amount: val, method });
     
-    // Refresh dashboard data
-    const res = await fetch(`${API_URL}/dashboard/summary`, {
-      headers: { 'Authorization': `Bearer ${session?.access_token}` }
-    });
-    if (res.ok) {
-      setDashboardData(await res.json());
+    setIsDepositing(true);
+    try {
+      await deposit.mutateAsync({ amount: val, method });
+      
+      // Wait for the mock webhook on the backend to finish
+      setTimeout(async () => {
+        const res = await fetch(`${API_URL}/dashboard/summary`, {
+          headers: { 'Authorization': `Bearer ${session?.access_token}` }
+        });
+        if (res.ok) {
+          setDashboardData(await res.json());
+        }
+        
+        setIsDepositing(false);
+        setDepositSuccess(true);
+        toast.success("Deposit Successful", { description: `${formatUGX(val)} has been added to your wallet.` });
+        
+        setTimeout(() => {
+          setDepositSuccess(false);
+          setAmount('');
+          setShowDeposit(false);
+        }, 2000);
+      }, 3500);
+    } catch (e) {
+      console.error(e);
+      setIsDepositing(false);
+      toast.error("Deposit Failed", { description: "An error occurred during the transaction." });
     }
+  };
 
-    setAmount('');
-    setShowDeposit(false);
+  const handleWithdraw = async () => {
+    const val = parseInt(amount);
+    if (!val || val < 1000) return;
+    if (val > availableBalance) {
+      toast.error("Insufficient Funds", { description: "You cannot withdraw more than your available balance." });
+      return;
+    }
+    
+    setIsWithdrawing(true);
+    try {
+      // Mock withdrawal process
+      setTimeout(() => {
+        // Optimistically update local dashboard data for the mock
+        setDashboardData((prev: any) => ({
+          ...prev,
+          savings: {
+            ...prev.savings,
+            totalSaved: prev.savings.totalSaved - val
+          }
+        }));
+        
+        setIsWithdrawing(false);
+        setWithdrawSuccess(true);
+        toast.success("Withdrawal Successful", { description: `${formatUGX(val)} has been sent to your mobile money account.` });
+        
+        setTimeout(() => {
+          setWithdrawSuccess(false);
+          setAmount('');
+          setShowWithdraw(false);
+        }, 2000);
+      }, 3500);
+    } catch (e) {
+      console.error(e);
+      setIsWithdrawing(false);
+      toast.error("Withdrawal Failed", { description: "An error occurred during the transaction." });
+    }
   };
 
   const handlePurchase = () => {
@@ -121,178 +198,350 @@ const WalletPage = () => {
     navigate(`/payment-details?method=${purchaseMethod}&carId=${purchaseCar?.id}&deficit=${deficit}`);
   };
 
-  const handleCalculate = async () => {
-    if (!calcTarget || !calcMonthly) return;
-    setIsCalculating(true);
-    try {
-      const res = await fetch(`${API_URL}/savings/calculate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          targetAmount: parseInt(calcTarget),
-          monthlyContribution: parseInt(calcMonthly)
-        })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setCalcResult(data);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsCalculating(false);
-    }
+  const iconForType = (type: string) => {
+    if (type === 'deposit') return <ArrowDownLeft size={18} className="text-emerald-500" />;
+    if (type === 'growth') return <Sparkles size={18} className="text-primary" />;
+    return <ArrowUpRight size={18} className="text-rose-500" />;
   };
 
-  const iconForType = (type: string) => {
-    if (type === 'deposit') return <ArrowDownLeft size={16} className="text-success" />;
-    if (type === 'growth') return <Sparkles size={16} className="text-primary" />;
-    return <ArrowUpRight size={16} className="text-destructive" />;
-  };
+  // Mock expected payment (either calculated from car or a default)
+  const expectedPayment = dashboardData?.vehicle?.priceUgx ? Math.round(dashboardData.vehicle.priceUgx / 36) : 450000;
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="px-6 pt-12">
-        <h1 className="text-2xl font-bold font-heading">Wallet</h1>
-      </div>
-
-      <div className="px-6 mt-4">
-        <div className="bg-card rounded-2xl p-5 card-shadow">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider">Available Balance</p>
-          <AnimatedNumber value={availableBalance} className="text-3xl font-bold font-heading block mt-1" />
-          {profile.savings_locked && (
-            <p className="text-xs text-warning font-medium mt-2">🔒 Savings locked for car ownership</p>
-          )}
-          <button onClick={() => setShowDeposit(true)} disabled={profile.savings_locked}
-            className="mt-4 w-full h-11 gradient-primary text-primary-foreground font-semibold rounded-2xl text-sm disabled:opacity-50">
-            Deposit Money
-          </button>
+    <div className="min-h-screen bg-slate-50 pb-24 md:p-8">
+      <div className="max-w-4xl mx-auto space-y-8 p-4 md:p-0 pt-8 md:pt-0">
+        
+        {/* Header */}
+        <div className="print:hidden">
+          <h1 className="text-2xl font-extrabold text-slate-900">Wallet</h1>
+          <p className="text-slate-500 font-medium">Manage your savings, deposits, and growth.</p>
         </div>
-      </div>
 
-      <div className="px-6 mt-4 grid grid-cols-2 gap-3">
-        <div className="bg-card rounded-2xl p-4 card-shadow">
-          <p className="text-[10px] text-muted-foreground uppercase">Total Deposits</p>
-          <p className="text-lg font-bold font-heading mt-1">{formatUGX(availableBalance)}</p>
+        {/* Print-Only Header */}
+        <div className="hidden print:block mb-8">
+          <h1 className="text-3xl font-extrabold text-slate-900">Account Statement</h1>
+          <p className="text-slate-500">Welile Car Financing</p>
+          <div className="mt-4 p-4 border border-slate-200 rounded-xl">
+            <p className="font-bold">Total Balance: {formatUGX(availableBalance)}</p>
+            <p className="text-sm text-slate-500">Generated on {new Date().toLocaleDateString()}</p>
+          </div>
         </div>
-        <div className="bg-card rounded-2xl p-4 card-shadow">
-          <p className="text-[10px] text-muted-foreground uppercase">Growth Earned</p>
-          <p className="text-lg font-bold font-heading mt-1 text-gradient">{formatUGX(dashboardData.savings.interestEarned)}</p>
-        </div>
-      </div>
 
-      {/* Savings Calculator Widget */}
-      <div className="px-6 mt-6">
-        <div className="bg-primary rounded-3xl p-6 text-white shadow-lg shadow-primary/30">
-          <h2 className="font-extrabold text-lg flex items-center gap-2 mb-4">
-            <Sparkles size={18} /> Savings Calculator
-          </h2>
-          <div className="space-y-4">
+        {/* Hero Wallet Card */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="print:hidden relative bg-[#4C158D] text-white rounded-[2rem] p-8 shadow-2xl shadow-[#4C158D]/30 overflow-hidden">
+          <div className="absolute top-[-50%] right-[-20%] w-[400px] h-[400px] bg-white/10 rounded-full blur-[60px] pointer-events-none"></div>
+          <div className="absolute bottom-[-20%] left-[-10%] w-[300px] h-[300px] bg-fuchsia-500/20 rounded-full blur-[50px] pointer-events-none"></div>
+          
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <div>
-              <p className="text-xs text-primary/40 font-bold mb-1">Vehicle Target Deposit (UGX)</p>
-              <input 
-                type="number" 
-                placeholder="e.g. 15000000"
-                value={calcTarget}
-                onChange={e => setCalcTarget(e.target.value)}
-                className="w-full bg-white/20 border border-white/20 rounded-xl px-4 py-3 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white transition font-medium"
-              />
-            </div>
-            <div>
-              <p className="text-xs text-primary/40 font-bold mb-1">Monthly Contribution (UGX)</p>
-              <input 
-                type="number" 
-                placeholder="e.g. 500000"
-                value={calcMonthly}
-                onChange={e => setCalcMonthly(e.target.value)}
-                className="w-full bg-white/20 border border-white/20 rounded-xl px-4 py-3 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white transition font-medium"
-              />
+              <p className="text-white/70 font-bold uppercase tracking-wider text-xs mb-2 flex items-center gap-2">
+                <Wallet size={16} /> Total Balance
+              </p>
+              <AnimatedNumber value={availableBalance} className="text-5xl md:text-6xl font-black drop-shadow-lg" />
+              {profile.savings_locked && (
+                <p className="text-xs bg-white/20 text-white inline-flex items-center gap-1 font-bold px-3 py-1 rounded-full mt-4 backdrop-blur-sm">
+                  <ShieldCheck size={14} /> Savings locked for car financing
+                </p>
+              )}
             </div>
             
-            {calcResult && (
-              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-white/10 p-4 rounded-xl border border-white/20">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-primary/20">Estimated Time</span>
-                  <span className="font-bold">{calcResult.estimatedMonths} Months</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-primary/20">Total Interest Earned</span>
-                  <span className="font-bold text-emerald-300">+{formatUGX(calcResult.estimatedInterest)}</span>
-                </div>
-              </motion.div>
-            )}
+            <div className="flex gap-3 w-full md:w-auto">
+              <button 
+                onClick={() => { setAmount(''); setShowDeposit(true); }} 
+                disabled={profile.savings_locked}
+                className="bg-white text-[#4C158D] hover:bg-slate-100 font-bold px-6 py-4 rounded-2xl transition-all shadow-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed flex-1 md:flex-auto justify-center"
+              >
+                <PlusCircle size={20} /> Deposit
+              </button>
+              <button 
+                onClick={() => { setAmount(''); setShowWithdraw(true); }} 
+                disabled={profile.savings_locked || availableBalance <= 0}
+                className="bg-white/10 text-white border border-white/20 hover:bg-white/20 font-bold px-6 py-4 rounded-2xl transition-all shadow-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed flex-1 md:flex-auto justify-center"
+              >
+                <MinusCircle size={20} /> Withdraw
+              </button>
+            </div>
+          </div>
+        </motion.div>
 
-            <button 
-              onClick={handleCalculate}
-              disabled={isCalculating}
-              className="w-full bg-white text-primary font-bold py-3 rounded-xl hover:bg-slate-50 transition disabled:opacity-50"
-            >
-              {isCalculating ? 'Calculating...' : 'Calculate Estimation'}
+        {/* Quick Stats Grid */}
+        <div className="grid grid-cols-2 gap-4 md:gap-6 print:hidden">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm relative overflow-hidden">
+            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-4">
+              <ArrowDownLeft size={24} />
+            </div>
+            <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Total Deposits</p>
+            <p className="text-2xl font-black text-slate-900">{formatUGX(availableBalance)}</p>
+          </motion.div>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm relative overflow-hidden">
+            <div className="w-12 h-12 bg-fuchsia-50 text-fuchsia-600 rounded-full flex items-center justify-center mb-4">
+              <TrendingUp size={24} />
+            </div>
+            <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Growth Earned</p>
+            <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-600 to-[#4C158D]">+{formatUGX(dashboardData.savings.interestEarned)}</p>
+          </motion.div>
+        </div>
+
+        {/* Enhanced Interactive Savings Calculator */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="print:hidden bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex flex-col md:flex-row gap-8">
+          <div className="md:w-1/2 space-y-6">
+            <h2 className="font-extrabold text-xl text-slate-900 flex items-center gap-2">
+              <Calculator size={24} className="text-primary" /> Savings Estimator
+            </h2>
+            
+            <div className="space-y-6">
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-sm font-bold text-slate-500 uppercase">Target Amount</span>
+                  <span className="font-black text-primary text-lg">{formatUGX(calcTarget[0])}</span>
+                </div>
+                <Slider
+                  defaultValue={[15000000]}
+                  max={50000000}
+                  min={1000000}
+                  step={500000}
+                  value={calcTarget}
+                  onValueChange={setCalcTarget}
+                  className="w-full"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-sm font-bold text-slate-500 uppercase">Monthly Deposit</span>
+                  <span className="font-black text-emerald-600 text-lg">{formatUGX(calcMonthly[0])}</span>
+                </div>
+                <Slider
+                  defaultValue={[500000]}
+                  max={5000000}
+                  min={50000}
+                  step={50000}
+                  value={calcMonthly}
+                  onValueChange={setCalcMonthly}
+                  className="w-full"
+                />
+              </div>
+            </div>
+          </div>
+          
+          <div className="md:w-1/2 bg-slate-50 rounded-2xl p-6 border border-slate-100 flex flex-col justify-center">
+            {calcResult && (
+              <div className="space-y-6">
+                <div>
+                  <p className="text-xs font-bold text-slate-400 uppercase mb-1">Estimated Time to Target</p>
+                  <p className="text-4xl font-black text-slate-900">{calcResult.estimatedMonths} <span className="text-lg text-slate-500 font-bold">Months</span></p>
+                </div>
+                <div className="h-[1px] bg-slate-200 w-full"></div>
+                <div>
+                  <p className="text-xs font-bold text-slate-400 uppercase mb-1">Projected Interest Earned</p>
+                  <p className="text-2xl font-black text-emerald-500">+{formatUGX(calcResult.estimatedInterest)}</p>
+                </div>
+                <div className="bg-primary/10 text-primary p-3 rounded-xl text-xs font-bold flex items-center gap-2">
+                  <Sparkles size={16} /> 5% Annual Growth Rate applied.
+                </div>
+              </div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Savings Timeline / History */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm print:shadow-none print:border-none print:p-0">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="font-extrabold text-xl text-slate-900">Savings History</h2>
+            <button onClick={() => window.print()} className="print:hidden text-sm flex items-center gap-2 text-primary font-bold bg-primary/10 px-3 py-1.5 rounded-lg hover:bg-primary/20 transition">
+              <Printer size={16} /> Print Statement
             </button>
           </div>
-        </div>
+          {transactions.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+              <Wallet size={48} className="mb-4 opacity-20" />
+              <p className="font-medium">No savings history yet.</p>
+            </div>
+          ) : (
+            <div className="space-y-0 relative before:absolute before:inset-0 before:ml-6 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
+              {transactions.map((tx, idx) => (
+                <div key={tx.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active py-4">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-slate-50 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                    {iconForType(tx.type)}
+                  </div>
+                  <div className="w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-1">
+                      <p className="font-bold text-slate-900 capitalize">{tx.type} {tx.method ? `via ${tx.method}` : ''}</p>
+                      <span className={`font-black ${tx.type === 'withdrawal' ? 'text-rose-500' : 'text-emerald-500'}`}>
+                        {tx.type === 'withdrawal' ? '-' : '+'}{formatUGX(tx.amount)}
+                      </span>
+                    </div>
+                    <time className="text-xs font-medium text-slate-400">{formatDate(tx.date || tx.created_at || new Date().toISOString())}</time>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </motion.div>
       </div>
 
-      <div className="px-6 mt-6">
-        <h2 className="font-semibold text-sm mb-3">Savings History</h2>
-        {transactions.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-8">No savings history yet</p>
-        ) : (
-          <div className="space-y-2">
-            {transactions.map(tx => (
-              <div key={tx.id} className="bg-card rounded-xl p-3 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
-                  {iconForType(tx.type)}
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium capitalize">{tx.type}{tx.method ? ` · ${tx.method}` : ''}</p>
-                  <p className="text-[10px] text-muted-foreground">{formatDate(tx.date || tx.created_at || new Date().toISOString())}</p>
-                </div>
-                <p className={`text-sm font-semibold ${tx.type === 'withdrawal' ? 'text-destructive' : 'text-success'}`}>
-                  {tx.type === 'withdrawal' ? '-' : '+'}{formatUGX(tx.amount)}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
+      {/* Deposit Modal (Glassmorphism Slide-Up) */}
       <AnimatePresence>
         {showDeposit && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-foreground/40 z-50 flex items-end justify-center"
-            onClick={() => setShowDeposit(false)}>
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-end justify-center md:items-center"
+            onClick={() => !isDepositing && setShowDeposit(false)}>
             <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 25 }}
-              className="bg-white w-full max-w-lg rounded-t-3xl p-6"
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="bg-white w-full max-w-md rounded-t-3xl md:rounded-3xl p-6 shadow-2xl relative"
               onClick={e => e.stopPropagation()}>
+              
               <div className="flex items-center justify-between mb-6">
-                <h2 className="font-bold font-heading text-lg">Deposit Money</h2>
-                <button onClick={() => setShowDeposit(false)}><X size={20} className="text-muted-foreground" /></button>
+                <h2 className="font-extrabold text-2xl text-slate-900">Deposit Money</h2>
+                <button onClick={() => !isDepositing && setShowDeposit(false)} className="bg-slate-100 p-2 rounded-full text-slate-500 hover:bg-slate-200 transition">
+                  <X size={20} />
+                </button>
               </div>
-              <div className="flex gap-3 mb-4">
-                {paymentMethods.map(pm => (
-                  <button key={pm.id} onClick={() => setMethod(pm.id)}
-                    className={`flex-1 h-12 rounded-2xl text-sm font-medium border-2 transition ${
-                      method === pm.id ? 'border-primary bg-secondary' : 'border-border'
-                    }`}>{pm.name}</button>
-                ))}
-              </div>
-              <input type="number" placeholder="Enter amount (UGX)" value={amount}
-                onChange={e => setAmount(e.target.value)}
-                className="w-full h-14 px-4 rounded-2xl bg-secondary text-foreground text-lg font-semibold placeholder:text-muted-foreground placeholder:text-base placeholder:font-normal outline-none focus:ring-2 focus:ring-primary transition" />
-              <div className="flex gap-2 mt-3">
-                {quickAmounts.map(qa => (
-                  <button key={qa} onClick={() => setAmount(qa.toString())}
-                    className="flex-1 h-9 rounded-xl bg-secondary text-xs font-medium hover:bg-accent transition">
-                    {(qa / 1000)}K
+
+              {isDepositing ? (
+                <div className="py-12 flex flex-col items-center text-center">
+                  <div className="relative w-20 h-20 mb-6 flex items-center justify-center">
+                    <div className="absolute inset-0 border-4 border-primary/30 rounded-full"></div>
+                    <div className="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-3xl">📱</span>
+                  </div>
+                  <h3 className="text-xl font-extrabold mb-2 text-slate-900">Awaiting Approval</h3>
+                  <p className="text-slate-500 font-medium px-4">Please check your phone and enter your PIN to approve the deposit of <span className="font-bold text-slate-900">{formatUGX(parseInt(amount) || 0)}</span>.</p>
+                </div>
+              ) : depositSuccess ? (
+                <div className="py-12 flex flex-col items-center text-center">
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-20 h-20 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                    <Check size={40} strokeWidth={3} />
+                  </motion.div>
+                  <h3 className="text-2xl font-extrabold mb-2 text-slate-900">Deposit Successful!</h3>
+                  <p className="text-slate-500 font-medium">Your wallet balance has been updated securely.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-3 mb-6">
+                    {paymentMethods.map(pm => (
+                      <button 
+                        key={pm.id} 
+                        onClick={() => setMethod(pm.id)}
+                        className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all ${
+                          method === pm.id ? 'border-primary bg-primary/5 shadow-inner' : 'border-slate-100 hover:border-slate-200'
+                        }`}
+                      >
+                        <span className="text-2xl">{pm.icon}</span>
+                        <span className="font-bold text-sm flex-1 text-left text-slate-900">{pm.name}</span>
+                        {method === pm.id && <div className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center"><Check size={12} strokeWidth={4} /></div>}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <div className="mb-4">
+                    <button 
+                      onClick={() => setAmount(expectedPayment.toString())}
+                      className="w-full py-3 rounded-xl bg-primary/10 text-primary font-bold border border-primary/20 hover:bg-primary/20 transition flex justify-between px-4 items-center"
+                    >
+                      <span className="text-sm">Expected Payment</span>
+                      <span>{formatUGX(expectedPayment)}</span>
+                    </button>
+                  </div>
+
+                  <div className="relative mb-4">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">UGX</span>
+                    <input type="number" placeholder="Enter amount" value={amount}
+                      onChange={e => setAmount(e.target.value)}
+                      className="w-full h-16 pl-14 pr-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xl font-black placeholder:text-slate-300 placeholder:text-lg placeholder:font-bold outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition" />
+                  </div>
+
+                  <div className="flex gap-2 mb-6">
+                    {quickAmounts.map(qa => (
+                      <button key={qa} onClick={() => setAmount(qa.toString())}
+                        className="flex-1 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200 hover:text-slate-900 transition">
+                        {(qa / 1000)}K
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <button onClick={handleDeposit} disabled={!amount}
+                    className="w-full h-14 bg-primary text-white font-bold rounded-2xl disabled:opacity-50 disabled:bg-slate-300 shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all text-lg">
+                    Confirm Deposit
                   </button>
-                ))}
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Withdraw Modal (Glassmorphism Slide-Up) */}
+      <AnimatePresence>
+        {showWithdraw && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-end justify-center md:items-center"
+            onClick={() => !isWithdrawing && setShowWithdraw(false)}>
+            <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="bg-white w-full max-w-md rounded-t-3xl md:rounded-3xl p-6 shadow-2xl relative"
+              onClick={e => e.stopPropagation()}>
+              
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="font-extrabold text-2xl text-slate-900">Withdraw Money</h2>
+                <button onClick={() => !isWithdrawing && setShowWithdraw(false)} className="bg-slate-100 p-2 rounded-full text-slate-500 hover:bg-slate-200 transition">
+                  <X size={20} />
+                </button>
               </div>
-              <button onClick={handleDeposit}
-                className="mt-6 w-full h-12 gradient-primary text-primary-foreground font-semibold rounded-2xl">
-                Confirm Deposit
-              </button>
+
+              {isWithdrawing ? (
+                <div className="py-12 flex flex-col items-center text-center">
+                  <div className="relative w-20 h-20 mb-6 flex items-center justify-center">
+                    <div className="absolute inset-0 border-4 border-rose-500/30 rounded-full"></div>
+                    <div className="absolute inset-0 border-4 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-3xl">🏦</span>
+                  </div>
+                  <h3 className="text-xl font-extrabold mb-2 text-slate-900">Processing Withdrawal</h3>
+                  <p className="text-slate-500 font-medium px-4">Sending <span className="font-bold text-slate-900">{formatUGX(parseInt(amount) || 0)}</span> to your selected account. This may take a moment.</p>
+                </div>
+              ) : withdrawSuccess ? (
+                <div className="py-12 flex flex-col items-center text-center">
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-20 h-20 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                    <Check size={40} strokeWidth={3} />
+                  </motion.div>
+                  <h3 className="text-2xl font-extrabold mb-2 text-slate-900">Withdrawal Sent!</h3>
+                  <p className="text-slate-500 font-medium">The funds have been dispatched to your mobile money account.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-3 mb-6">
+                    {paymentMethods.map(pm => (
+                      <button 
+                        key={pm.id} 
+                        onClick={() => setMethod(pm.id)}
+                        className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all ${
+                          method === pm.id ? 'border-primary bg-primary/5 shadow-inner' : 'border-slate-100 hover:border-slate-200'
+                        }`}
+                      >
+                        <span className="text-2xl">{pm.icon}</span>
+                        <span className="font-bold text-sm flex-1 text-left text-slate-900">{pm.name}</span>
+                        {method === pm.id && <div className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center"><Check size={12} strokeWidth={4} /></div>}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <div className="flex justify-between text-sm font-bold text-slate-500 mb-2 px-1">
+                    <span>Withdrawal Amount</span>
+                    <span>Available: <span className="text-primary">{formatUGX(availableBalance)}</span></span>
+                  </div>
+                  <div className="relative mb-6">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">UGX</span>
+                    <input type="number" placeholder="Enter amount" value={amount}
+                      onChange={e => setAmount(e.target.value)}
+                      className="w-full h-16 pl-14 pr-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xl font-black placeholder:text-slate-300 placeholder:text-lg placeholder:font-bold outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition" />
+                  </div>
+                  
+                  <button onClick={handleWithdraw} disabled={!amount || parseInt(amount) > availableBalance}
+                    className="w-full h-14 bg-rose-500 text-white font-bold rounded-2xl disabled:opacity-50 disabled:bg-slate-300 shadow-lg shadow-rose-500/20 hover:bg-rose-600 transition-all text-lg">
+                    Confirm Withdrawal
+                  </button>
+                </>
+              )}
             </motion.div>
           </motion.div>
         )}
@@ -302,68 +551,68 @@ const WalletPage = () => {
       <AnimatePresence>
         {showPurchaseModal && purchaseCar && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-slate-900/60 z-50 flex items-end justify-center"
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-end justify-center md:items-center"
             onClick={() => !isPurchasing && !purchaseSuccess && setShowPurchaseModal(false)}>
             <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25 }}
-              className="bg-white w-full max-w-lg rounded-t-3xl p-6 relative overflow-y-auto max-h-[90vh] shadow-2xl"
+              className="bg-white w-full max-w-lg rounded-t-3xl md:rounded-3xl p-6 relative overflow-y-auto max-h-[90vh] shadow-2xl"
               onClick={e => e.stopPropagation()}>
               
               {purchaseSuccess ? (
                 <div className="py-12 flex flex-col items-center text-center">
-                  <div className="w-20 h-20 bg-success/20 text-success rounded-full flex items-center justify-center mb-6">
-                    <Sparkles size={40} />
-                  </div>
-                  <h2 className="text-2xl font-bold font-heading mb-2">Purchase Successful!</h2>
-                  <p className="text-muted-foreground">You are now the proud owner of the {purchaseCar.name}.</p>
-                  <p className="text-sm mt-4 text-muted-foreground animate-pulse">Redirecting to marketplace...</p>
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-20 h-20 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                    <Check size={40} strokeWidth={3} />
+                  </motion.div>
+                  <h2 className="text-2xl font-extrabold text-slate-900 mb-2">Purchase Successful!</h2>
+                  <p className="text-slate-500 font-medium">You are now the proud owner of the {purchaseCar.name}.</p>
+                  <p className="text-sm mt-4 text-primary font-bold animate-pulse">Redirecting to marketplace...</p>
                 </div>
               ) : (
                 <>
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="font-bold font-heading text-lg">Checkout</h2>
-                    <button onClick={() => setShowPurchaseModal(false)}><X size={20} className="text-muted-foreground" /></button>
+                    <h2 className="font-extrabold text-2xl text-slate-900">Checkout</h2>
+                    <button onClick={() => setShowPurchaseModal(false)} className="bg-slate-100 p-2 rounded-full text-slate-500 hover:bg-slate-200 transition"><X size={20} /></button>
                   </div>
                   
-                  <div className="bg-[#4C158D] p-4 rounded-2xl flex gap-4 items-center mb-6 text-white shadow-lg shadow-[#4C158D]/30 relative overflow-hidden">
+                  <div className="bg-[#4C158D] p-6 rounded-3xl flex gap-4 items-center mb-6 text-white shadow-xl shadow-[#4C158D]/30 relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/20" />
-                    <img src={purchaseCar.image} alt={purchaseCar.name} className="w-24 h-16 object-contain drop-shadow-md relative z-10" />
+                    <img src={purchaseCar.image} alt={purchaseCar.name} className="w-28 h-20 object-contain drop-shadow-xl relative z-10" />
                     <div className="relative z-10">
-                      <p className="font-bold">{purchaseCar.name}</p>
-                      <p className="text-white/90 font-bold text-lg drop-shadow-sm">{formatUGX(purchaseCar.priceUgx)}</p>
+                      <p className="font-extrabold text-lg leading-tight">{purchaseCar.name}</p>
+                      <p className="text-white/90 font-black text-xl drop-shadow-sm mt-1">{formatUGX(purchaseCar.priceUgx)}</p>
                     </div>
                   </div>
 
-                  <p className="text-sm font-bold mb-3 uppercase tracking-wider text-muted-foreground">Select Payment Method</p>
+                  <p className="text-xs font-bold mb-3 uppercase tracking-wider text-slate-400">Select Payment Method</p>
                   <div className="space-y-3 mb-6">
                     {purchasePaymentMethods.map(pm => (
                       <button 
                         key={pm.id} 
                         onClick={() => setPurchaseMethod(pm.id)}
                         className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all ${
-                          purchaseMethod === pm.id ? 'border-primary bg-primary/5' : 'border-border hover:border-border/80'
+                          purchaseMethod === pm.id ? 'border-primary bg-primary/5 shadow-inner' : 'border-slate-100 hover:border-slate-200'
                         }`}
                       >
-                        <span className="material-symbols-outlined text-primary">{pm.icon}</span>
-                        <span className="font-bold text-sm flex-1 text-left">{pm.name}</span>
+                        <span className="text-2xl">{pm.icon}</span>
+                        <span className="font-bold text-sm flex-1 text-left text-slate-900">{pm.name}</span>
                         {purchaseMethod === pm.id && <div className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center"><Check size={12} strokeWidth={4} /></div>}
                       </button>
                     ))}
                   </div>
 
                   {purchaseMethod === 'wallet' && dashboardData?.savings?.totalSaved < purchaseCar.priceUgx && (
-                    <div className="mb-6 bg-orange-500/10 text-orange-600 p-3 rounded-xl text-sm font-semibold flex items-center gap-2">
-                      <span className="material-symbols-outlined">info</span>
-                      Your wallet balance is low. You will be prompted to top up your wallet via Mobile Money in the next step.
+                    <div className="mb-6 bg-amber-50 text-amber-700 p-4 rounded-2xl text-sm font-semibold flex items-start gap-3 border border-amber-200">
+                      <span className="material-symbols-outlined shrink-0 mt-0.5">info</span>
+                      <p>Your wallet balance is low. You will be prompted to top up your wallet via Mobile Money in the next step.</p>
                     </div>
                   )}
 
                   <button 
                     onClick={handlePurchase}
                     disabled={isPurchasing}
-                    className="w-full h-14 gradient-primary text-primary-foreground font-bold rounded-2xl disabled:opacity-50 text-lg flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
+                    className="w-full h-14 bg-primary text-white font-bold rounded-2xl disabled:opacity-50 text-lg flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
                   >
-                    Continue to Payment Details
+                    Continue to Payment
                   </button>
                 </>
               )}
@@ -372,7 +621,9 @@ const WalletPage = () => {
         )}
       </AnimatePresence>
 
-      <BottomNav />
+      <div className="print:hidden">
+        <BottomNav />
+      </div>
     </div>
   );
 };

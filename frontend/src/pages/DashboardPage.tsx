@@ -4,8 +4,9 @@ import { API_URL } from '@/config';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
 import { formatUGX } from '@/lib/format';
-import { PlusCircle, ListOrdered, FileText, Car, LifeBuoy, CheckCircle2, Circle, TrendingUp, Target, Clock, ArrowRight } from 'lucide-react';
+import { PlusCircle, Wallet, FileText, Car, CarFront, LifeBuoy, CheckCircle2, Circle, TrendingUp, Target, Clock, ArrowRight } from 'lucide-react';
 import { carsData } from '@/data/cars';
+import { useProfile } from '@/hooks/useProfile';
 
 interface DashboardData {
   health: {
@@ -44,6 +45,7 @@ const DashboardPage = () => {
   const navigate = useNavigate();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const { data: profile } = useProfile();
 
   useEffect(() => {
     if (authLoading) return;
@@ -107,38 +109,7 @@ const DashboardPage = () => {
         <p className="text-slate-500 font-medium">Here is your vehicle ownership progress.</p>
       </div>
 
-      {/* Section 1: Savings Wallet (Top Priority) */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-primary text-white rounded-3xl p-6 shadow-xl shadow-primary/20 relative overflow-hidden">
-        <div className="absolute top-[-20%] right-[-10%] w-[300px] h-[300px] bg-white/5 rounded-full blur-[40px]"></div>
-        
-        <div className="relative z-10">
-          <p className="text-primary-fixed-dim font-bold uppercase tracking-wider text-xs mb-1">Savings Balance</p>
-          <h2 className="text-4xl font-black mb-6">{formatUGX(availableBalance)}</h2>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white/10 p-3 rounded-2xl">
-              <p className="text-primary-fixed-dim text-[10px] uppercase font-bold mb-1">Deposit Goal</p>
-              <p className="font-bold">{formatUGX(data.savings.targetAmount)}</p>
-            </div>
-            <div className="bg-white/10 p-3 rounded-2xl">
-              <p className="text-primary-fixed-dim text-[10px] uppercase font-bold mb-1">Progress</p>
-              <p className="font-bold">{data.savings.progressPercent}%</p>
-            </div>
-            <div className="bg-white/10 p-3 rounded-2xl">
-              <p className="text-primary-fixed-dim text-[10px] uppercase font-bold mb-1">Interest Earned</p>
-              <p className="font-bold text-emerald-300">+{formatUGX(data.savings.interestEarned)}</p>
-            </div>
-            <div className="bg-white/10 p-3 rounded-2xl">
-              <p className="text-primary-fixed-dim text-[10px] uppercase font-bold mb-1">Monthly Contrib.</p>
-              <p className="font-bold">{formatUGX(data.savings.monthlyContribution)}</p>
-            </div>
-          </div>
-          
-          <button onClick={() => navigate('/wallet')} className="w-full md:w-auto bg-white text-primary hover:bg-slate-50 font-bold px-8 py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
-            <PlusCircle size={18} /> Add Money
-          </button>
-        </div>
-      </motion.div>
+
 
       {/* Section 2: Ownership Journey Tracker */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm overflow-x-auto">
@@ -221,20 +192,20 @@ const DashboardPage = () => {
         <h3 className="text-lg font-bold text-slate-900 mb-4">Quick Actions</h3>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <button onClick={() => navigate('/wallet')} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-primary hover:shadow-md transition-all flex flex-col items-center justify-center gap-3 group">
-            <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors"><PlusCircle size={20} /></div>
-            <span className="text-xs font-bold text-slate-700">Add Savings</span>
+            <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors"><Wallet size={20} /></div>
+            <span className="text-xs font-bold text-slate-700">Wallet</span>
           </button>
-          <button onClick={() => navigate('/savings-history')} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-primary hover:shadow-md transition-all flex flex-col items-center justify-center gap-3 group">
-            <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors"><ListOrdered size={20} /></div>
-            <span className="text-xs font-bold text-slate-700">Transactions</span>
-          </button>
-          <button onClick={() => navigate('/financing')} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-primary hover:shadow-md transition-all flex flex-col items-center justify-center gap-3 group">
+          <button onClick={() => navigate('/applications')} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-primary hover:shadow-md transition-all flex flex-col items-center justify-center gap-3 group">
             <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors"><FileText size={20} /></div>
-            <span className="text-xs font-bold text-slate-700">Apply Financing</span>
+            <span className="text-xs font-bold text-slate-700">Applications</span>
           </button>
           <button onClick={() => navigate('/vehicles')} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-primary hover:shadow-md transition-all flex flex-col items-center justify-center gap-3 group">
             <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors"><Car size={20} /></div>
-            <span className="text-xs font-bold text-slate-700">Browse Vehicles</span>
+            <span className="text-xs font-bold text-slate-700">Vehicles</span>
+          </button>
+          <button onClick={() => navigate('/my-vehicle')} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-primary hover:shadow-md transition-all flex flex-col items-center justify-center gap-3 group">
+            <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors"><CarFront size={20} /></div>
+            <span className="text-xs font-bold text-slate-700">My Vehicle</span>
           </button>
           <button onClick={() => navigate('/support')} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-primary hover:shadow-md transition-all flex flex-col items-center justify-center gap-3 group">
             <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors"><LifeBuoy size={20} /></div>
@@ -246,11 +217,11 @@ const DashboardPage = () => {
       {/* Section 5: Featured Vehicle Suggestions (Only after wallet & goals) */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
         <div className="flex justify-between items-end mb-4">
-          <h3 className="text-lg font-bold text-slate-900">Featured Vehicles</h3>
-          <button onClick={() => navigate('/vehicles')} className="text-primary text-xs font-bold flex items-center gap-1 hover:underline">View All <ArrowRight size={12} /></button>
+          <h3 className="text-lg font-bold text-slate-900">{profile?.selected_car_id ? "Your Target Vehicle" : "Featured Vehicles"}</h3>
+          <button onClick={() => navigate('/vehicles')} className="text-primary text-xs font-bold flex items-center gap-1 hover:underline">{profile?.selected_car_id ? "Change Vehicle" : "View All"} <ArrowRight size={12} /></button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {carsData.slice(0, 3).map(car => (
+          {(profile?.selected_car_id ? carsData.filter(c => c.id === profile.selected_car_id) : carsData.slice(0, 3)).map(car => (
             <div key={car.id} className="bg-white rounded-[24px] border border-slate-100 p-4 shadow-sm hover:shadow-md transition-all">
               <div className="h-32 flex items-center justify-center mb-4">
                 <img src={car.image} alt={car.name} className="max-h-full max-w-full object-contain mix-blend-multiply" />

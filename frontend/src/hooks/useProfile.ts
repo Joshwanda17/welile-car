@@ -124,7 +124,8 @@ export function useProfile() {
         const me = await meRes.json();
         const summary = await summaryRes.json();
         
-        const localCarId = localStorage.getItem('mockPurchasedCarId') || localStorage.getItem('selectedCarId');
+        const mockP = getMockProfile(me.id.toString());
+        const localCarId = localStorage.getItem('mockPurchasedCarId') || mockP.selected_car_id || localStorage.getItem('selectedCarId');
         
         const profile: Profile = {
           id: me.id.toString(),

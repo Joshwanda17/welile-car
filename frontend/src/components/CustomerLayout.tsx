@@ -13,11 +13,10 @@ const CustomerLayout = ({ children }: { children: React.ReactNode }) => {
 
   const links = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'Wallet', path: '/wallet', icon: Wallet },
     { name: 'Vehicle Marketplace', path: '/vehicles', icon: Car },
-    { name: 'My Applications', path: '/applications', icon: FileText },
+    { name: 'My Application', path: '/applications', icon: FileText },
+    { name: 'Wallet', path: '/wallet', icon: Wallet },
     { name: 'My Vehicle', path: '/my-vehicle', icon: CarFront },
-    { name: 'Repayments', path: '/repayments', icon: CreditCard },
     { name: 'Support', path: '/support', icon: LifeBuoy },
     { name: 'Settings', path: '/settings', icon: Settings },
   ];

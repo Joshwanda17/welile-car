@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, Bell, Monitor, Lock, CreditCard, Globe, AlertCircle, LogOut,
-  ChevronRight, ArrowLeft, Camera, Phone, Mail, MapPin, 
+  ChevronRight, ArrowLeft, Camera, Phone, Mail, MapPin, X,
   ShieldCheck, Smartphone, CheckCircle2, Search, Send, MessageSquare, FileText
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -24,9 +24,28 @@ export default function SettingsPage() {
   const [pushEnabled, setPushEnabled] = useState(true);
   const [emailEnabled, setEmailEnabled] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [passwordData, setPasswordData] = useState({ current: '', new: '', confirm: '' });
+  const [isSaving, setIsSaving] = useState(false);
   const [helpMessage, setHelpMessage] = useState('');
   const [helpSearchQuery, setHelpSearchQuery] = useState('');
   const { language: selectedLanguage, setLanguage: setSelectedLanguage, t } = useLanguage();
+
+  const [localAvatar, setLocalAvatar] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLocalAvatar(reader.result as string);
+        toast.success("Profile Picture Updated");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleLogout = async () => {
     await signOut();
@@ -43,12 +62,22 @@ export default function SettingsPage() {
     <div className="space-y-6">
       <div className="flex flex-col items-center justify-center py-6">
         <div className="relative w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center text-[#4C158D] shadow-sm mb-4">
-          {profile?.avatar_url ? (
-            <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover rounded-full" />
+          {localAvatar || profile?.avatar_url ? (
+            <img src={localAvatar || profile?.avatar_url} alt="Profile" className="w-full h-full object-cover rounded-full" />
           ) : (
             <User size={40} />
           )}
-          <button className="absolute bottom-0 right-0 w-8 h-8 bg-[#4C158D] text-white rounded-full flex items-center justify-center border-2 border-white">
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleImageUpload} 
+            accept="image/*" 
+            className="hidden" 
+          />
+          <button 
+            onClick={() => fileInputRef.current?.click()}
+            className="absolute bottom-0 right-0 w-8 h-8 bg-[#4C158D] hover:bg-[#3f2bc2] transition-colors text-white rounded-full flex items-center justify-center border-2 border-white cursor-pointer shadow-sm"
+          >
             <Camera size={14} />
           </button>
         </div>
@@ -80,9 +109,7 @@ export default function SettingsPage() {
         </div>
       </div>
       
-      <button className="w-full py-4 bg-[#4C158D] hover:bg-[#3f2bc2] transition-colors text-white font-bold rounded-xl mt-4">
-        Save Changes
-      </button>
+
     </div>
   );
 
@@ -139,32 +166,108 @@ export default function SettingsPage() {
 
   const renderPrivacy = () => (
     <div className="space-y-4">
-      <button className="w-full bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-100 p-4 rounded-xl flex items-center justify-between text-left group">
-        <div className="flex items-center gap-3">
-          <Lock size={20} className="text-[#4C158D]" />
-          <div>
-            <p className="font-bold text-slate-800">Change Password</p>
-            <p className="text-xs text-slate-500">Update your security key</p>
+      {!showPasswordForm ? (
+        <button 
+          onClick={() => setShowPasswordForm(true)}
+          className="w-full bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-100 p-4 rounded-xl flex items-center justify-between text-left group"
+        >
+          <div className="flex items-center gap-3">
+            <Lock size={20} className="text-[#4C158D]" />
+            <div>
+              <p className="font-bold text-slate-800">Change Password</p>
+              <p className="text-xs text-slate-500">Update your security key</p>
+            </div>
           </div>
-        </div>
-        <ChevronRight size={18} className="text-slate-400 group-hover:text-slate-600" />
-      </button>
-      <button className="w-full bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-100 p-4 rounded-xl flex items-center justify-between text-left group">
+          <ChevronRight size={18} className="text-slate-400 group-hover:text-slate-600" />
+        </button>
+      ) : (
+        <motion.div 
+          initial={{ opacity: 0, height: 0 }} 
+          animate={{ opacity: 1, height: 'auto' }} 
+          className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2 text-[#4C158D]">
+              <Lock size={18} />
+              <h4 className="font-bold">Change Password</h4>
+            </div>
+            <button onClick={() => setShowPasswordForm(false)} className="text-slate-400 hover:text-slate-600">
+              <X size={18} />
+            </button>
+          </div>
+          
+          <div className="space-y-3">
+            <input 
+              type="password" 
+              placeholder="Current Password" 
+              value={passwordData.current}
+              onChange={(e) => setPasswordData({...passwordData, current: e.target.value})}
+              className="w-full bg-slate-50 border border-slate-100 rounded-xl py-2.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#4C158D]/20"
+            />
+            <input 
+              type="password" 
+              placeholder="New Password" 
+              value={passwordData.new}
+              onChange={(e) => setPasswordData({...passwordData, new: e.target.value})}
+              className="w-full bg-slate-50 border border-slate-100 rounded-xl py-2.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#4C158D]/20"
+            />
+            <input 
+              type="password" 
+              placeholder="Confirm New Password" 
+              value={passwordData.confirm}
+              onChange={(e) => setPasswordData({...passwordData, confirm: e.target.value})}
+              className="w-full bg-slate-50 border border-slate-100 rounded-xl py-2.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#4C158D]/20"
+            />
+            <button 
+              onClick={() => {
+                if (!passwordData.current || !passwordData.new || !passwordData.confirm) {
+                  toast.error("Please fill in all fields.");
+                  return;
+                }
+                if (passwordData.new !== passwordData.confirm) {
+                  toast.error("New passwords do not match.");
+                  return;
+                }
+                toast.success("Password changed successfully!");
+                setShowPasswordForm(false);
+                setPasswordData({ current: '', new: '', confirm: '' });
+              }}
+              className="w-full py-2.5 bg-[#4C158D] text-white font-bold rounded-xl hover:bg-[#3f2bc2] transition-colors mt-2 text-sm"
+            >
+              Update Password
+            </button>
+          </div>
+        </motion.div>
+      )}
+      <div className="w-full bg-slate-50 border border-slate-100 p-4 rounded-xl flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <ShieldCheck size={20} className="text-[#4C158D]" />
+          <ShieldCheck size={20} className={twoFactorEnabled ? "text-emerald-500" : "text-[#4C158D]"} />
           <div>
             <p className="font-bold text-slate-800">Two-Factor Auth</p>
-            <p className="text-xs text-slate-500">Extra layer of security</p>
+            <p className="text-xs text-slate-500">{twoFactorEnabled ? "Enabled via SMS" : "Extra layer of security"}</p>
           </div>
         </div>
-        <ChevronRight size={18} className="text-slate-400 group-hover:text-slate-600" />
-      </button>
+        <button 
+          onClick={() => {
+            const newState = !twoFactorEnabled;
+            setTwoFactorEnabled(newState);
+            if (newState) {
+              toast.success("Two-Factor Auth Enabled", { description: "Verification codes will now be sent to your phone." });
+            } else {
+              toast.success("Two-Factor Auth Disabled");
+            }
+          }}
+          className={`w-12 h-6 rounded-full p-1 transition-colors ${twoFactorEnabled ? 'bg-emerald-500' : 'bg-slate-300'}`}
+        >
+          <div className={`w-4 h-4 bg-white rounded-full transition-transform ${twoFactorEnabled ? 'translate-x-6' : ''}`} />
+        </button>
+      </div>
     </div>
   );
 
   const renderPayment = () => (
     <div className="space-y-4">
-      <div className="bg-[#4C158D]/5 border border-[#4C158D]/20 p-4 rounded-xl flex items-center justify-between">
+      <div className="bg-[#4C158D]/5 border border-[#4C158D]/20 p-4 rounded-xl flex items-center justify-between cursor-pointer">
         <div className="flex items-center gap-3">
           <Smartphone size={20} className="text-[#4C158D]" />
           <div>
@@ -173,6 +276,26 @@ export default function SettingsPage() {
           </div>
         </div>
         <CheckCircle2 size={18} className="text-[#4C158D]" />
+      </div>
+
+      <div className="bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors p-4 rounded-xl flex items-center justify-between cursor-pointer group">
+        <div className="flex items-center gap-3">
+          <Smartphone size={20} className="text-slate-400 group-hover:text-red-500 transition-colors" />
+          <div>
+            <p className="font-bold text-slate-800">Airtel Money</p>
+            <p className="text-xs text-slate-500">075* *** *89</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors p-4 rounded-xl flex items-center justify-between cursor-pointer group">
+        <div className="flex items-center gap-3">
+          <CreditCard size={20} className="text-slate-400 group-hover:text-blue-500 transition-colors" />
+          <div>
+            <p className="font-bold text-slate-800">Visa / Mastercard</p>
+            <p className="text-xs text-slate-500">**** **** **** 4242</p>
+          </div>
+        </div>
       </div>
       
       <button className="w-full py-4 bg-white border-2 border-dashed border-slate-200 text-slate-500 hover:text-[#4C158D] hover:border-[#4C158D] font-bold rounded-xl transition-colors">
@@ -388,7 +511,6 @@ export default function SettingsPage() {
                   { icon: Bell, label: t('settings.notification'), section: 'Notification' },
                   { icon: Monitor, label: t('settings.display'), section: 'Display' },
                   { icon: Lock, label: t('settings.privacy'), section: 'Privacy' },
-                  { icon: CreditCard, label: t('settings.payment'), section: 'Payment' },
                   { icon: Globe, label: t('settings.language'), section: 'Language' },
                   { icon: AlertCircle, label: t('settings.help'), section: 'Help' },
                 ].map((item, idx) => (

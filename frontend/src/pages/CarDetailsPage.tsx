@@ -2,24 +2,30 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { API_URL } from '@/config';
 import { useAuth } from '@/hooks/useAuth';
+import { useProfile, useSelectCarDetails } from '@/hooks/useProfile';
 import { motion } from 'framer-motion';
 import { carsData, Car } from '@/data/cars';
 import { formatUGX } from '@/lib/format';
+import { toast } from 'sonner';
 import { 
   ChevronLeft, CheckCircle2, ShieldCheck, MapPin, Star, 
   Settings, Fuel, Calendar, Car as CarIcon, Gauge, Users, 
-  Droplet, AlertCircle, PhoneCall, CalendarPlus, ChevronRight 
+  Droplet, AlertCircle, PhoneCall, CalendarPlus, ChevronRight, X
 } from 'lucide-react';
 
 const CarDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { session } = useAuth();
+  const { data: profile } = useProfile();
+  const selectCar = useSelectCarDetails();
   
   const [car, setCar] = useState<Car | null>(null);
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
   const [userSavings, setUserSavings] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [paymentFreq, setPaymentFreq] = useState<'daily' | 'weekly' | 'monthly'>('monthly');
+  const [showInspectionForm, setShowInspectionForm] = useState(false);
 
   useEffect(() => {
     const foundCar = carsData.find(c => c.id === id);
@@ -59,8 +65,17 @@ const CarDetailsPage = () => {
   
   // Mock monthly installment (Financed amount + 30% interest spread over 36 months)
   const monthlyInstallment = (financedAmount * 1.3) / 36;
+  const divisor = paymentFreq === 'daily' ? 30 : paymentFreq === 'weekly' ? 4 : 1;
+  const periodLabel = paymentFreq === 'daily' ? 'Daily' : paymentFreq === 'weekly' ? 'Weekly' : 'Monthly';
+
+  const installment = monthlyInstallment / divisor;
+  const insurance = car.estimatedCosts.insurance / divisor;
+  const fuel = car.estimatedCosts.fuel / divisor;
+  const maintenance = car.estimatedCosts.maintenance / divisor;
+  const totalCost = installment + insurance + fuel + maintenance;
 
   return (
+    <>
     <div className="bg-slate-50 min-h-screen pb-24 font-sans text-slate-900">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 py-4 flex items-center gap-4">
@@ -166,15 +181,28 @@ const CarDetailsPage = () => {
 
             <div className="mt-6 space-y-3">
               {!isEligible && (
-                <button onClick={() => navigate('/wallet')} className="w-full bg-primary hover:bg-[#3f2bc2] text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20">
-                  Start Saving For This Vehicle
+                <button 
+                  onClick={() => {
+                    selectCar.mutate({ carId: car.id, condition: 'used', price: car.priceUgx });
+                    navigate('/my-vehicle');
+                  }} 
+                  className={`w-full font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 ${
+                    profile?.selected_car_id === car.id 
+                      ? 'bg-secondary text-primary border-2 border-primary' 
+                      : 'bg-primary hover:bg-[#3f2bc2] text-white'
+                  }`}
+                >
+                  {profile?.selected_car_id === car.id ? 'View in My Vehicle Dashboard' : 'Select & Add to My Vehicle'}
                 </button>
               )}
               <button 
-                onClick={() => navigate(`/wallet?purchaseCarId=${car.id}`)}
-                className={`w-full font-bold py-4 rounded-xl transition-all bg-primary hover:bg-[#3f2bc2] text-white shadow-lg shadow-primary/20`}
+                onClick={() => {
+                  selectCar.mutate({ carId: car.id, condition: 'used', price: car.priceUgx });
+                  navigate('/my-vehicle');
+                }}
+                className={`w-full font-bold py-4 rounded-xl transition-all bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20`}
               >
-                Purchase Vehicle
+                Go to My Vehicle
               </button>
             </div>
           </div>
@@ -263,55 +291,59 @@ const CarDetailsPage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Estimated Costs */}
+          {/* Estimated Costs / Payment Plans */}
           <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-            <h3 className="text-lg font-bold text-slate-900 mb-6">Estimated Monthly Costs</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-4">Select Payment Plan</h3>
             <div className="space-y-4">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-600 font-medium">Loan Payment</span>
-                <span className="font-bold text-slate-900">{formatUGX(monthlyInstallment)}</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-600 font-medium">Insurance</span>
-                <span className="font-bold text-slate-900">{formatUGX(car.estimatedCosts.insurance)}</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-600 font-medium">Fuel Estimate</span>
-                <span className="font-bold text-slate-900">{formatUGX(car.estimatedCosts.fuel)}</span>
-              </div>
-              <div className="flex justify-between items-center text-sm border-b border-slate-100 pb-4">
-                <span className="text-slate-600 font-medium">Maintenance</span>
-                <span className="font-bold text-slate-900">{formatUGX(car.estimatedCosts.maintenance)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="font-bold text-slate-900">Total Monthly Cost</span>
-                <span className="font-black text-primary text-lg">{formatUGX(monthlyInstallment + car.estimatedCosts.insurance + car.estimatedCosts.fuel + car.estimatedCosts.maintenance)}</span>
-              </div>
+              {[
+                { id: 'daily', label: 'Daily Payment', divisor: 30 },
+                { id: 'weekly', label: 'Weekly Payment', divisor: 4 },
+                { id: 'monthly', label: 'Monthly Payment', divisor: 1 },
+              ].map(plan => {
+                const pLoan = Math.round(monthlyInstallment / plan.divisor);
+                const pIns = Math.round(car.estimatedCosts.insurance / plan.divisor);
+                const pFuel = Math.round(car.estimatedCosts.fuel / plan.divisor);
+                const pMaint = Math.round(car.estimatedCosts.maintenance / plan.divisor);
+                const pTotal = pLoan + pIns + pFuel + pMaint;
+                const isSelected = paymentFreq === plan.id;
+
+                return (
+                  <div 
+                    key={plan.id}
+                    onClick={() => setPaymentFreq(plan.id as any)}
+                    className={`border-2 rounded-2xl p-4 cursor-pointer transition-all ${
+                      isSelected ? 'border-primary bg-primary/5 shadow-inner' : 'border-slate-100 hover:border-slate-200'
+                    }`}
+                  >
+                    <div className="flex justify-between items-center mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-primary' : 'border-slate-300'}`}>
+                          {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                        </div>
+                        <h4 className="font-bold text-slate-900">{plan.label}</h4>
+                      </div>
+                      <span className="font-black text-primary text-lg">{formatUGX(pTotal)}</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-y-2 text-xs font-medium text-slate-500 pl-8">
+                      <div className="flex justify-between pr-4"><span>Loan:</span> <span className="text-slate-700">{formatUGX(pLoan)}</span></div>
+                      <div className="flex justify-between"><span>Insurance:</span> <span className="text-slate-700">{formatUGX(pIns)}</span></div>
+                      <div className="flex justify-between pr-4"><span>Fuel:</span> <span className="text-slate-700">{formatUGX(pFuel)}</span></div>
+                      <div className="flex justify-between"><span>Maint:</span> <span className="text-slate-700">{formatUGX(pMaint)}</span></div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
+            
+
           </div>
 
           <div className="space-y-6">
-            {/* Dealer Info */}
-            <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex items-center justify-between">
-              <div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Dealer</p>
-                <h4 className="font-bold text-lg text-slate-900">{car.dealer.name}</h4>
-                <div className="flex items-center gap-3 mt-2">
-                  <div className="flex items-center gap-1 text-amber-500 text-sm font-bold">
-                    <Star size={14} className="fill-amber-500" /> {car.dealer.rating}
-                  </div>
-                  <div className="flex items-center gap-1 text-slate-500 text-sm font-medium">
-                    <MapPin size={14} /> {car.dealer.location}
-                  </div>
-                </div>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 border border-slate-100">
-                <StoreIcon />
-              </div>
-            </div>
-
             {/* Verification Section */}
-            <div className="bg-slate-900 rounded-3xl p-6 text-white shadow-sm flex items-center gap-4">
+            <button 
+              onClick={() => navigate('/wallet')}
+              className="w-full text-left bg-slate-900 rounded-3xl p-6 text-white shadow-sm flex items-center gap-4 hover:bg-slate-800 transition-colors cursor-pointer hover:shadow-lg"
+            >
               <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center shrink-0">
                 <ShieldCheck size={24} className="text-emerald-400" />
               </div>
@@ -319,22 +351,80 @@ const CarDetailsPage = () => {
                 <h4 className="font-bold mb-1">{car.verification.status}</h4>
                 <p className="text-sm text-slate-400 font-medium">Inspected by {car.verification.inspector} on {car.verification.date}</p>
               </div>
-            </div>
+            </button>
           </div>
         </div>
 
         {/* Additional Actions */}
         <div className="grid grid-cols-2 gap-4">
-          <button className="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all">
+          <button 
+            onClick={() => setShowInspectionForm(true)}
+            className="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer"
+          >
             <CalendarPlus size={18} /> Schedule Inspection
           </button>
-          <button className="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all">
+          <button 
+            onClick={() => {
+              toast.info("Connecting to dealer...");
+              window.location.href = `tel:${car.dealer.phone}`;
+            }}
+            className="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer"
+          >
             <PhoneCall size={18} /> Contact Dealer
           </button>
         </div>
 
       </div>
     </div>
+
+    {/* Inspection Modal */}
+    {showInspectionForm && (
+      <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4" onClick={() => setShowInspectionForm(false)}>
+        <motion.div 
+          initial={{ opacity: 0, y: 100 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl"
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="font-bold text-xl text-slate-900">Schedule Inspection</h3>
+              <p className="text-sm text-slate-500">Pick a date to view this vehicle.</p>
+            </div>
+            <button onClick={() => setShowInspectionForm(false)} className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
+              <X size={20} />
+            </button>
+          </div>
+
+          <div className="space-y-4 mb-6">
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-2">Preferred Date</label>
+              <input type="date" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-2">Preferred Time</label>
+              <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 outline-none focus:border-primary focus:ring-1 focus:ring-primary appearance-none">
+                <option>Morning (9AM - 12PM)</option>
+                <option>Afternoon (1PM - 4PM)</option>
+                <option>Evening (4PM - 6PM)</option>
+              </select>
+            </div>
+          </div>
+
+          <button 
+            onClick={() => {
+              setShowInspectionForm(false);
+              toast.success("Inspection Scheduled!", { description: "We've notified the dealer. You'll receive a confirmation SMS shortly." });
+            }}
+            className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all cursor-pointer"
+          >
+            Confirm Appointment
+          </button>
+        </motion.div>
+      </div>
+    )}
+
+  </>
   );
 };
 
