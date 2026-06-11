@@ -37,7 +37,7 @@ const queryClient = new QueryClient();
 
 const CUSTOMER_ROUTES = [
   '/dashboard', '/wallet', '/vehicles', '/cars', '/profile', 
-  '/financing', '/logbook', '/settings', '/savings-history', 
+  '/financing', '/logbook', '/settings', 
   '/applications', '/my-vehicle', '/repayments', '/support',
   '/payment-details'
 ];
@@ -82,7 +82,6 @@ const AppLayout = () => {
         <Route path="/settings" element={<ProtectedRoute><CustomerLayout><SettingsPage /></CustomerLayout></ProtectedRoute>} />
         
         {/* Placeholder Routes mapped to existing pages for now */}
-        <Route path="/savings-history" element={<ProtectedRoute><CustomerLayout><WalletPage /></CustomerLayout></ProtectedRoute>} />
         <Route path="/applications" element={<ProtectedRoute><CustomerLayout><FinancingPage /></CustomerLayout></ProtectedRoute>} />
         <Route path="/my-vehicle" element={<ProtectedRoute><CustomerLayout><LogbookPage /></CustomerLayout></ProtectedRoute>} />
         <Route path="/repayments" element={<ProtectedRoute><CustomerLayout><FinancingPage /></CustomerLayout></ProtectedRoute>} />

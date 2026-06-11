@@ -4,7 +4,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -14,15 +14,15 @@ model User {
   passwordHash     String
   name             String
   phone            String?
-  role             Role                 @default(CUSTOMER)
-  status           UserStatus           @default(PENDING_KYC)
+  role             String               @default("CUSTOMER")
+  status           String               @default("PENDING_KYC")
   
   // KYC Fields
   nationalId       String?              @unique
   selfieUrl        String?
   address          String?
-  employmentStatus EmploymentStatus?
-  kycStatus        KycStatus            @default(PENDING)
+  employmentStatus String?
+  kycStatus        String               @default("PENDING")
   
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
@@ -48,8 +48,8 @@ model Vehicle {
   make             String
   model            String
   year             Int
-  price            Decimal              @db.Decimal(12, 2)
-  status           VehicleStatus        @default(AVAILABLE)
+  price            Decimal
+  status           String               @default("AVAILABLE")
   dealerId         Int? // Can link to a Dealer user role in the future
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
@@ -62,10 +62,10 @@ model SavingsAccount {
   id                        Int                  @id @default(autoincrement())
   userId                    Int                  @unique
   user                      User                 @relation(fields: [userId], references: [id])
-  balance                   Decimal              @default(0.00) @db.Decimal(12, 2)
-  targetAmount              Decimal              @db.Decimal(12, 2)
-  interestEarned            Decimal              @default(0.00) @db.Decimal(12, 2)
-  status                    AccountStatus        @default(ACTIVE)
+  balance                   Decimal              @default(0.00)
+  targetAmount              Decimal
+  interestEarned            Decimal              @default(0.00)
+  status                    String               @default("ACTIVE")
   createdAt                 DateTime             @default(now())
   updatedAt                 DateTime             @updatedAt
 
@@ -76,9 +76,9 @@ model SavingsTransaction {
   id           Int               @id @default(autoincrement())
   accountId    Int
   account      SavingsAccount    @relation(fields: [accountId], references: [id])
-  amount       Decimal           @db.Decimal(12, 2)
-  type         SavingsTxType
-  status       TransactionStatus @default(COMPLETED)
+  amount       Decimal
+  type         String
+  status       String            @default("COMPLETED")
   reference    String?           @unique
   date         DateTime          @default(now())
 }
@@ -89,8 +89,8 @@ model LoanApplication {
   user            User                @relation(fields: [userId], references: [id])
   vehicleId       Int
   vehicle         Vehicle             @relation(fields: [vehicleId], references: [id])
-  requestedAmount Decimal             @db.Decimal(12, 2)
-  status          LoanAppStatus       @default(PENDING)
+  requestedAmount Decimal
+  status          String              @default("PENDING")
   riskScore       Int?                // 0 - 100
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
@@ -102,12 +102,12 @@ model FinancingAgreement {
   user                 User              @relation(fields: [customerId], references: [id])
   vehicleId            Int
   vehicle              Vehicle           @relation(fields: [vehicleId], references: [id])
-  principalAmount      Decimal           @db.Decimal(12, 2)
-  monthlyInstallment   Decimal           @db.Decimal(12, 2)
-  interestRate         Decimal           @db.Decimal(5, 2)
+  principalAmount      Decimal
+  monthlyInstallment   Decimal
+  interestRate         Decimal
   startDate            DateTime          @default(now())
   endDate              DateTime
-  status               FinancingStatus   @default(ACTIVE)
+  status               String            @default("ACTIVE")
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
 
@@ -118,85 +118,9 @@ model Repayment {
   id              Int                 @id @default(autoincrement())
   agreementId     Int
   agreement       FinancingAgreement  @relation(fields: [agreementId], references: [id])
-  amount          Decimal             @db.Decimal(12, 2)
-  status          RepaymentStatus     @default(PENDING)
+  amount          Decimal
+  status          String              @default("PENDING")
   dueDate         DateTime
   paidDate        DateTime?
   createdAt       DateTime            @default(now())
-}
-
-// ENUMS
-
-enum Role {
-  CUSTOMER
-  ADMIN
-  LOAN_OFFICER
-  RECOVERY_OFFICER
-  DEALER
-  SUPER_ADMIN
-}
-
-enum UserStatus {
-  PENDING_KYC
-  ACTIVE
-  SUSPENDED
-}
-
-enum KycStatus {
-  PENDING
-  VERIFIED
-  REJECTED
-}
-
-enum EmploymentStatus {
-  EMPLOYED
-  SELF_EMPLOYED
-  UNEMPLOYED
-  STUDENT
-}
-
-enum VehicleStatus {
-  AVAILABLE
-  RESERVED
-  FINANCED
-  SOLD
-}
-
-enum AccountStatus {
-  ACTIVE
-  FROZEN
-  CLOSED
-}
-
-enum SavingsTxType {
-  DEPOSIT
-  WITHDRAWAL
-  BONUS
-  INTEREST
-}
-
-enum TransactionStatus {
-  PENDING
-  COMPLETED
-  FAILED
-}
-
-enum LoanAppStatus {
-  PENDING
-  UNDER_REVIEW
-  APPROVED
-  REJECTED
-}
-
-enum FinancingStatus {
-  ACTIVE
-  PAID_OFF
-  DEFAULTED
-}
-
-enum RepaymentStatus {
-  PENDING
-  PAID
-  OVERDUE
-  PARTIAL
 }

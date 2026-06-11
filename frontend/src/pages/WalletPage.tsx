@@ -234,9 +234,9 @@ const WalletPage = () => {
       </div>
 
       <div className="px-6 mt-6">
-        <h2 className="font-semibold text-sm mb-3">Transaction History</h2>
+        <h2 className="font-semibold text-sm mb-3">Savings History</h2>
         {transactions.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-8">No transactions yet</p>
+          <p className="text-sm text-muted-foreground text-center py-8">No savings history yet</p>
         ) : (
           <div className="space-y-2">
             {transactions.map(tx => (
@@ -246,7 +246,7 @@ const WalletPage = () => {
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium capitalize">{tx.type}{tx.method ? ` · ${tx.method}` : ''}</p>
-                  <p className="text-[10px] text-muted-foreground">{formatDate(tx.created_at)}</p>
+                  <p className="text-[10px] text-muted-foreground">{formatDate(tx.date || tx.created_at || new Date().toISOString())}</p>
                 </div>
                 <p className={`text-sm font-semibold ${tx.type === 'withdrawal' ? 'text-destructive' : 'text-success'}`}>
                   {tx.type === 'withdrawal' ? '-' : '+'}{formatUGX(tx.amount)}

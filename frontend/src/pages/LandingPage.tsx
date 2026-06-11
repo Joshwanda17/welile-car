@@ -22,7 +22,7 @@ export default function LandingPage() {
           <button className="flex items-center justify-center w-10 h-10 active:scale-95 duration-100 md:hidden">
             <span className="material-symbols-outlined text-primary">menu</span>
           </button>
-          <h1 className="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile font-extrabold text-primary cursor-pointer" onClick={() => navigate('/')}>
+          <h1 className="font-chewy text-3xl md:text-4xl text-primary cursor-pointer tracking-wide" onClick={() => navigate('/')}>
             Welile Car
           </h1>
         </div>

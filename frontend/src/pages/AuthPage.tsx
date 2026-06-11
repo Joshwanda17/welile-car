@@ -28,19 +28,22 @@ const AuthPage: React.FC = () => {
     }
 
     try {
+      let result;
       if (isLogin) {
-        await signIn(email, password);
+        result = await signIn(email, password);
       } else {
         if (!name || !phone) {
           setError('Please provide your name and phone number');
           return;
         }
-        await signUp(email, password, {
-          name,
-          phone,
-          residence,
-        });
+        result = await signUp(email, password, name, phone, residence);
       }
+      
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      
       navigate('/vehicles');
     } catch (err: any) {
       setError(err.message || 'Authentication failed. Please try again.');
@@ -52,8 +55,11 @@ const AuthPage: React.FC = () => {
       {/* TopAppBar Shell */}
       <header className="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl shadow-sm border-b border-outline-variant/30 transition-all">
         <div className="max-w-[1440px] mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate('/')}>
-            <span className="font-headline-lg-mobile text-headline-sm font-bold text-primary tracking-tight">Welile Car</span>
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+            <div className="w-10 h-10 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center">
+              <span className="material-symbols-outlined text-[24px]">directions_car</span>
+            </div>
+            <span className="font-chewy text-3xl text-primary tracking-wide">Welile Car</span>
           </div>
           
           {/* Desktop Nav */}
@@ -281,8 +287,8 @@ const AuthPage: React.FC = () => {
 
       {/* Footer */}
       <footer className="w-full px-4 md:px-8 py-8 mt-12 flex flex-col md:flex-row justify-between items-center max-w-[1280px] mx-auto border-t border-outline-variant/50 bg-surface">
-        <div className="flex flex-col items-center md:items-start mb-6 md:mb-0">
-          <span className="font-headline-lg-mobile text-headline-sm font-bold text-primary mb-2">Welile Car</span>
+        <div className="flex flex-col items-center md:items-start gap-4 mb-8 md:mb-0">
+          <span className="font-chewy text-3xl text-primary mb-2">Welile Car</span>
           <p className="text-on-surface-variant font-body-md max-w-xs text-center md:text-left">© 2026 Welile Cars. Premium Automotive Finance. All Rights Reserved.</p>
         </div>
         

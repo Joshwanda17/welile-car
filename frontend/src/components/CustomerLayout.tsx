@@ -14,7 +14,6 @@ const CustomerLayout = ({ children }: { children: React.ReactNode }) => {
   const links = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Wallet', path: '/wallet', icon: Wallet },
-    { name: 'Savings History', path: '/savings-history', icon: History },
     { name: 'Vehicle Marketplace', path: '/vehicles', icon: Car },
     { name: 'My Applications', path: '/applications', icon: FileText },
     { name: 'My Vehicle', path: '/my-vehicle', icon: CarFront },
@@ -29,7 +28,7 @@ const CustomerLayout = ({ children }: { children: React.ReactNode }) => {
         <div>
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-primary text-3xl">directions_car</span>
-            <span className="font-display-lg text-xl font-bold text-primary tracking-tight">Welile Car</span>
+            <span className="font-chewy text-2xl text-primary tracking-wide">Welile Car</span>
           </div>
           <p className="text-slate-400 font-bold uppercase tracking-wider text-[10px] mt-2">Customer Portal</p>
         </div>
@@ -81,7 +80,7 @@ const CustomerLayout = ({ children }: { children: React.ReactNode }) => {
         </button>
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-primary text-2xl">directions_car</span>
-          <span className="font-display-lg font-bold text-primary text-lg tracking-tight">Welile Car</span>
+          <span className="font-chewy text-2xl text-primary tracking-wide">Welile Car</span>
         </div>
       </div>
 

@@ -14,7 +14,7 @@ interface AuthContextType {
   loading: boolean;
   isAdmin: boolean;
   isCfo: boolean;
-  signUp: (email: string, password: string, name: string) => Promise<{ error: string | null }>;
+  signUp: (email: string, password: string, name: string, phone: string, residence: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 }
