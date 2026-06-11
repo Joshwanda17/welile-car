@@ -142,8 +142,66 @@ const getHistory = async (req, res) => {
   }
 };
 
+const payFromWallet = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { amount, reason } = req.body;
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Invalid amount' });
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+      const savings = await tx.savingsAccount.findUnique({
+        where: { userId }
+      });
+
+      if (!savings || savings.balance < amount) {
+        throw new Error('Insufficient wallet balance');
+      }
+
+      const updatedSavings = await tx.savingsAccount.update({
+        where: { id: savings.id },
+        data: { balance: { decrement: amount } }
+      });
+
+      const transaction = await tx.savingsTransaction.create({
+        data: {
+          accountId: savings.id,
+          amount: amount,
+          type: 'WITHDRAWAL', // Using WITHDRAWAL to represent payment
+          status: 'COMPLETED',
+          reference: `PAY-${Date.now()}`
+        }
+      });
+
+      await tx.auditLog.create({
+        data: {
+          userId,
+          action: 'WALLET_PAYMENT',
+          details: `Paid ${amount} UGX from wallet. Reason: ${reason || 'Car Payment'}`
+        }
+      });
+
+      return { updatedSavings, transaction };
+    });
+
+    res.json({
+      message: 'Payment successful',
+      balance: result.updatedSavings.balance
+    });
+  } catch (error) {
+    console.error('Pay From Wallet Error:', error.message);
+    if (error.message === 'Insufficient wallet balance') {
+      return res.status(400).json({ error: error.message });
+    }
+    res.status(500).json({ error: 'Server error processing payment' });
+  }
+};
+
 module.exports = {
   deposit,
   getHistory,
-  paymentWebhook
+  paymentWebhook,
+  payFromWallet
 };

@@ -255,6 +255,37 @@ export function useDeposit() {
   });
 }
 
+export function usePayFromWallet() {
+  const { user, session } = useAuth();
+  const token = session?.access_token;
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ amount, reason }: { amount: number; reason?: string }) => {
+      if (!user || !token) throw new Error('Not authenticated');
+
+      const res = await fetch(`${API_URL}/transactions/pay-from-wallet`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ amount, reason })
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to process wallet payment');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardSummary'] });
+    },
+  });
+}
+
 export function useSelectCar() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
