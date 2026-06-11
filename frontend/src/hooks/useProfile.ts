@@ -105,15 +105,60 @@ const addMockTransaction = (userId: string, tx: any) => {
 };
 
 export function useProfile() {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
+  const token = session?.access_token;
 
   return useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
-      if (!user) return null;
-      return getMockProfile(user.id);
+      if (!user || !token) return null;
+      
+      try {
+        const [meRes, summaryRes] = await Promise.all([
+          fetch(`${API_URL}/users/me`, { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch(`${API_URL}/dashboard/summary`, { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
+        
+        if (!meRes.ok || !summaryRes.ok) throw new Error('Failed to fetch profile data');
+        
+        const me = await meRes.json();
+        const summary = await summaryRes.json();
+        
+        const localCarId = localStorage.getItem('mockPurchasedCarId') || localStorage.getItem('selectedCarId');
+        
+        const profile: Profile = {
+          id: me.id.toString(),
+          user_id: me.id.toString(),
+          name: me.name,
+          phone: me.phone || '',
+          avatar_url: '',
+          referral_code: '',
+          referred_by: null,
+          wallet_balance: summary.savings.totalSaved,
+          total_deposits: summary.savings.totalSaved,
+          deposits_this_month: 0,
+          growth_earned: summary.savings.interestEarned,
+          last_deposit_date: null,
+          last_growth_date: null,
+          has_withdrawn_this_month: false,
+          savings_locked: false,
+          financing_unlocked: summary.journey.currentStep !== 'Saving',
+          financing_status: summary.vehicle ? 'active' : 'none',
+          selected_car_id: summary.vehicle ? summary.vehicle.id.toString() : localCarId,
+          assigned_agent: null,
+          flagged: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        
+        return profile;
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
     },
-    enabled: !!user,
+    enabled: !!user && !!token,
+    refetchInterval: 3000, // Refetch every 3 seconds to catch deposit webhook updates
   });
 }
 
@@ -151,7 +196,8 @@ export function useUpdateProfile() {
 }
 
 export function useTransactions() {
-  const { user, token } = useAuth();
+  const { user, session } = useAuth();
+  const token = session?.access_token;
 
   return useQuery({
     queryKey: ['transactions', user?.id],
@@ -164,14 +210,24 @@ export function useTransactions() {
       });
       if (!res.ok) throw new Error('Failed to fetch transactions');
       const data = await res.json();
-      return data.transactions;
+      
+      // Map DB transactions to UI transactions
+      return data.transactions.map((tx: any) => ({
+        id: tx.id.toString(),
+        user_id: user.id.toString(),
+        type: tx.type === 'DEPOSIT' ? 'deposit' : tx.type,
+        amount: tx.amount,
+        method: 'system',
+        created_at: tx.date
+      }));
     },
     enabled: !!user && !!token,
   });
 }
 
 export function useDeposit() {
-  const { user, token } = useAuth();
+  const { user, session } = useAuth();
+  const token = session?.access_token;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -205,8 +261,7 @@ export function useSelectCar() {
 
   return useMutation({
     mutationFn: async (carId: string) => {
-      if (!user) throw new Error('Not authenticated');
-      updateMockProfile(user.id, { selected_car_id: carId });
+      localStorage.setItem('selectedCarId', carId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });

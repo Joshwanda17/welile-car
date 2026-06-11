@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, CheckCircle2, Sparkles, Upload } from 'lucide-react';
 import { carsData, Car } from '@/data/cars';
 import { formatUGX } from '@/lib/format';
+import { useDeposit } from '@/hooks/useProfile';
 
 const PaymentDetailsPage = () => {
   const location = useLocation();
@@ -18,6 +19,7 @@ const PaymentDetailsPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
   const [ussdMessage, setUssdMessage] = useState('');
+  const { mutateAsync: makeDeposit } = useDeposit();
 
   // Form states
   const [amountToPay, setAmountToPay] = useState('');
@@ -41,42 +43,39 @@ const PaymentDetailsPage = () => {
   const parsedAmount = parseInt(amountToPay || '0', 10);
   const currentDeficit = method === 'wallet' ? Math.max(0, parsedAmount - walletBalance) : 0;
 
-  const handleConfirm = (e: React.FormEvent) => {
+  const handleConfirm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (parsedAmount <= 0) return;
     setIsProcessing(true);
     
-    if (method === 'mtn' || method === 'airtel' || (method === 'wallet' && currentDeficit > 0)) {
-      setUssdMessage('Connecting to USSD... Please check your phone to enter your Mobile Money PIN.');
-      setTimeout(() => {
+    try {
+      if (method === 'mtn' || method === 'airtel') {
+        setUssdMessage('Connecting to USSD... Please check your phone to enter your Mobile Money PIN.');
+        // Call the real backend API
+        await makeDeposit({ amount: parsedAmount, method: method });
+        
         setUssdMessage('Processing transaction...');
         setTimeout(() => {
           setIsProcessing(false);
           setUssdMessage('');
           setSuccess(true);
+          setTimeout(() => navigate('/wallet'), 3000);
+        }, 3000);
+      } else {
+        // Fallback for mock flows (wallet, bank, etc)
+        setTimeout(() => {
+          setIsProcessing(false);
+          setSuccess(true);
           const currentTotal = Number(localStorage.getItem('mockTotalPaid') || 0);
           localStorage.setItem('mockTotalPaid', (currentTotal + parsedAmount).toString());
           if (car) localStorage.setItem('mockPurchasedCarId', car.id);
-          if (method === 'wallet') {
-            const currentDeduction = Number(localStorage.getItem('mockWalletDeduction') || 0);
-            localStorage.setItem('mockWalletDeduction', (currentDeduction + (parsedAmount - currentDeficit)).toString());
-          }
           setTimeout(() => navigate('/logbook'), 3000);
-        }, 1500);
-      }, 3000);
-    } else {
-      setTimeout(() => {
-        setIsProcessing(false);
-        setSuccess(true);
-        const currentTotal = Number(localStorage.getItem('mockTotalPaid') || 0);
-        localStorage.setItem('mockTotalPaid', (currentTotal + parsedAmount).toString());
-        if (car) localStorage.setItem('mockPurchasedCarId', car.id);
-        if (method === 'wallet') {
-          const currentDeduction = Number(localStorage.getItem('mockWalletDeduction') || 0);
-          localStorage.setItem('mockWalletDeduction', (currentDeduction + (parsedAmount - currentDeficit)).toString());
-        }
-        setTimeout(() => navigate('/logbook'), 3000);
-      }, 2000);
+        }, 2000);
+      }
+    } catch (err) {
+      setIsProcessing(false);
+      setUssdMessage('');
+      alert('Transaction failed. Please try again.');
     }
   };
 

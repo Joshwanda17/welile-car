@@ -14,15 +14,15 @@ model User {
   passwordHash     String
   name             String
   phone            String?
-  role             String               @default("CUSTOMER")
-  status           String               @default("PENDING_KYC")
+  role             String @default("CUSTOMER")
+  status           String @default("PENDING_KYC")
   
   // KYC Fields
   nationalId       String?              @unique
   selfieUrl        String?
   address          String?
   employmentStatus String?
-  kycStatus        String               @default("PENDING")
+  kycStatus        String @default("PENDING")
   
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
@@ -48,8 +48,8 @@ model Vehicle {
   make             String
   model            String
   year             Int
-  price            Decimal
-  status           String               @default("AVAILABLE")
+  price            Float
+  status           String @default("AVAILABLE")
   dealerId         Int? // Can link to a Dealer user role in the future
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
@@ -62,10 +62,10 @@ model SavingsAccount {
   id                        Int                  @id @default(autoincrement())
   userId                    Int                  @unique
   user                      User                 @relation(fields: [userId], references: [id])
-  balance                   Decimal              @default(0.00)
-  targetAmount              Decimal
-  interestEarned            Decimal              @default(0.00)
-  status                    String               @default("ACTIVE")
+  balance                   Float @default(0)
+  targetAmount              Float
+  interestEarned            Float @default(0)
+  status                    String @default("ACTIVE")
   createdAt                 DateTime             @default(now())
   updatedAt                 DateTime             @updatedAt
 
@@ -76,9 +76,9 @@ model SavingsTransaction {
   id           Int               @id @default(autoincrement())
   accountId    Int
   account      SavingsAccount    @relation(fields: [accountId], references: [id])
-  amount       Decimal
+  amount       Float
   type         String
-  status       String            @default("COMPLETED")
+  status       String @default("COMPLETED")
   reference    String?           @unique
   date         DateTime          @default(now())
 }
@@ -89,8 +89,8 @@ model LoanApplication {
   user            User                @relation(fields: [userId], references: [id])
   vehicleId       Int
   vehicle         Vehicle             @relation(fields: [vehicleId], references: [id])
-  requestedAmount Decimal
-  status          String              @default("PENDING")
+  requestedAmount Float
+  status          String @default("PENDING")
   riskScore       Int?                // 0 - 100
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
@@ -102,12 +102,12 @@ model FinancingAgreement {
   user                 User              @relation(fields: [customerId], references: [id])
   vehicleId            Int
   vehicle              Vehicle           @relation(fields: [vehicleId], references: [id])
-  principalAmount      Decimal
-  monthlyInstallment   Decimal
-  interestRate         Decimal
+  principalAmount      Float
+  monthlyInstallment   Float
+  interestRate         Float
   startDate            DateTime          @default(now())
   endDate              DateTime
-  status               String            @default("ACTIVE")
+  status               String @default("ACTIVE")
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
 
@@ -118,9 +118,33 @@ model Repayment {
   id              Int                 @id @default(autoincrement())
   agreementId     Int
   agreement       FinancingAgreement  @relation(fields: [agreementId], references: [id])
-  amount          Decimal
-  status          String              @default("PENDING")
+  amount          Float
+  status          String @default("PENDING")
   dueDate         DateTime
   paidDate        DateTime?
   createdAt       DateTime            @default(now())
 }
+
+// ENUMS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
